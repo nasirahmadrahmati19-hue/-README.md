@@ -68,10 +68,10 @@
         }
         .theme-toggle:hover { background: rgba(255,255,255,0.3); }
 
-        .tabs-nav { display: flex; background: var(--bg); padding: 10px; gap: 10px; }
+        .tabs-nav { display: flex; background: var(--bg); padding: 10px; gap: 10px; overflow-x: auto; }
         .tab-btn {
             flex: 1; padding: 15px; border: none; background: transparent; cursor: pointer;
-            font-weight: 700; color: var(--text-light); border-radius: 12px; transition: 0.3s;
+            font-weight: 700; color: var(--text-light); border-radius: 12px; transition: 0.3s; white-space: nowrap;
         }
         .tab-btn.active { background: var(--card); color: var(--primary); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
         
@@ -80,7 +80,6 @@
         .tab-content.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Sub-tabs */
         .sub-tabs { display: flex; gap: 10px; margin-bottom: 25px; flex-wrap: wrap; }
         .sub-tab-btn {
             padding: 10px 20px; border: 2px solid var(--border); background: var(--bg);
@@ -90,7 +89,6 @@
         .sub-tab-content { display: none; animation: fadeIn 0.4s; }
         .sub-tab-content.active { display: block; }
 
-        /* Summary Cards */
         .summary-cards {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -106,12 +104,7 @@
             position: relative;
             overflow: hidden;
         }
-        .summary-card::before {
-            content: '';
-            position: absolute;
-            top: 0; right: 0; left: 0;
-            height: 4px;
-        }
+        .summary-card::before { content: ''; position: absolute; top: 0; right: 0; left: 0; height: 4px; }
         .summary-card.success { border-color: var(--success); }
         .summary-card.success::before { background: var(--success); }
         .summary-card.danger { border-color: var(--danger); }
@@ -121,14 +114,20 @@
         .summary-card.warning { border-color: var(--warning); }
         .summary-card.warning::before { background: var(--warning); }
         
-        .summary-card .label { font-size: 0.9rem; color: var(--text-light); margin-bottom: 8px; font-weight: 600; }
-        .summary-card .value { font-size: 1.5rem; font-weight: 800; }
+        .summary-card .label { font-size: 0.9rem; color: var(--text-light); margin-bottom: 12px; font-weight: 600; }
+        .summary-card .value { 
+            font-size: 1.1rem; 
+            font-weight: 800; 
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            align-items: center;
+        }
         .summary-card.success .value { color: var(--success); }
         .summary-card.danger .value { color: var(--danger); }
         .summary-card.info .value { color: var(--info); }
         .summary-card.warning .value { color: var(--warning); }
 
-        /* Form Styles */
         .form-card {
             background: var(--bg); border: 1px solid var(--border); border-radius: 16px; padding: 25px; margin-bottom: 25px;
         }
@@ -138,7 +137,7 @@
             width: 100%; padding: 12px; border: 2px solid var(--border); border-radius: 10px;
             font-size: 1rem; background: var(--card); color: var(--text);
         }
-        .form-input:focus { outline: none; border-color: var(--primary); }
+        .form-input:focus, .form-select:focus { outline: none; border-color: var(--primary); }
         
         .btn {
             padding: 12px 24px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; transition: 0.3s;
@@ -146,20 +145,17 @@
         .btn-primary { background: var(--primary); color: white; }
         .btn-primary:hover { background: var(--primary-dark); }
 
-        /* Table & Dropdown */
         .table-wrapper { overflow-x: auto; border-radius: 16px; border: 1px solid var(--border); }
         table { width: 100%; border-collapse: collapse; background: var(--card); }
         th { background: var(--bg); padding: 16px; text-align: right; font-weight: 700; color: var(--text-light); }
         td { padding: 16px; border-bottom: 1px solid var(--border); vertical-align: middle; }
         
-        .amount-pos { color: var(--success); font-weight: 800; direction: ltr; display: inline-block; }
-        .amount-neg { color: var(--danger); font-weight: 800; direction: ltr; display: inline-block; }
-        
-        .badge { padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: 700; }
+        .badge { padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: 700; display: inline-block; }
         .badge-afn { background: #dbeafe; color: #1e40af; }
         .badge-usd { background: #dcfce7; color: #166534; }
         .badge-eur { background: #fef3c7; color: #92400e; }
         .badge-irr { background: #fce7f3; color: #9f1239; }
+        .badge-pkr { background: #f3e8ff; color: #6b21a8; }
 
         .action-cell { position: relative; }
         .action-btn {
@@ -180,25 +176,13 @@
         .text-danger { color: var(--danger); }
         .text-warning { color: var(--warning); }
 
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-            color: var(--text-light);
-        }
+        .empty-state { text-align: center; padding: 40px 20px; color: var(--text-light); }
         .empty-state .icon { font-size: 3rem; margin-bottom: 10px; }
 
-        /* Archive List */
         .archive-item {
-            background: var(--bg);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 15px 20px;
-            margin-bottom: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 10px;
+            background: var(--bg); border: 1px solid var(--border); border-radius: 12px;
+            padding: 15px 20px; margin-bottom: 10px; display: flex; justify-content: space-between;
+            align-items: center; flex-wrap: wrap; gap: 10px;
         }
         .archive-date { font-weight: bold; color: var(--primary); }
     </style>
@@ -249,8 +233,9 @@
                             <input type="text" id="t-desc" class="form-input" placeholder="مثال: فروش کالا">
                         </div>
                         <div class="input-group">
-                            <label>مبلغ (فارسی یا انگلیسی)</label>
-                            <input type="text" id="t-amount" class="form-input" placeholder="0" oninput="convertToEnglish(this)">
+                            <label>مبلغ</label>
+                            <!-- inputmode="numeric" کیبورد عددی موبایل را باز می‌کند -->
+                            <input type="text" inputmode="numeric" pattern="[0-9]*" id="t-amount" class="form-input" placeholder="0" oninput="convertToEnglish(this)">
                         </div>
                         <div class="input-group">
                             <label>ارز</label>
@@ -259,6 +244,7 @@
                                 <option value="USD">USD</option>
                                 <option value="EUR">EUR</option>
                                 <option value="IRR">IRR</option>
+                                <option value="PKR">PKR</option>
                             </select>
                         </div>
                     </div>
@@ -303,8 +289,8 @@
                             <input type="text" id="t-desc-sent" class="form-input" placeholder="مثال: خرید مواد اولیه">
                         </div>
                         <div class="input-group">
-                            <label>مبلغ (فارسی یا انگلیسی)</label>
-                            <input type="text" id="t-amount-sent" class="form-input" placeholder="0" oninput="convertToEnglish(this)">
+                            <label>مبلغ</label>
+                            <input type="text" inputmode="numeric" pattern="[0-9]*" id="t-amount-sent" class="form-input" placeholder="0" oninput="convertToEnglish(this)">
                         </div>
                         <div class="input-group">
                             <label>ارز</label>
@@ -313,6 +299,7 @@
                                 <option value="USD">USD</option>
                                 <option value="EUR">EUR</option>
                                 <option value="IRR">IRR</option>
+                                <option value="PKR">PKR</option>
                             </select>
                         </div>
                     </div>
@@ -340,7 +327,7 @@
             <div id="daily-balance" class="sub-tab-content">
                 <h2 style="margin-bottom:20px; color:var(--info)">💰 دخل روزانه</h2>
                 <p style="color:var(--text-light); margin-bottom:20px; font-size:0.95rem;">
-                    فرمول: مانده روز قبل + رسیدات امروز - برده‌های امروز
+                    فرمول: مانده روز قبل + رسیدات امروز - برده‌های امروز - مصارف امروز (به تفکیک هر ارز)
                 </p>
 
                 <div class="summary-cards">
@@ -356,6 +343,10 @@
                         <div class="label">⬆️ برده‌های امروز</div>
                         <div class="value" id="db-sent">۰</div>
                     </div>
+                    <div class="summary-card danger">
+                        <div class="label">💸 مصارف امروز</div>
+                        <div class="value" id="db-expenses">۰</div>
+                    </div>
                     <div class="summary-card info">
                         <div class="label">💵 مانده فعلی دخل</div>
                         <div class="value" id="current-balance">۰</div>
@@ -363,8 +354,8 @@
                 </div>
 
                 <div class="form-card" style="background: linear-gradient(135deg, #eff6ff 0%, #f0f9ff 100%); border-color: var(--info);">
-                    <h3 style="color:var(--info); margin-bottom:15px;">📊 وضعیت دخل امروز</h3>
-                    <div id="balance-status" style="font-size:1.1rem; line-height:2;"></div>
+                    <h3 style="color:var(--info); margin-bottom:15px;">📊 ریز وضعیت دخل امروز</h3>
+                    <div id="balance-status" style="font-size:1rem; line-height:2;"></div>
                 </div>
             </div>
         </div>
@@ -387,7 +378,17 @@
                     </div>
                     <div class="input-group">
                         <label>مبلغ</label>
-                        <input type="text" id="e-amount" class="form-input" placeholder="0" oninput="convertToEnglish(this)">
+                        <input type="text" inputmode="numeric" pattern="[0-9]*" id="e-amount" class="form-input" placeholder="0" oninput="convertToEnglish(this)">
+                    </div>
+                    <div class="input-group">
+                        <label>ارز</label>
+                        <select id="e-currency" class="form-select">
+                            <option value="AFN">AFN</option>
+                            <option value="USD">USD</option>
+                            <option value="EUR">EUR</option>
+                            <option value="IRR">IRR</option>
+                            <option value="PKR">PKR</option>
+                        </select>
                     </div>
                 </div>
                 <button class="btn btn-primary" style="background:var(--danger)" onclick="addExpense()">💾 ثبت هزینه</button>
@@ -400,6 +401,7 @@
                             <th>شماره</th>
                             <th>دسته‌بندی</th>
                             <th>مبلغ</th>
+                            <th>ارز</th>
                             <th>تاریخ</th>
                             <th>عملیات</th>
                         </tr>
@@ -423,7 +425,7 @@
                     <div class="value" id="total-expense-all">۰</div>
                 </div>
                 <div class="summary-card info">
-                    <div class="label">مانده فعلی</div>
+                    <div class="label">مانده فعلی کل</div>
                     <div class="value" id="total-balance-all">۰</div>
                 </div>
             </div>
@@ -439,6 +441,7 @@
     let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
     let expenses = JSON.parse(localStorage.getItem('expenses')) || [];
     let editIndex = null;
+    const currencies = ['AFN', 'USD', 'EUR', 'IRR', 'PKR'];
 
     // ===== Afghanistan Time Functions =====
     function getAfghanistanDate(date = new Date()) {
@@ -446,62 +449,62 @@
     }
 
     function getAfghanistanDateString(date = new Date()) {
-        const afDate = getAfghanistanDate(date);
-        return afDate.toLocaleDateString('fa-IR');
+        return getAfghanistanDate(date).toLocaleDateString('fa-IR');
     }
 
     function getAfghanistanDateTimeString(date = new Date()) {
-        const afDate = getAfghanistanDate(date);
-        return afDate.toLocaleString('fa-IR', { 
-            year: 'numeric', month: 'long', day: 'numeric',
-            hour: '2-digit', minute: '2-digit'
+        return getAfghanistanDate(date).toLocaleString('fa-IR', { 
+            year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
         });
     }
 
-    // ===== Day Closing Logic =====
+    // ===== Day Closing Logic (Multi-Currency) =====
     function checkDayClosing() {
         const today = getAfghanistanDateString();
         const lastDate = localStorage.getItem('lastDate');
         
         if (lastDate && lastDate !== today) {
-            // روز عوض شده - باید معاملات روز قبل را آرشیو کنیم
-            const previousTransactions = JSON.parse(localStorage.getItem('transactions')) || [];
-            const previousExpenses = JSON.parse(localStorage.getItem('expenses')) || [];
+            const prevTrans = JSON.parse(localStorage.getItem('transactions')) || [];
+            const prevExp = JSON.parse(localStorage.getItem('expenses')) || [];
             const archives = JSON.parse(localStorage.getItem('dailyArchives')) || [];
+            const prevBalances = JSON.parse(localStorage.getItem('lastClosingBalancesByCurrency')) || {AFN:0, USD:0, EUR:0, IRR:0, PKR:0};
             
-            const totalReceived = previousTransactions
-                .filter(t => t.type === 'received')
-                .reduce((sum, t) => sum + Number(t.amount), 0);
-            const totalSent = previousTransactions
-                .filter(t => t.type === 'sent')
-                .reduce((sum, t) => sum + Number(t.amount), 0);
-            const totalExp = previousExpenses.reduce((sum, e) => sum + Number(e.amount), 0);
-            
-            const lastBalance = Number(localStorage.getItem('lastClosingBalance') || 0);
-            const newBalance = lastBalance + totalReceived - totalSent;
-            
-            // ذخیره آرشیو
+            const currentBalances = { ...prevBalances };
+            const todayStats = { received: {}, sent: {}, expenses: {} };
+
+            prevTrans.forEach(t => {
+                if (t.type === 'received') {
+                    currentBalances[t.currency] = (currentBalances[t.currency] || 0) + Number(t.amount);
+                    todayStats.received[t.currency] = (todayStats.received[t.currency] || 0) + Number(t.amount);
+                } else {
+                    currentBalances[t.currency] = (currentBalances[t.currency] || 0) - Number(t.amount);
+                    todayStats.sent[t.currency] = (todayStats.sent[t.currency] || 0) + Number(t.amount);
+                }
+            });
+
+            prevExp.forEach(e => {
+                const curr = e.currency || 'AFN';
+                currentBalances[curr] = (currentBalances[curr] || 0) - Number(e.amount);
+                todayStats.expenses[curr] = (todayStats.expenses[curr] || 0) + Number(e.amount);
+            });
+
             archives.push({
                 date: lastDate,
-                transactions: previousTransactions,
-                expenses: previousExpenses,
-                openingBalance: lastBalance,
-                closingBalance: newBalance,
-                totalReceived,
-                totalSent,
-                totalExpenses: totalExp
+                transactions: prevTrans,
+                expenses: prevExp,
+                openingBalances: prevBalances,
+                closingBalances: currentBalances,
+                stats: todayStats
             });
             
             localStorage.setItem('dailyArchives', JSON.stringify(archives));
-            localStorage.setItem('lastClosingBalance', newBalance);
+            localStorage.setItem('lastClosingBalancesByCurrency', JSON.stringify(currentBalances));
             localStorage.setItem('transactions', JSON.stringify([]));
             localStorage.setItem('expenses', JSON.stringify([]));
             
-            // بروزرسانی متغیرها
             transactions = [];
             expenses = [];
         }
-        
         localStorage.setItem('lastDate', today);
     }
 
@@ -513,13 +516,12 @@
         localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
     }
 
-    // Load saved theme
     if (localStorage.getItem('theme') === 'dark') {
         document.body.classList.add('dark-mode');
         document.querySelector('.theme-toggle').innerText = '☀️';
     }
 
-    // ===== Persian Number Converter =====
+    // ===== Persian Number Converter & Formatter =====
     function convertToEnglish(input) {
         let val = input.value;
         const persianNumbers = [/۰/g, /۱/g, /۲/g, /۳/g, /۴/g, /۵/g, /۶/g, /۷/g, /۸/g, /۹/g];
@@ -533,6 +535,35 @@
 
     function formatNumber(num) {
         return Number(num).toLocaleString('fa-IR');
+    }
+
+    // ===== Helper: Format Currency Breakdown =====
+    function formatCurrencyBreakdown(items, amountKey = 'amount') {
+        const totals = { AFN: 0, USD: 0, EUR: 0, IRR: 0, PKR: 0 };
+        items.forEach(item => {
+            const curr = item.currency || 'AFN';
+            totals[curr] += Number(item[amountKey]);
+        });
+        
+        let html = '';
+        for (const [curr, amount] of Object.entries(totals)) {
+            if (amount !== 0) {
+                html += `<div>${formatNumber(amount)} <span class="badge badge-${curr.toLowerCase()}">${curr}</span></div>`;
+            }
+        }
+        return html || '<div style="color:var(--text-light)">۰</div>';
+    }
+
+    function formatCurrencyBreakdownObject(balances, inline = false) {
+        let html = '';
+        const style = inline ? 'display:inline-block; margin-left:10px;' : '';
+        for (const [curr, amount] of Object.entries(balances)) {
+            if (amount !== 0) {
+                const color = amount > 0 ? 'var(--success)' : 'var(--danger)';
+                html += `<div style="${style}color:${color}">${formatNumber(Math.abs(amount))} <span class="badge badge-${curr.toLowerCase()}">${curr}</span></div>`;
+            }
+        }
+        return html || '<div style="color:var(--text-light)">۰</div>';
     }
 
     // ===== Save Data =====
@@ -563,7 +594,6 @@
     // ===== Add Transaction =====
     function addTransaction(type = 'received') {
         let desc, amount, currency;
-        
         if (type === 'received') {
             desc = document.getElementById('t-desc').value;
             amount = document.getElementById('t-amount').value;
@@ -576,14 +606,7 @@
 
         if(!desc || !amount) return alert('لطفاً تمام فیلدها را پر کنید');
 
-        const newTrans = {
-            id: Date.now(),
-            desc,
-            amount,
-            currency,
-            type,
-            date: getAfghanistanDateString()
-        };
+        const newTrans = { id: Date.now(), desc, amount, currency, type, date: getAfghanistanDateString() };
 
         if(editIndex !== null) {
             transactions[editIndex] = newTrans;
@@ -592,7 +615,6 @@
             transactions.push(newTrans);
         }
 
-        // Clear inputs
         if (type === 'received') {
             document.getElementById('t-desc').value = '';
             document.getElementById('t-amount').value = '';
@@ -600,7 +622,6 @@
             document.getElementById('t-desc-sent').value = '';
             document.getElementById('t-amount-sent').value = '';
         }
-        
         saveData();
     }
 
@@ -608,21 +629,18 @@
     function addExpense() {
         const cat = document.getElementById('e-cat').value;
         const amount = document.getElementById('e-amount').value;
+        const currency = document.getElementById('e-currency').value;
+        
         if(!cat || !amount) return alert('لطفاً اطلاعات را کامل کنید');
 
-        expenses.push({ 
-            id: Date.now(), 
-            cat, 
-            amount, 
-            date: getAfghanistanDateString() 
-        });
+        expenses.push({ id: Date.now(), cat, amount, currency, date: getAfghanistanDateString() });
         
         document.getElementById('e-cat').value = '';
         document.getElementById('e-amount').value = '';
         saveData();
     }
 
-    // ===== Delete Item =====
+    // ===== Delete & Edit =====
     function deleteItem(type, id) {
         if(confirm('آیا از حذف این مورد اطمینان دارید؟')) {
             if(type === 'trans') transactions = transactions.filter(t => t.id !== id);
@@ -631,7 +649,6 @@
         }
     }
 
-    // ===== Edit Transaction =====
     function editTransaction(id) {
         const item = transactions.find(t => t.id === id);
         if(item) {
@@ -654,8 +671,7 @@
     // ===== Dropdown Logic =====
     function toggleDropdown(id) {
         const menu = document.getElementById(`menu-${id}`);
-        const allMenus = document.querySelectorAll('.dropdown-menu');
-        allMenus.forEach(m => {
+        document.querySelectorAll('.dropdown-menu').forEach(m => {
             if(m !== menu) m.classList.remove('show');
         });
         menu.classList.toggle('show');
@@ -669,7 +685,6 @@
 
     // ===== Render Tables =====
     function renderTables() {
-        // Received Transactions
         const transBody = document.getElementById('trans-table-body');
         transBody.innerHTML = '';
         const receivedList = transactions.filter(t => t.type === 'received');
@@ -682,7 +697,7 @@
                     <tr>
                         <td>${index + 1}</td>
                         <td>${t.desc}</td>
-                        <td><span class="amount-pos">⬇️ ${formatNumber(t.amount)}</span></td>
+                        <td><span style="color:var(--success); font-weight:800; direction:ltr; display:inline-block;">⬇️ ${formatNumber(t.amount)}</span></td>
                         <td><span class="badge badge-${t.currency.toLowerCase()}">${t.currency}</span></td>
                         <td>${t.date}</td>
                         <td class="action-cell">
@@ -697,7 +712,6 @@
             });
         }
 
-        // Sent Transactions
         const sentBody = document.getElementById('sent-table-body');
         sentBody.innerHTML = '';
         const sentList = transactions.filter(t => t.type === 'sent');
@@ -710,7 +724,7 @@
                     <tr>
                         <td>${index + 1}</td>
                         <td>${t.desc}</td>
-                        <td><span class="amount-neg">⬆️ ${formatNumber(t.amount)}</span></td>
+                        <td><span style="color:var(--danger); font-weight:800; direction:ltr; display:inline-block;">⬆️ ${formatNumber(t.amount)}</span></td>
                         <td><span class="badge badge-${t.currency.toLowerCase()}">${t.currency}</span></td>
                         <td>${t.date}</td>
                         <td class="action-cell">
@@ -725,19 +739,19 @@
             });
         }
 
-        // Expenses
         const expBody = document.getElementById('exp-table-body');
         expBody.innerHTML = '';
         
         if (expenses.length === 0) {
-            expBody.innerHTML = `<tr><td colspan="5"><div class="empty-state"><div class="icon">📭</div><div>هنوز هزینه‌ای ثبت نشده است</div></div></td></tr>`;
+            expBody.innerHTML = `<tr><td colspan="6"><div class="empty-state"><div class="icon">📭</div><div>هنوز هزینه‌ای ثبت نشده است</div></div></td></tr>`;
         } else {
             expenses.forEach((e, index) => {
                 expBody.innerHTML += `
                     <tr>
                         <td>${index + 1}</td>
                         <td>${e.cat}</td>
-                        <td class="amount-neg">${formatNumber(e.amount)}</td>
+                        <td style="color:var(--danger); font-weight:800; direction:ltr; display:inline-block;">${formatNumber(e.amount)}</td>
+                        <td><span class="badge badge-${(e.currency || 'AFN').toLowerCase()}">${e.currency || 'AFN'}</span></td>
                         <td>${e.date}</td>
                         <td class="action-cell">
                             <button class="action-btn" onclick="toggleDropdown(${e.id})">⚙️ عملیات</button>
@@ -756,42 +770,41 @@
         const todayReceived = transactions.filter(t => t.type === 'received');
         const todaySent = transactions.filter(t => t.type === 'sent');
         
-        const totalRec = todayReceived.reduce((sum, t) => sum + Number(t.amount), 0);
-        const totalSent = todaySent.reduce((sum, t) => sum + Number(t.amount), 0);
-        const totalExp = expenses.reduce((sum, e) => sum + Number(e.amount), 0);
-        
-        document.getElementById('total-received-today').innerText = formatNumber(totalRec);
+        document.getElementById('total-received-today').innerHTML = formatCurrencyBreakdown(todayReceived);
         document.getElementById('count-received-today').innerText = formatNumber(todayReceived.length);
-        document.getElementById('total-sent-today').innerText = formatNumber(totalSent);
+        document.getElementById('total-sent-today').innerHTML = formatCurrencyBreakdown(todaySent);
         document.getElementById('count-sent-today').innerText = formatNumber(todaySent.length);
-        document.getElementById('total-expenses-today').innerText = formatNumber(totalExp);
+        document.getElementById('total-expenses-today').innerHTML = formatCurrencyBreakdown(expenses);
     }
 
     // ===== Update Daily Balance (دخل) =====
     function updateDailyBalance() {
-        const prevBalance = Number(localStorage.getItem('lastClosingBalance') || 0);
-        const todayReceived = transactions.filter(t => t.type === 'received').reduce((sum, t) => sum + Number(t.amount), 0);
-        const todaySent = transactions.filter(t => t.type === 'sent').reduce((sum, t) => sum + Number(t.amount), 0);
-        const currentBalance = prevBalance + todayReceived - todaySent;
+        const prevBalances = JSON.parse(localStorage.getItem('lastClosingBalancesByCurrency')) || {AFN:0, USD:0, EUR:0, IRR:0, PKR:0};
+        const todayReceived = transactions.filter(t => t.type === 'received');
+        const todaySent = transactions.filter(t => t.type === 'sent');
+        const todayExpenses = expenses;
+
+        const currentBalances = { ...prevBalances };
+        todayReceived.forEach(t => currentBalances[t.currency] += Number(t.amount));
+        todaySent.forEach(t => currentBalances[t.currency] -= Number(t.amount));
+        todayExpenses.forEach(e => currentBalances[e.currency || 'AFN'] -= Number(e.amount));
+
+        document.getElementById('prev-balance').innerHTML = formatCurrencyBreakdownObject(prevBalances);
+        document.getElementById('db-received').innerHTML = formatCurrencyBreakdown(todayReceived);
+        document.getElementById('db-sent').innerHTML = formatCurrencyBreakdown(todaySent);
+        document.getElementById('db-expenses').innerHTML = formatCurrencyBreakdown(todayExpenses);
+        document.getElementById('current-balance').innerHTML = formatCurrencyBreakdownObject(currentBalances);
         
-        document.getElementById('prev-balance').innerText = formatNumber(prevBalance);
-        document.getElementById('db-received').innerText = '+' + formatNumber(todayReceived);
-        document.getElementById('db-sent').innerText = '-' + formatNumber(todaySent);
-        document.getElementById('current-balance').innerText = formatNumber(currentBalance);
-        
-        // وضعیت دخل
-        const statusEl = document.getElementById('balance-status');
-        const isProfit = currentBalance >= prevBalance;
-        statusEl.innerHTML = `
-            <div>📅 <strong>مانده روز قبل:</strong> ${formatNumber(prevBalance)}</div>
-            <div>⬇️ <strong>رسیدات امروز:</strong> <span style="color:var(--success)">+${formatNumber(todayReceived)}</span></div>
-            <div>⬆️ <strong>برده‌های امروز:</strong> <span style="color:var(--danger)">-${formatNumber(todaySent)}</span></div>
-            <hr style="margin:15px 0; border:none; border-top:2px dashed var(--border)">
-            <div style="font-size:1.3rem; font-weight:800; color:${isProfit ? 'var(--success)' : 'var(--danger)'}">
-                💵 <strong>مانده فعلی دخل:</strong> ${formatNumber(currentBalance)}
-            </div>
-            <div style="margin-top:10px; color:${isProfit ? 'var(--success)' : 'var(--danger)'}">
-                ${isProfit ? '✅ دخل امروز مثبت است' : '⚠️ دخل امروز منفی است'}
+        document.getElementById('balance-status').innerHTML = `
+            <div style="font-size:1rem; line-height:2.2;">
+                <div>📅 <strong>مانده روز قبل:</strong> <br>${formatCurrencyBreakdownObject(prevBalances, true)}</div>
+                <div>⬇️ <strong>رسیدات امروز:</strong> <br>${formatCurrencyBreakdown(todayReceived, true)}</div>
+                <div>⬆️ <strong>برده‌های امروز:</strong> <br>${formatCurrencyBreakdown(todaySent, true)}</div>
+                <div>💸 <strong>مصارف امروز:</strong> <br>${formatCurrencyBreakdown(todayExpenses, true)}</div>
+                <hr style="margin:15px 0; border:none; border-top:2px dashed var(--border)">
+                <div style="font-size:1.2rem; font-weight:800; color:var(--info)">
+                    💵 <strong>مانده فعلی دخل:</strong> <br>${formatCurrencyBreakdownObject(currentBalances, true)}
+                </div>
             </div>
         `;
     }
@@ -799,32 +812,28 @@
     // ===== Update Reports =====
     function updateReports() {
         const archives = JSON.parse(localStorage.getItem('dailyArchives')) || [];
-        const prevBalance = Number(localStorage.getItem('lastClosingBalance') || 0);
+        const prevBalances = JSON.parse(localStorage.getItem('lastClosingBalancesByCurrency')) || {AFN:0, USD:0, EUR:0, IRR:0, PKR:0};
         
-        // محاسبه کل از آرشیو + امروز
-        let totalIncomeAll = 0;
-        let totalExpenseAll = 0;
-        
+        const totalBalances = { ...prevBalances };
+        const totalIncomeObj = { AFN:0, USD:0, EUR:0, IRR:0, PKR:0 };
+        const totalExpenseObj = { AFN:0, USD:0, EUR:0, IRR:0, PKR:0 };
+
         archives.forEach(a => {
-            totalIncomeAll += a.totalReceived || 0;
-            totalExpenseAll += (a.totalSent || 0) + (a.totalExpenses || 0);
+            for (const curr of currencies) {
+                totalBalances[curr] += (a.stats.received[curr] || 0) - (a.stats.sent[curr] || 0) - (a.stats.expenses[curr] || 0);
+                totalIncomeObj[curr] += (a.stats.received[curr] || 0);
+                totalExpenseObj[curr] += (a.stats.sent[curr] || 0) + (a.stats.expenses[curr] || 0);
+            }
         });
+
+        transactions.filter(t => t.type === 'received').forEach(t => { totalBalances[t.currency] += Number(t.amount); totalIncomeObj[t.currency] += Number(t.amount); });
+        transactions.filter(t => t.type === 'sent').forEach(t => { totalBalances[t.currency] -= Number(t.amount); totalExpenseObj[t.currency] += Number(t.amount); });
+        expenses.forEach(e => { const c = e.currency || 'AFN'; totalBalances[c] -= Number(e.amount); totalExpenseObj[c] += Number(e.amount); });
+
+        document.getElementById('total-income-all').innerHTML = formatCurrencyBreakdownObject(totalIncomeObj, true);
+        document.getElementById('total-expense-all').innerHTML = formatCurrencyBreakdownObject(totalExpenseObj, true);
+        document.getElementById('total-balance-all').innerHTML = formatCurrencyBreakdownObject(totalBalances, true);
         
-        // امروز
-        const todayReceived = transactions.filter(t => t.type === 'received').reduce((sum, t) => sum + Number(t.amount), 0);
-        const todaySent = transactions.filter(t => t.type === 'sent').reduce((sum, t) => sum + Number(t.amount), 0);
-        const todayExp = expenses.reduce((sum, e) => sum + Number(e.amount), 0);
-        
-        totalIncomeAll += todayReceived;
-        totalExpenseAll += todaySent + todayExp;
-        
-        const currentBalance = prevBalance + todayReceived - todaySent;
-        
-        document.getElementById('total-income-all').innerText = formatNumber(totalIncomeAll);
-        document.getElementById('total-expense-all').innerText = formatNumber(totalExpenseAll);
-        document.getElementById('total-balance-all').innerText = formatNumber(currentBalance);
-        
-        // نمایش آرشیو
         const archiveList = document.getElementById('archive-list');
         if (archives.length === 0) {
             archiveList.innerHTML = `<div class="empty-state"><div class="icon">📚</div><div>هنوز روزی بسته نشده است</div></div>`;
@@ -836,12 +845,16 @@
                         <div>
                             <div class="archive-date">📅 ${a.date}</div>
                             <div style="font-size:0.85rem; color:var(--text-light); margin-top:5px;">
-                                ⬇️ ${formatNumber(a.totalReceived)} | ⬆️ ${formatNumber(a.totalSent)} | 💸 ${formatNumber(a.totalExpenses || 0)}
+                                ⬇️ ${formatCurrencyBreakdownObject(a.stats.received || {}, true)} <br>
+                                ⬆️ ${formatCurrencyBreakdownObject(a.stats.sent || {}, true)} <br>
+                                💸 ${formatCurrencyBreakdownObject(a.stats.expenses || {}, true)}
                             </div>
                         </div>
                         <div style="text-align:left;">
                             <div style="font-size:0.8rem; color:var(--text-light)">مانده پایان روز</div>
-                            <div style="font-weight:800; color:var(--primary); font-size:1.2rem;">${formatNumber(a.closingBalance)}</div>
+                            <div style="font-weight:800; color:var(--primary); font-size:1rem; margin-top:5px;">
+                                ${formatCurrencyBreakdownObject(a.closingBalances, true)}
+                            </div>
                         </div>
                     </div>
                 `;
@@ -851,8 +864,7 @@
 
     // ===== Update Current Date Display =====
     function updateDateDisplay() {
-        document.getElementById('current-date').innerText = 
-            '📅 امروز: ' + getAfghanistanDateTimeString() + ' (به وقت افغانستان)';
+        document.getElementById('current-date').innerText = '📅 امروز: ' + getAfghanistanDateTimeString() + ' (به وقت افغانستان)';
     }
 
     // ===== Initialization =====
@@ -863,10 +875,7 @@
     updateReports();
     updateDateDisplay();
     
-    // آپدیت ساعت هر دقیقه
     setInterval(updateDateDisplay, 60000);
-    
-    // چک کردن روز جدید هر ۳۰ ثانیه
     setInterval(() => {
         const lastDate = localStorage.getItem('lastDate');
         const today = getAfghanistanDateString();
