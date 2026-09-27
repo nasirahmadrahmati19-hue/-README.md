@@ -340,7 +340,7 @@
             <div id="daily-balance" class="sub-tab-content">
                 <h2 style="margin-bottom:20px; color:var(--info)">💰 دخل روزانه</h2>
                 <p style="color:var(--text-light); margin-bottom:20px; font-size:0.95rem;">
-                    فرمول: مانده روز قبل + رسیدات امروز - برده‌های امروز - مصارف امروز
+                    فرمول: مانده روز قبل + رسیدات امروز - برده‌های امروز
                 </p>
 
                 <div class="summary-cards">
@@ -355,10 +355,6 @@
                     <div class="summary-card danger">
                         <div class="label">⬆️ برده‌های امروز</div>
                         <div class="value" id="db-sent">۰</div>
-                    </div>
-                    <div class="summary-card danger">
-                        <div class="label">💸 مصارف امروز</div>
-                        <div class="value" id="db-expenses">۰</div>
                     </div>
                     <div class="summary-card info">
                         <div class="label">💵 مانده فعلی دخل</div>
@@ -482,8 +478,7 @@
             const totalExp = previousExpenses.reduce((sum, e) => sum + Number(e.amount), 0);
             
             const lastBalance = Number(localStorage.getItem('lastClosingBalance') || 0);
-            // فرمول جدید: مانده قبل + رسید - برده - مصارف
-            const newBalance = lastBalance + totalReceived - totalSent - totalExp;
+            const newBalance = lastBalance + totalReceived - totalSent;
             
             // ذخیره آرشیو
             archives.push({
@@ -777,15 +772,11 @@
         const prevBalance = Number(localStorage.getItem('lastClosingBalance') || 0);
         const todayReceived = transactions.filter(t => t.type === 'received').reduce((sum, t) => sum + Number(t.amount), 0);
         const todaySent = transactions.filter(t => t.type === 'sent').reduce((sum, t) => sum + Number(t.amount), 0);
-        const todayExpenses = expenses.reduce((sum, e) => sum + Number(e.amount), 0);
-        
-        // فرمول جدید: مانده قبل + رسید - برده - مصارف
-        const currentBalance = prevBalance + todayReceived - todaySent - todayExpenses;
+        const currentBalance = prevBalance + todayReceived - todaySent;
         
         document.getElementById('prev-balance').innerText = formatNumber(prevBalance);
         document.getElementById('db-received').innerText = '+' + formatNumber(todayReceived);
         document.getElementById('db-sent').innerText = '-' + formatNumber(todaySent);
-        document.getElementById('db-expenses').innerText = '-' + formatNumber(todayExpenses);
         document.getElementById('current-balance').innerText = formatNumber(currentBalance);
         
         // وضعیت دخل
@@ -795,7 +786,6 @@
             <div>📅 <strong>مانده روز قبل:</strong> ${formatNumber(prevBalance)}</div>
             <div>⬇️ <strong>رسیدات امروز:</strong> <span style="color:var(--success)">+${formatNumber(todayReceived)}</span></div>
             <div>⬆️ <strong>برده‌های امروز:</strong> <span style="color:var(--danger)">-${formatNumber(todaySent)}</span></div>
-            <div>💸 <strong>مصارف امروز:</strong> <span style="color:var(--danger)">-${formatNumber(todayExpenses)}</span></div>
             <hr style="margin:15px 0; border:none; border-top:2px dashed var(--border)">
             <div style="font-size:1.3rem; font-weight:800; color:${isProfit ? 'var(--success)' : 'var(--danger)'}">
                 💵 <strong>مانده فعلی دخل:</strong> ${formatNumber(currentBalance)}
@@ -817,7 +807,6 @@
         
         archives.forEach(a => {
             totalIncomeAll += a.totalReceived || 0;
-            // هزینه کل شامل برده‌ها و مصارف
             totalExpenseAll += (a.totalSent || 0) + (a.totalExpenses || 0);
         });
         
@@ -827,11 +816,9 @@
         const todayExp = expenses.reduce((sum, e) => sum + Number(e.amount), 0);
         
         totalIncomeAll += todayReceived;
-        // هزینه کل شامل برده‌ها و مصارف امروز
         totalExpenseAll += todaySent + todayExp;
         
-        // مانده فعلی با فرمول جدید
-        const currentBalance = prevBalance + todayReceived - todaySent - todayExp;
+        const currentBalance = prevBalance + todayReceived - todaySent;
         
         document.getElementById('total-income-all').innerText = formatNumber(totalIncomeAll);
         document.getElementById('total-expense-all').innerText = formatNumber(totalExpenseAll);
