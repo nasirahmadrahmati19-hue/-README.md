@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مدیریت مالی هوشمند</title>
+    <title>برنامه مدیریت مالی غلام سرور حسنی</title>
     <!-- اضافه کردن فونت وزیرمتن برای ظاهر مدرن -->
     <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
     
@@ -239,13 +239,13 @@
 
     <div class="app-container">
         <div class="header">
-            <h1>💎 داشبورد مدیریت مالی</h1>
-            <p style="opacity: 0.9;">مدیریت هوشمند درآمد و هزینه‌ها</p>
+            <h1>💎 برنامه مدیریت مالی غلام سرور حسنی</h1>
+            <p style="opacity: 0.9;">مدیریت هوشمند درآمد ها و هزینه‌ها</p>
         </div>
 
         <!-- Main Tabs -->
         <div class="tabs-nav">
-            <button class="tab-btn active" onclick="showTab('tab1')">🔄 تراکنش‌ها</button>
+            <button class="tab-btn active" onclick="showTab('tab1')">🔄 معاملات</button>
             <button class="tab-btn" onclick="showTab('tab2')">💸 مصارف</button>
             <button class="tab-btn" onclick="showTab('tab3')">📊 گزارشات</button>
         </div>
@@ -254,8 +254,9 @@
             <!-- Tab 1: Transactions -->
             <div id="tab1" class="tab-content active">
                 <div class="sub-tabs">
-                    <button class="sub-tab-btn active" onclick="showSubTab('received')">⬆️ رسید (دریافت)</button>
-                    <button class="sub-tab-btn" onclick="showSubTab('sent')">⬇️ برده (پرداخت)</button>
+                    <!-- اصلاح فلش‌ها: رسید با فلش بالا، برده با فلش پایین -->
+                    <button class="sub-tab-btn active" onclick="showSubTab('received')">⬆️ رسید</button>
+                    <button class="sub-tab-btn" onclick="showSubTab('sent')">⬇️ برده</button>
                 </div>
                 
                 <!-- Received Sub-tab -->
