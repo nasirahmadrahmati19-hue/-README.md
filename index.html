@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>مدیریت مالی غلام سرور حسنی</title>
     <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    
     <style>
         :root {
             --primary: #6C5CE7;
@@ -48,7 +53,6 @@
             transition: background 0.4s, color 0.4s;
         }
 
-        /* ===== HEADER ===== */
         .header {
             background: linear-gradient(135deg, #6C5CE7 0%, #a29bfe 30%, #00CEC9 70%, #FD79A8 100%);
             background-size: 300% 300%;
@@ -70,8 +74,12 @@
         .header p { opacity: 0.9; font-size: 0.85rem; }
         .header .date-display { font-size: 0.75rem; opacity: 0.85; margin-top: 8px; }
 
-        .theme-toggle {
+        .header-actions {
             position: absolute; top: 15px; left: 15px;
+            display: flex; gap: 8px;
+        }
+
+        .icon-btn {
             background: rgba(255,255,255,0.25); border: none; color: white;
             width: 40px; height: 40px; border-radius: 50%;
             cursor: pointer; font-size: 1.2rem;
@@ -79,13 +87,28 @@
             display: flex; align-items: center; justify-content: center;
         }
 
-        /* ===== DESKTOP TABS ===== */
+        .sync-status {
+            position: absolute; top: 15px; right: 15px;
+            background: rgba(255,255,255,0.25);
+            padding: 6px 12px; border-radius: 20px;
+            font-size: 0.7rem; backdrop-filter: blur(10px);
+            display: flex; align-items: center; gap: 5px;
+        }
+        .sync-dot {
+            width: 8px; height: 8px; border-radius: 50%;
+            background: #ff6b6b;
+        }
+        .sync-dot.connected { background: #00b894; animation: pulse 2s infinite; }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
         .tabs-nav {
             display: none;
             background: var(--card);
             backdrop-filter: blur(20px);
-            padding: 8px;
-            gap: 8px;
+            padding: 8px; gap: 8px;
             margin: 15px 20px 0;
             border-radius: 16px;
             box-shadow: var(--shadow);
@@ -101,7 +124,6 @@
             box-shadow: 0 4px 15px rgba(108,92,231,0.4);
         }
 
-        /* ===== MOBILE BOTTOM NAV ===== */
         .bottom-nav {
             position: fixed; bottom: 0; left: 0; right: 0;
             background: var(--card);
@@ -125,13 +147,11 @@
             background: rgba(108,92,231,0.1);
         }
 
-        /* ===== CONTENT ===== */
         .content-area { padding: 20px 15px; }
         .tab-content { display: none; animation: fadeIn 0.4s; }
         .tab-content.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* ===== SUB-TABS ===== */
         .sub-tabs { display: flex; gap: 8px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 5px; }
         .sub-tab-btn {
             padding: 10px 18px; border: 2px solid var(--border);
@@ -148,7 +168,6 @@
         .sub-tab-content { display: none; animation: fadeIn 0.4s; }
         .sub-tab-content.active { display: block; }
 
-        /* ===== SUMMARY CARDS ===== */
         .summary-cards {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -186,7 +205,6 @@
         .summary-card.info .value { color: var(--info); }
         .summary-card.warning .value { color: #e17055; }
 
-        /* ===== FORM ===== */
         .form-card {
             background: var(--card);
             backdrop-filter: blur(15px);
@@ -231,8 +249,11 @@
             background: linear-gradient(135deg, var(--danger), var(--accent));
             color: white; box-shadow: 0 4px 15px rgba(255,107,107,0.3);
         }
+        .btn-secondary {
+            background: var(--bg); color: var(--text);
+            border: 2px solid var(--border);
+        }
 
-        /* ===== TABLE ===== */
         .table-wrapper {
             overflow-x: auto; border-radius: 18px;
             border: 1px solid var(--border);
@@ -268,7 +289,6 @@
         body.dark-mode .badge-irr { background: #3d1a1a; color: #f1948a; }
         body.dark-mode .badge-pkr { background: #2d1a3d; color: #c39bd3; }
 
-        /* ===== DROPDOWN ===== */
         .action-cell { position: relative; }
         .action-btn {
             background: var(--bg); border: 1px solid var(--border);
@@ -305,7 +325,44 @@
         }
         .archive-date { font-weight: 700; color: var(--primary); font-size: 0.9rem; }
 
-        /* ===== DESKTOP RESPONSIVE ===== */
+        /* ===== MODAL ===== */
+        .modal-overlay {
+            display: none;
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            align-items: center; justify-content: center;
+            padding: 20px;
+        }
+        .modal-overlay.show { display: flex; animation: fadeIn 0.3s; }
+        .modal {
+            background: var(--card-solid);
+            border-radius: 24px;
+            padding: 25px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        .modal h2 { margin-bottom: 15px; color: var(--primary); font-size: 1.2rem; }
+        .modal p { color: var(--text-light); margin-bottom: 15px; line-height: 1.8; font-size: 0.9rem; }
+        .modal ol { padding-right: 20px; margin-bottom: 15px; color: var(--text-light); font-size: 0.85rem; line-height: 2; }
+        .modal-close {
+            background: var(--bg); border: 1px solid var(--border);
+            padding: 10px 20px; border-radius: 10px;
+            cursor: pointer; color: var(--text); font-weight: 600;
+            margin-top: 10px; width: 100%;
+        }
+        .modal textarea {
+            width: 100%; min-height: 150px; padding: 12px;
+            border: 2px solid var(--border); border-radius: 10px;
+            font-family: monospace; font-size: 0.8rem;
+            background: var(--bg); color: var(--text);
+            margin-bottom: 10px;
+        }
+
         @media (min-width: 768px) {
             body { padding-bottom: 20px; }
             .header { padding: 35px 30px 40px; border-radius: 0 0 40px 40px; }
@@ -328,13 +385,19 @@
 <body>
 
 <div class="header">
-    <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
+    <div class="header-actions">
+        <button class="icon-btn" onclick="toggleTheme()">🌙</button>
+        <button class="icon-btn" onclick="openSettings()">⚙️</button>
+    </div>
+    <div class="sync-status" id="sync-status">
+        <span class="sync-dot" id="sync-dot"></span>
+        <span id="sync-text">آفلاین</span>
+    </div>
     <h1>💼 مدیریت مالی غلام سرور حسنی</h1>
     <p>سیستم هوشمند ثبت و پیگیری معاملات</p>
     <div class="date-display" id="current-date"></div>
 </div>
 
-<!-- Desktop Tabs -->
 <div class="tabs-nav">
     <button class="tab-btn active" onclick="switchTab('transactions')">🔄 معاملات</button>
     <button class="tab-btn" onclick="switchTab('expenses')">💸 مصارف</button>
@@ -342,7 +405,6 @@
 </div>
 
 <div class="content-area">
-    <!-- Tab: Transactions -->
     <div id="transactions" class="tab-content active">
         <div class="sub-tabs">
             <button class="sub-tab-btn active" onclick="switchSubTab('received')">⬇️ رسید</button>
@@ -350,7 +412,6 @@
             <button class="sub-tab-btn" onclick="switchSubTab('daily-balance')" style="background:linear-gradient(135deg,var(--secondary),var(--info)); color:white; border-color:transparent;">💰 دخل</button>
         </div>
 
-        <!-- Sub-tab: Received -->
         <div id="received" class="sub-tab-content active">
             <div class="summary-cards">
                 <div class="summary-card success">
@@ -362,7 +423,6 @@
                     <div class="value" id="count-received-today">۰</div>
                 </div>
             </div>
-
             <div class="form-card">
                 <h3 style="color:var(--primary)">➕ ثبت دریافت جدید</h3>
                 <div class="form-grid">
@@ -387,25 +447,14 @@
                 </div>
                 <button class="btn btn-primary" onclick="addTransaction()">💾 ذخیره معامله</button>
             </div>
-
             <div class="table-wrapper">
                 <table>
-                    <thead>
-                        <tr>
-                            <th>شماره</th>
-                            <th>شرح</th>
-                            <th>مبلغ</th>
-                            <th>ارز</th>
-                            <th>تاریخ</th>
-                            <th>عملیات</th>
-                        </tr>
-                    </thead>
+                    <thead><tr><th>شماره</th><th>شرح</th><th>مبلغ</th><th>ارز</th><th>تاریخ</th><th>عملیات</th></tr></thead>
                     <tbody id="trans-table-body"></tbody>
                 </table>
             </div>
         </div>
 
-        <!-- Sub-tab: Sent -->
         <div id="sent" class="sub-tab-content">
             <div class="summary-cards">
                 <div class="summary-card danger">
@@ -417,7 +466,6 @@
                     <div class="value" id="count-sent-today">۰</div>
                 </div>
             </div>
-
             <div class="form-card">
                 <h3 style="color:var(--danger)">➕ ثبت پرداخت جدید</h3>
                 <div class="form-grid">
@@ -442,54 +490,26 @@
                 </div>
                 <button class="btn btn-danger" onclick="addTransaction('sent')">💾 ذخیره برده</button>
             </div>
-
             <div class="table-wrapper">
                 <table>
-                    <thead>
-                        <tr>
-                            <th>شماره</th>
-                            <th>شرح</th>
-                            <th>مبلغ</th>
-                            <th>ارز</th>
-                            <th>تاریخ</th>
-                            <th>عملیات</th>
-                        </tr>
-                    </thead>
+                    <thead><tr><th>شماره</th><th>شرح</th><th>مبلغ</th><th>ارز</th><th>تاریخ</th><th>عملیات</th></tr></thead>
                     <tbody id="sent-table-body"></tbody>
                 </table>
             </div>
         </div>
 
-        <!-- Sub-tab: Daily Balance -->
         <div id="daily-balance" class="sub-tab-content">
             <h2 style="margin-bottom:10px; color:var(--secondary)">💰 دخل روزانه</h2>
             <p style="color:var(--text-light); margin-bottom:20px; font-size:0.85rem;">
                 فرمول: مانده روز قبل + رسیدات - برده‌ها - مصارف
             </p>
-
             <div class="summary-cards">
-                <div class="summary-card warning">
-                    <div class="label">📅 مانده روز قبل</div>
-                    <div class="value" id="prev-balance">۰</div>
-                </div>
-                <div class="summary-card success">
-                    <div class="label">⬇️ رسیدات امروز</div>
-                    <div class="value" id="db-received">۰</div>
-                </div>
-                <div class="summary-card danger">
-                    <div class="label">⬆️ برده‌های امروز</div>
-                    <div class="value" id="db-sent">۰</div>
-                </div>
-                <div class="summary-card danger">
-                    <div class="label">💸 مصارف امروز</div>
-                    <div class="value" id="db-expenses">۰</div>
-                </div>
-                <div class="summary-card info">
-                    <div class="label">💵 مانده فعلی دخل</div>
-                    <div class="value" id="current-balance">۰</div>
-                </div>
+                <div class="summary-card warning"><div class="label">📅 مانده روز قبل</div><div class="value" id="prev-balance">۰</div></div>
+                <div class="summary-card success"><div class="label">⬇️ رسیدات امروز</div><div class="value" id="db-received">۰</div></div>
+                <div class="summary-card danger"><div class="label">⬆️ برده‌های امروز</div><div class="value" id="db-sent">۰</div></div>
+                <div class="summary-card danger"><div class="label">💸 مصارف امروز</div><div class="value" id="db-expenses">۰</div></div>
+                <div class="summary-card info"><div class="label">💵 مانده فعلی دخل</div><div class="value" id="current-balance">۰</div></div>
             </div>
-
             <div class="form-card" style="border-color: var(--secondary);">
                 <h3 style="color:var(--secondary); margin-bottom:10px;">📊 ریز وضعیت دخل</h3>
                 <div id="balance-status" style="font-size:0.9rem; line-height:2.2;"></div>
@@ -497,7 +517,6 @@
         </div>
     </div>
 
-    <!-- Tab: Expenses -->
     <div id="expenses" class="tab-content">
         <div class="summary-cards">
             <div class="summary-card danger">
@@ -505,7 +524,6 @@
                 <div class="value" id="total-expenses-today">۰</div>
             </div>
         </div>
-
         <div class="form-card">
             <h3 style="color:var(--danger)">➕ ثبت هزینه جدید</h3>
             <div class="form-grid">
@@ -530,49 +548,26 @@
             </div>
             <button class="btn btn-danger" id="btn-add-expense" onclick="addExpense()">💾 ثبت هزینه</button>
         </div>
-
         <div class="table-wrapper">
             <table>
-                <thead>
-                    <tr>
-                        <th>شماره</th>
-                        <th>دسته‌بندی</th>
-                        <th>مبلغ</th>
-                        <th>ارز</th>
-                        <th>تاریخ</th>
-                        <th>عملیات</th>
-                    </tr>
-                </thead>
+                <thead><tr><th>شماره</th><th>دسته‌بندی</th><th>مبلغ</th><th>ارز</th><th>تاریخ</th><th>عملیات</th></tr></thead>
                 <tbody id="exp-table-body"></tbody>
             </table>
         </div>
     </div>
 
-    <!-- Tab: Reports -->
     <div id="reports" class="tab-content">
         <h2 style="margin-bottom:20px; color:var(--primary)">📊 گزارشات و آرشیو</h2>
-
         <div class="summary-cards">
-            <div class="summary-card success">
-                <div class="label">کل درآمد</div>
-                <div class="value" id="total-income-all">۰</div>
-            </div>
-            <div class="summary-card danger">
-                <div class="label">کل هزینه</div>
-                <div class="value" id="total-expense-all">۰</div>
-            </div>
-            <div class="summary-card info">
-                <div class="label">مانده فعلی</div>
-                <div class="value" id="total-balance-all">۰</div>
-            </div>
+            <div class="summary-card success"><div class="label">کل درآمد</div><div class="value" id="total-income-all">۰</div></div>
+            <div class="summary-card danger"><div class="label">کل هزینه</div><div class="value" id="total-expense-all">۰</div></div>
+            <div class="summary-card info"><div class="label">مانده فعلی</div><div class="value" id="total-balance-all">۰</div></div>
         </div>
-
         <h3 style="margin:20px 0 10px; color:var(--primary)">📚 آرشیو روزهای قبل</h3>
         <div id="archive-list"></div>
     </div>
 </div>
 
-<!-- Mobile Bottom Navigation -->
 <div class="bottom-nav">
     <button class="bottom-nav-btn active" onclick="switchTab('transactions')">
         <span class="nav-icon">🔄</span>معاملات
@@ -585,7 +580,130 @@
     </button>
 </div>
 
+<!-- Settings Modal -->
+<div class="modal-overlay" id="settings-modal">
+    <div class="modal">
+        <h2>⚙️ تنظیمات همگام‌سازی</h2>
+        <p>برای همگام‌سازی بین موبایل و کامپیوتر:</p>
+        <ol>
+            <li>به <strong>console.firebase.google.com</strong> بروید</li>
+            <li>یک پروژه جدید بسازید</li>
+            <li>Realtime Database را در حالت <strong>test mode</strong> فعال کنید</li>
+            <li>کد config را از بخش Web app کپی کنید</li>
+            <li>در کادر زیر جایگزین کنید</li>
+            <li>یک <strong>کد همگام‌سازی</strong> دلخواه وارد کنید (مثل نام خودتان)</li>
+            <li>همان کد را در همه دستگاه‌ها وارد کنید</li>
+        </ol>
+        
+        <div class="input-group">
+            <label>🔑 کد همگام‌سازی (در همه دستگاه‌ها یکسان)</label>
+            <input type="text" id="sync-code" class="form-input" placeholder="مثال: ghulam123">
+        </div>
+        
+        <div class="input-group" style="margin-top:15px;">
+            <label>📝 Firebase Config (JSON)</label>
+            <textarea id="firebase-config" placeholder='{
+  "apiKey": "...",
+  "authDomain": "...",
+  "databaseURL": "...",
+  "projectId": "...",
+  ...
+}'></textarea>
+        </div>
+        
+        <button class="btn btn-primary" onclick="saveSettings()" style="margin-top:15px;">💾 ذخیره تنظیمات</button>
+        <button class="modal-close" onclick="closeSettings()">بستن</button>
+    </div>
+</div>
+
 <script>
+    // ===== Firebase Configuration =====
+    let db = null;
+    let useFirebase = false;
+    let syncCode = localStorage.getItem('syncCode') || '';
+    let isSyncing = false;
+
+    function initFirebase() {
+        const configStr = localStorage.getItem('firebaseConfig');
+        if (!configStr || !syncCode) {
+            updateSyncStatus(false);
+            return;
+        }
+        
+        try {
+            const config = JSON.parse(configStr);
+            if (!config.apiKey || config.apiKey === '...') {
+                updateSyncStatus(false);
+                return;
+            }
+            
+            if (firebase.apps.length === 0) {
+                firebase.initializeApp(config);
+            }
+            db = firebase.database();
+            useFirebase = true;
+            updateSyncStatus(true);
+            startSync();
+        } catch (e) {
+            console.error('Firebase init error:', e);
+            updateSyncStatus(false);
+        }
+    }
+
+    function updateSyncStatus(connected) {
+        const dot = document.getElementById('sync-dot');
+        const text = document.getElementById('sync-text');
+        if (connected) {
+            dot.classList.add('connected');
+            text.innerText = 'آنلاین ✓';
+        } else {
+            dot.classList.remove('connected');
+            text.innerText = 'آفلاین';
+        }
+    }
+
+    function openSettings() {
+        document.getElementById('sync-code').value = syncCode;
+        document.getElementById('firebase-config').value = localStorage.getItem('firebaseConfig') || '';
+        document.getElementById('settings-modal').classList.add('show');
+    }
+
+    function closeSettings() {
+        document.getElementById('settings-modal').classList.remove('show');
+    }
+
+    function saveSettings() {
+        const newCode = document.getElementById('sync-code').value.trim();
+        const configStr = document.getElementById('firebase-config').value.trim();
+        
+        if (!newCode) {
+            alert('لطفاً کد همگام‌سازی را وارد کنید');
+            return;
+        }
+        
+        try {
+            if (configStr) {
+                JSON.parse(configStr); // Validate JSON
+                localStorage.setItem('firebaseConfig', configStr);
+            }
+            localStorage.setItem('syncCode', newCode);
+            syncCode = newCode;
+            
+            // Reinitialize Firebase
+            useFirebase = false;
+            db = null;
+            if (firebase.apps.length > 0) {
+                firebase.app().delete();
+            }
+            initFirebase();
+            
+            closeSettings();
+            alert('✅ تنظیمات ذخیره شد. در حال همگام‌سازی...');
+        } catch (e) {
+            alert('❌ خطا در فرمت JSON. لطفاً کد config را درست کپی کنید.');
+        }
+    }
+
     // ===== Data & State =====
     let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
     let expenses = JSON.parse(localStorage.getItem('expenses')) || [];
@@ -604,6 +722,65 @@
         return getAfghanistanDate(d).toLocaleString('fa-IR', {
             year: 'numeric', month: 'long', day: 'numeric',
             hour: '2-digit', minute: '2-digit'
+        });
+    }
+
+    // ===== Firebase Sync Functions =====
+    function startSync() {
+        if (!useFirebase || !syncCode) return;
+        
+        const userPath = `users/${syncCode}`;
+        
+        // Listen for changes
+        db.ref(userPath).on('value', (snapshot) => {
+            if (isSyncing) return;
+            isSyncing = true;
+            
+            const data = snapshot.val();
+            if (data) {
+                transactions = data.transactions || [];
+                expenses = data.expenses || [];
+                
+                // Update localStorage
+                localStorage.setItem('transactions', JSON.stringify(transactions));
+                localStorage.setItem('expenses', JSON.stringify(expenses));
+                
+                if (data.lastDate) localStorage.setItem('lastDate', data.lastDate);
+                if (data.lastClosingBalancesByCurrency) {
+                    localStorage.setItem('lastClosingBalancesByCurrency', JSON.stringify(data.lastClosingBalancesByCurrency));
+                }
+                if (data.dailyArchives) {
+                    localStorage.setItem('dailyArchives', JSON.stringify(data.dailyArchives));
+                }
+                
+                renderTables();
+                updateSummaryCards();
+                updateDailyBalance();
+                updateReports();
+            }
+            
+            isSyncing = false;
+        }, (error) => {
+            console.error('Sync error:', error);
+            updateSyncStatus(false);
+        });
+    }
+
+    function pushToFirebase() {
+        if (!useFirebase || !syncCode || isSyncing) return;
+        
+        const userPath = `users/${syncCode}`;
+        const data = {
+            transactions: transactions,
+            expenses: expenses,
+            lastDate: localStorage.getItem('lastDate'),
+            lastClosingBalancesByCurrency: JSON.parse(localStorage.getItem('lastClosingBalancesByCurrency') || 'null'),
+            dailyArchives: JSON.parse(localStorage.getItem('dailyArchives') || 'null'),
+            lastUpdate: Date.now()
+        };
+        
+        db.ref(userPath).set(data).catch(err => {
+            console.error('Push error:', err);
         });
     }
 
@@ -660,13 +837,13 @@
     // ===== Theme Toggle =====
     function toggleTheme() {
         document.body.classList.toggle('dark-mode');
-        const btn = document.querySelector('.theme-toggle');
+        const btn = document.querySelectorAll('.icon-btn')[0];
         btn.innerText = document.body.classList.contains('dark-mode') ? '☀️' : '🌙';
         localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
     }
     if (localStorage.getItem('theme') === 'dark') {
         document.body.classList.add('dark-mode');
-        document.querySelector('.theme-toggle').innerText = '☀️';
+        document.querySelectorAll('.icon-btn')[0].innerText = '☀️';
     }
 
     // ===== Persian Number Converter =====
@@ -680,7 +857,6 @@
 
     function formatNumber(n) { return Number(n).toLocaleString('fa-IR'); }
 
-    // ===== Format Currency Breakdown =====
     function formatCurrencyBreakdown(items, inline = false) {
         const t = {AFN:0, USD:0, EUR:0, IRR:0, PKR:0};
         if (items && items.length > 0) {
@@ -718,6 +894,7 @@
         updateSummaryCards();
         updateDailyBalance();
         updateReports();
+        pushToFirebase(); // Push to Firebase
     }
 
     // ===== Tab Switching =====
@@ -727,7 +904,6 @@
         document.querySelectorAll('.bottom-nav-btn').forEach(el => el.classList.remove('active'));
         document.getElementById(tabId).classList.add('active');
 
-        // Sync desktop and mobile nav
         const tabNames = { transactions: 'معاملات', expenses: 'مصارف', reports: 'گزارشات' };
         const name = tabNames[tabId];
         document.querySelectorAll('.tab-btn').forEach(b => {
@@ -808,7 +984,6 @@
         saveData();
     }
 
-    // ===== Edit Expense =====
     function editExpense(id) {
         const item = expenses.find(e => e.id === id);
         if (item) {
@@ -824,7 +999,6 @@
         }
     }
 
-    // ===== Delete Item =====
     function deleteItem(type, id) {
         if (confirm('آیا از حذف اطمینان دارید؟')) {
             if (type === 'trans') transactions = transactions.filter(t => t.id !== id);
@@ -833,7 +1007,6 @@
         }
     }
 
-    // ===== Edit Transaction =====
     function editTransaction(id) {
         const item = transactions.find(t => t.id === id);
         if (item) {
@@ -853,7 +1026,6 @@
         }
     }
 
-    // ===== Dropdown =====
     function toggleDropdown(id) {
         const m = document.getElementById(`menu-${id}`);
         document.querySelectorAll('.dropdown-menu').forEach(el => {
@@ -869,7 +1041,6 @@
 
     // ===== Render Tables =====
     function renderTables() {
-        // Received
         const tb = document.getElementById('trans-table-body');
         tb.innerHTML = '';
         const rl = transactions.filter(t => t.type === 'received');
@@ -895,7 +1066,6 @@
             });
         }
 
-        // Sent
         const sb = document.getElementById('sent-table-body');
         sb.innerHTML = '';
         const sl = transactions.filter(t => t.type === 'sent');
@@ -921,7 +1091,6 @@
             });
         }
 
-        // Expenses
         const eb = document.getElementById('exp-table-body');
         eb.innerHTML = '';
         if (!expenses.length) {
@@ -947,7 +1116,6 @@
         }
     }
 
-    // ===== Update Summary Cards =====
     function updateSummaryCards() {
         const r = transactions.filter(t => t.type === 'received');
         const s = transactions.filter(t => t.type === 'sent');
@@ -958,7 +1126,6 @@
         document.getElementById('total-expenses-today').innerHTML = formatCurrencyBreakdown(expenses);
     }
 
-    // ===== Update Daily Balance =====
     function updateDailyBalance() {
         const pb = JSON.parse(localStorage.getItem('lastClosingBalancesByCurrency')) || {AFN:0,USD:0,EUR:0,IRR:0,PKR:0};
         const r = transactions.filter(t => t.type === 'received');
@@ -986,7 +1153,6 @@
         `;
     }
 
-    // ===== Update Reports =====
     function updateReports() {
         const archives = JSON.parse(localStorage.getItem('dailyArchives')) || [];
         const pb = JSON.parse(localStorage.getItem('lastClosingBalancesByCurrency')) || {AFN:0,USD:0,EUR:0,IRR:0,PKR:0};
@@ -1047,12 +1213,12 @@
         }
     }
 
-    // ===== Update Date Display =====
     function updateDateDisplay() {
         document.getElementById('current-date').innerText = '📅 ' + getAfghanistanDateTimeString() + ' (به وقت افغانستان)';
     }
 
     // ===== Initialization =====
+    initFirebase();
     checkDayClosing();
     renderTables();
     updateSummaryCards();
@@ -1068,6 +1234,7 @@
             updateSummaryCards();
             updateDailyBalance();
             updateReports();
+            pushToFirebase();
         }
     }, 30000);
 </script>
