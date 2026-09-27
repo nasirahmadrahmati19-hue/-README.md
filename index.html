@@ -3,145 +3,78 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>برنامه مدیریت مالی غلام سرور حسنی</title>
+    <title>مدیریت مالی غلام سرور حسنی</title>
     <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
-    
     <style>
         :root {
             --primary: #4f46e5;
-            --primary-hover: #4338ca;
-            --secondary: #ec4899;
-            --bg-color: #f3f4f6;
-            --card-bg: #ffffff;
-            --text-main: #1f2937;
-            --text-light: #6b7280;
-            --success: #10b981;
+            --primary-dark: #4338ca;
             --danger: #ef4444;
-            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --warning: #f59e0b;
+            --success: #10b981;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --text: #1e293b;
+            --border: #e2e8f0;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Vazirmatn', sans-serif; }
         
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            min-height: 100vh;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-        }
+        body { background-color: var(--bg); color: var(--text); min-height: 100vh; padding: 20px; }
         
         .app-container {
-            width: 100%;
             max-width: 1100px;
-            background: var(--card-bg);
+            margin: 0 auto;
+            background: var(--card);
             border-radius: 24px;
-            box-shadow: var(--shadow);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
             overflow: hidden;
-            margin-top: 20px;
-            animation: fadeInApp 0.6s ease-out;
-        }
-
-        @keyframes fadeInApp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
         }
         
         .header {
-            padding: 35px;
-            text-align: center;
-            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            background: linear-gradient(135deg, var(--primary) 0%, #7c3aed 100%);
             color: white;
-            position: relative;
+            padding: 40px 20px;
+            text-align: center;
         }
         
-        .header h1 { font-size: 1.8rem; margin-bottom: 8px; font-weight: 800; }
-        .header p { opacity: 0.9; font-size: 1rem; }
+        .header h1 { font-size: 2rem; margin-bottom: 10px; font-weight: 800; }
         
-        /* Tabs Navigation */
         .tabs-nav {
             display: flex;
-            background: #f9fafb;
-            padding: 15px;
-            gap: 15px;
-            border-bottom: 1px solid #e5e7eb;
+            background: #f1f5f9;
+            padding: 10px;
+            gap: 10px;
         }
         
         .tab-btn {
             flex: 1;
-            padding: 12px;
+            padding: 15px;
             border: none;
             background: transparent;
             cursor: pointer;
-            font-size: 1rem;
-            font-weight: 600;
-            color: var(--text-light);
+            font-weight: 700;
+            color: #64748b;
             border-radius: 12px;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        
-        .tab-btn:hover { background: #e5e7eb; color: var(--text-main); }
-        
-        .tab-btn.active {
-            background: white;
-            color: var(--primary);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            transform: scale(1.02);
-        }
-        
-        .content-area { padding: 30px; min-height: 500px; }
-        
-        .tab-content { display: none; animation: slideUp 0.4s ease-out; }
-        .tab-content.active { display: block; }
-        
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(15px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        /* Sub-tabs */
-        .sub-tabs {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 25px;
-            border-bottom: 2px solid #f3f4f6;
-            padding-bottom: 15px;
-        }
-        
-        .sub-tab-btn {
-            padding: 10px 25px;
-            background: #f3f4f6;
-            border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            font-weight: bold;
-            color: var(--text-light);
             transition: all 0.3s;
         }
         
-        .sub-tab-btn.active {
-            background: var(--primary);
-            color: white;
-            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
-        }
+        .tab-btn.active { background: white; color: var(--primary); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
         
-        .sub-tab-content { display: none; }
-        .sub-tab-content.active { display: block; animation: fadeIn 0.5s; }
+        .content-area { padding: 30px; }
+        .tab-content { display: none; animation: fadeIn 0.4s; }
+        .tab-content.active { display: block; }
         
-        /* Forms */
-        .add-form-card {
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Form Styles */
+        .form-card {
             background: #f8fafc;
-            border: 1px dashed #cbd5e1;
+            border: 1px solid var(--border);
             border-radius: 16px;
             padding: 25px;
             margin-bottom: 30px;
-            transition: all 0.3s;
         }
-        
-        .add-form-card:hover { border-color: var(--primary); background: #f1f5f9; }
-        
-        .form-title { font-size: 1.1rem; color: var(--primary); margin-bottom: 20px; font-weight: bold; display: flex; align-items: center; gap: 8px; }
         
         .form-grid {
             display: grid;
@@ -150,303 +83,320 @@
             margin-bottom: 20px;
         }
         
-        .input-group label { display: block; margin-bottom: 8px; font-size: 0.9rem; color: var(--text-light); font-weight: 600; }
+        .input-group label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 0.9rem; color: #475569; }
         
         .form-input, .form-select {
             width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #e2e8f0;
+            padding: 12px;
+            border: 2px solid var(--border);
             border-radius: 10px;
             font-size: 1rem;
-            transition: all 0.3s;
-            background: white;
+            transition: 0.3s;
         }
         
-        .form-input:focus, .form-select:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
-        }
+        .form-input:focus, .form-select:focus { outline: none; border-color: var(--primary); }
         
-        .btn-submit {
-            background: var(--primary);
-            color: white;
+        .btn {
+            padding: 12px 24px;
             border: none;
-            padding: 12px 35px;
             border-radius: 10px;
-            font-size: 1rem;
             font-weight: bold;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: 0.3s;
             display: inline-flex;
             align-items: center;
             gap: 8px;
         }
         
-        .btn-submit:hover { background: var(--primary-hover); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3); }
-        
-        /* Table */
-        .table-container {
-            overflow-x: auto;
-            border-radius: 16px;
-            border: 1px solid #e5e7eb;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-        }
-        
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-dark); }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-edit { background: var(--warning); color: white; padding: 8px 16px; font-size: 0.9rem; }
+        .btn-delete { background: var(--danger); color: white; padding: 8px 16px; font-size: 0.9rem; }
+
+        /* Table Styles */
+        .table-wrapper { overflow-x: auto; border-radius: 16px; border: 1px solid var(--border); }
         table { width: 100%; border-collapse: collapse; background: white; }
+        th { background: #f1f5f9; padding: 16px; text-align: right; font-weight: 700; color: #475569; }
+        td { padding: 16px; border-bottom: 1px solid var(--border); vertical-align: middle; }
         
-        th {
-            background: #f8fafc;
-            padding: 16px;
-            text-align: right;
-            font-weight: 700;
-            color: var(--text-main);
-            border-bottom: 2px solid #e2e8f0;
-            font-size: 0.95rem;
-        }
+        .amount-pos { color: var(--success); font-weight: 800; direction: ltr; display: inline-block; }
+        .amount-neg { color: var(--danger); font-weight: 800; direction: ltr; display: inline-block; }
         
-        td {
-            padding: 16px;
-            border-bottom: 1px solid #f1f5f9;
-            color: var(--text-main);
-            font-size: 0.95rem;
-        }
-        
-        tr:last-child td { border-bottom: none; }
-        tr:hover td { background: #f8fafc; }
-        
-        .amount-positive { color: var(--success); font-weight: 800; direction: ltr; display: inline-block; }
-        .amount-negative { color: var(--danger); font-weight: 800; direction: ltr; display: inline-block; }
-        
-        .badge { padding: 5px 12px; border-radius: 8px; font-size: 0.8rem; font-weight: 700; letter-spacing: 0.5px; }
+        .badge { padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: 700; }
         .badge-afn { background: #dbeafe; color: #1e40af; }
         .badge-usd { background: #dcfce7; color: #166534; }
         .badge-eur { background: #fef3c7; color: #92400e; }
-        
+
+        .actions { display: flex; gap: 8px; }
     </style>
 </head>
 <body>
 
-    <div class="app-container">
-        <div class="header">
-            <h1>برنامه مدیریت مالی غلام سرور حسنی</h1>
-            <p>مدیریت هوشمند درآمد ها، هزینه‌ها و معاملات</p>
+<div class="app-container">
+    <div class="header">
+        <h1>💎 مدیریت مالی غلام سرور حسنی</h1>
+        <p>سیستم هوشمند ثبت و پیگیری معاملات</p>
+    </div>
+
+    <div class="tabs-nav">
+        <button class="tab-btn active" onclick="switchTab('transactions')">🔄 معاملات</button>
+        <button class="tab-btn" onclick="switchTab('expenses')">💸 مصارف</button>
+        <button class="tab-btn" onclick="switchTab('reports')">📊 گزارشات</button>
+    </div>
+
+    <div class="content-area">
+        <!-- Tab: Transactions -->
+        <div id="transactions" class="tab-content active">
+            <div class="sub-tabs" style="display:flex; gap:10px; margin-bottom:20px;">
+                <button class="btn" style="background:#e0e7ff; color:var(--primary)" onclick="setTransType('received')">⬇️ رسید</button>
+                <button class="btn" style="background:#fee2e2; color:var(--danger)" onclick="setTransType('sent')">⬆️ برده</button>
+            </div>
+
+            <div class="form-card">
+                <h3 style="margin-bottom:15px; color:var(--primary)">➕ ثبت معامله جدید</h3>
+                <div class="form-grid">
+                    <div class="input-group">
+                        <label>شرح معامله</label>
+                        <input type="text" id="t-desc" class="form-input" placeholder="مثال: فروش کالا">
+                    </div>
+                    <div class="input-group">
+                        <label>مبلغ</label>
+                        <input type="number" id="t-amount" class="form-input" placeholder="0">
+                    </div>
+                    <div class="input-group">
+                        <label>ارز</label>
+                        <select id="t-currency" class="form-select">
+                            <option value="AFN">AFN</option>
+                            <option value="USD">USD</option>
+                            <option value="EUR">EUR</option>
+                            <option value="IRR">IRR</option>
+                        </select>
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="addTransaction()">💾 ذخیره معامله</button>
+            </div>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>شماره</th>
+                            <th>شرح</th>
+                            <th>مبلغ</th>
+                            <th>ارز</th>
+                            <th>تاریخ</th>
+                            <th>عملیات</th>
+                        </tr>
+                    </thead>
+                    <tbody id="trans-table-body">
+                        <!-- Rows will be added by JS -->
+                    </tbody>
+                </table>
+            </div>
         </div>
 
-        <!-- Main Tabs -->
-        <div class="tabs-nav">
-            <button class="tab-btn active" onclick="showTab('tab1')">🔄 معاملات</button>
-            <button class="tab-btn" onclick="showTab('tab2')">💸 مصارف</button>
-            <button class="tab-btn" onclick="showTab('tab3')">📊 گزارشات</button>
+        <!-- Tab: Expenses -->
+        <div id="expenses" class="tab-content">
+            <div class="form-card">
+                <h3 style="margin-bottom:15px; color:var(--danger)">➕ ثبت هزینه جدید</h3>
+                <div class="form-grid">
+                    <div class="input-group">
+                        <label>دسته‌بندی</label>
+                        <input type="text" id="e-cat" class="form-input" placeholder="مثال: اجاره">
+                    </div>
+                    <div class="input-group">
+                        <label>مبلغ</label>
+                        <input type="number" id="e-amount" class="form-input" placeholder="0">
+                    </div>
+                </div>
+                <button class="btn btn-danger" onclick="addExpense()">💾 ثبت هزینه</button>
+            </div>
+            
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>شماره</th>
+                            <th>دسته‌بندی</th>
+                            <th>مبلغ</th>
+                            <th>تاریخ</th>
+                            <th>عملیات</th>
+                        </tr>
+                    </thead>
+                    <tbody id="exp-table-body"></tbody>
+                </table>
+            </div>
         </div>
-        
-        <div class="content-area">
-            <!-- Tab 1: Transactions -->
-            <div id="tab1" class="tab-content active">
-                <div class="sub-tabs">
-                    <button class="sub-tab-btn active" onclick="showSubTab('received')">⬇️ رسید (دریافت)</button>
-                    <button class="sub-tab-btn" onclick="showSubTab('sent')">⬆️ برده (پرداخت)</button>
-                </div>
-                
-                <!-- Received Form & Table -->
-                <div id="received" class="sub-tab-content active">
-                    <div class="add-form-card">
-                        <div class="form-title">➕ ثبت دریافت جدید</div>
-                        <div class="form-grid">
-                            <div class="input-group">
-                                <label>شرح معامله</label>
-                                <input type="text" class="form-input" placeholder="مثال: فروش کالا">
-                            </div>
-                            <div class="input-group">
-                                <label>مبلغ</label>
-                                <input type="number" class="form-input" placeholder="0">
-                            </div>
-                            <div class="input-group">
-                                <label>نوع ارز</label>
-                                <select class="form-select">
-                                    <option>AFN</option>
-                                    <option>USD</option>
-                                    <option>EUR</option>
-                                    <option>IRR</option>
-                                </select>
-                            </div>
-                        </div>
-                        <button class="btn-submit">ذخیره رسید</button>
-                    </div>
 
-                    <div class="table-container">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>شماره</th>
-                                    <th>شرح</th>
-                                    <th>مبلغ</th>
-                                    <th>ارز</th>
-                                    <th>تاریخ</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>۱</td>
-                                    <td>فروش عمده</td>
-                                    <td><span class="amount-positive">⬇️ ۵۰,۰۰۰</span></td>
-                                    <td><span class="badge badge-afn">AFN</span></td>
-                                    <td>۱۴۰۵/۰۷/۰۵</td>
-                                </tr>
-                                <tr>
-                                    <td>۲</td>
-                                    <td>حواله بانکی</td>
-                                    <td><span class="amount-positive">⬇️ ۱۰۰,۰۰۰</span></td>
-                                    <td><span class="badge badge-usd">USD</span></td>
-                                    <td>۱۴۰۵/۰۷/۰۴</td>
-                                </tr>
-                            </tbody>
-                        </table>
+        <!-- Tab: Reports -->
+        <div id="reports" class="tab-content">
+            <div class="form-card" style="text-align:center;">
+                <h2>خلاصه وضعیت مالی</h2>
+                <div style="display:flex; justify-content:space-around; margin-top:20px;">
+                    <div>
+                        <h3 style="color:var(--success)">درآمد کل</h3>
+                        <h1 id="total-income">0</h1>
                     </div>
-                </div>
-                
-                <!-- Sent Form & Table -->
-                <div id="sent" class="sub-tab-content">
-                    <div class="add-form-card">
-                        <div class="form-title">➕ ثبت پرداخت جدید</div>
-                        <div class="form-grid">
-                            <div class="input-group">
-                                <label>شرح معامله</label>
-                                <input type="text" class="form-input" placeholder="مثال: خرید مواد اولیه">
-                            </div>
-                            <div class="input-group">
-                                <label>مبلغ</label>
-                                <input type="number" class="form-input" placeholder="0">
-                            </div>
-                            <div class="input-group">
-                                <label>نوع ارز</label>
-                                <select class="form-select">
-                                    <option>AFN</option>
-                                    <option>USD</option>
-                                    <option>EUR</option>
-                                </select>
-                            </div>
-                        </div>
-                        <button class="btn-submit" style="background: var(--danger);">ذخیره برده</button>
+                    <div>
+                        <h3 style="color:var(--danger)">هزینه کل</h3>
+                        <h1 id="total-expense">0</h1>
                     </div>
-
-                    <div class="table-container">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>شماره</th>
-                                    <th>شرح</th>
-                                    <th>مبلغ</th>
-                                    <th>ارز</th>
-                                    <th>تاریخ</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>۱</td>
-                                    <td>اجاره مغازه</td>
-                                    <td><span class="amount-negative">⬆️ ۳۰,۰۰۰</span></td>
-                                    <td><span class="badge badge-afn">AFN</span></td>
-                                    <td>۱۴۰۵/۰۷/۰۵</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Tab 2: Expenses -->
-            <div id="tab2" class="tab-content">
-                <h2 style="margin-bottom: 20px; color: var(--primary);">📉 مدیریت مصارف</h2>
-                
-                <div class="add-form-card">
-                    <div class="form-title">➕ ثبت هزینه جدید</div>
-                    <div class="form-grid">
-                        <div class="input-group">
-                            <label>دسته‌بندی</label>
-                            <select class="form-select">
-                                <option>حمل و نقل</option>
-                                <option>پذیرایی</option>
-                                <option>خدمات</option>
-                                <option>متفرقه</option>
-                            </select>
-                        </div>
-                        <div class="input-group">
-                            <label>مبلغ هزینه</label>
-                            <input type="number" class="form-input" placeholder="0">
-                        </div>
-                    </div>
-                    <button class="btn-submit" style="background: var(--secondary);">ثبت هزینه</button>
-                </div>
-
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>شماره</th>
-                                <th>دسته‌بندی</th>
-                                <th>مبلغ</th>
-                                <th>وضعیت</th>
-                                <th>تاریخ</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>۱</td>
-                                <td>حمل و نقل</td>
-                                <td class="amount-negative">۱۵,۰۰۰ AFN</td>
-                                <td><span class="badge" style="background:#fef3c7; color:#92400e;">عادی</span></td>
-                                <td>۱۴۰۵/۰۷/۰۳</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            
-            <!-- Tab 3: Reports -->
-            <div id="tab3" class="tab-content">
-                <h2 style="margin-bottom: 20px; color: var(--primary);">📈 گزارش عملکرد مالی</h2>
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>شماره</th>
-                                <th>ماه</th>
-                                <th>درآمد کل</th>
-                                <th>هزینه کل</th>
-                                <th>ترازنامه</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>۱</td>
-                                <td>مهر ۱۴۰۵</td>
-                                <td class="amount-positive">۱۷۵,۰۰۰</td>
-                                <td class="amount-negative">۱۳۰,۰۰۰</td>
-                                <td><span class="amount-positive">✅ سودده</span></td>
-                            </tr>
-                        </tbody>
-                    </table>
                 </div>
             </div>
         </div>
     </div>
-    
-    <script>
-        function showTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
-            event.currentTarget.classList.add('active');
+</div>
+
+<script>
+    // Data Storage
+    let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+    let expenses = JSON.parse(localStorage.getItem('expenses')) || [];
+    let currentType = 'received'; // received or sent
+    let editIndex = null;
+
+    function saveData() {
+        localStorage.setItem('transactions', JSON.stringify(transactions));
+        localStorage.setItem('expenses', JSON.stringify(expenses));
+        renderTables();
+        updateReports();
+    }
+
+    function switchTab(tabId) {
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+        event.currentTarget.classList.add('active');
+    }
+
+    function setTransType(type) {
+        currentType = type;
+        document.querySelector('.form-card h3').innerText = type === 'received' ? '➕ ثبت دریافت جدید' : '➕ ثبت پرداخت جدید';
+    }
+
+    function addTransaction() {
+        const desc = document.getElementById('t-desc').value;
+        const amount = document.getElementById('t-amount').value;
+        const currency = document.getElementById('t-currency').value;
+
+        if(!desc || !amount) return alert('لطفاً تمام فیلدها را پر کنید');
+
+        const newTrans = {
+            id: Date.now(),
+            desc,
+            amount,
+            currency,
+            type: currentType,
+            date: new Date().toLocaleDateString('fa-IR')
+        };
+
+        if(editIndex !== null) {
+            transactions[editIndex] = newTrans;
+            editIndex = null;
+            document.querySelector('.btn-primary').innerText = '💾 ذخیره معامله';
+        } else {
+            transactions.push(newTrans);
         }
+
+        // Clear inputs
+        document.getElementById('t-desc').value = '';
+        document.getElementById('t-amount').value = '';
+        saveData();
+    }
+
+    function addExpense() {
+        const cat = document.getElementById('e-cat').value;
+        const amount = document.getElementById('e-amount').value;
+
+        if(!cat || !amount) return alert('لطفاً اطلاعات را کامل کنید');
+
+        expenses.push({
+            id: Date.now(),
+            cat,
+            amount,
+            date: new Date().toLocaleDateString('fa-IR')
+        });
+
+        document.getElementById('e-cat').value = '';
+        document.getElementById('e-amount').value = '';
+        saveData();
+    }
+
+    function deleteItem(type, id) {
+        if(confirm('آیا از حذف این مورد اطمینان دارید؟')) {
+            if(type === 'trans') transactions = transactions.filter(t => t.id !== id);
+            if(type === 'exp') expenses = expenses.filter(e => e.id !== id);
+            saveData();
+        }
+    }
+
+    function editTransaction(id) {
+        const item = transactions.find(t => t.id === id);
+        if(item) {
+            document.getElementById('t-desc').value = item.desc;
+            document.getElementById('t-amount').value = item.amount;
+            document.getElementById('t-currency').value = item.currency;
+            setTransType(item.type);
+            editIndex = transactions.indexOf(item);
+            document.querySelector('.btn-primary').innerText = '✏️ بروزرسانی معامله';
+            window.scrollTo(0,0);
+        }
+    }
+
+    function renderTables() {
+        // Render Transactions
+        const transBody = document.getElementById('trans-table-body');
+        transBody.innerHTML = '';
+        transactions.forEach((t, index) => {
+            const isRec = t.type === 'received';
+            const sign = isRec ? '⬇️' : '⬆️';
+            const colorClass = isRec ? 'amount-pos' : 'amount-neg';
+            
+            transBody.innerHTML += `
+                <tr>
+                    <td>${index + 1}</td>
+                    <td>${t.desc}</td>
+                    <td><span class="${colorClass}">${sign} ${Number(t.amount).toLocaleString()}</span></td>
+                    <td><span class="badge badge-${t.currency.toLowerCase()}">${t.currency}</span></td>
+                    <td>${t.date}</td>
+                    <td class="actions">
+                        <button class="btn btn-edit" onclick="editTransaction(${t.id})">✏️</button>
+                        <button class="btn btn-delete" onclick="deleteItem('trans', ${t.id})">🗑️</button>
+                    </td>
+                </tr>
+            `;
+        });
+
+        // Render Expenses
+        const expBody = document.getElementById('exp-table-body');
+        expBody.innerHTML = '';
+        expenses.forEach((e, index) => {
+            expBody.innerHTML += `
+                <tr>
+                    <td>${index + 1}</td>
+                    <td>${e.cat}</td>
+                    <td class="amount-neg">${Number(e.amount).toLocaleString()}</td>
+                    <td>${e.date}</td>
+                    <td class="actions">
+                        <button class="btn btn-delete" onclick="deleteItem('exp', ${e.id})">🗑️</button>
+                    </td>
+                </tr>
+            `;
+        });
+    }
+
+    function updateReports() {
+        const totalInc = transactions.filter(t => t.type === 'received').reduce((sum, t) => sum + Number(t.amount), 0);
+        const totalExp = expenses.reduce((sum, e) => sum + Number(e.amount), 0);
         
-        function showSubTab(subTabId) {
-            const parent = document.getElementById('tab1');
-            parent.querySelectorAll('.sub-tab-content').forEach(el => el.classList.remove('active'));
-            parent.querySelectorAll('.sub-tab-btn').forEach(el => el.classList.remove('active'));
-            document.getElementById(subTabId).classList.add('active');
-            event.currentTarget.classList.add('active');
-        }
-    </script>
+        document.getElementById('total-income').innerText = totalInc.toLocaleString();
+        document.getElementById('total-expense').innerText = totalExp.toLocaleString();
+    }
+
+    // Initial Load
+    renderTables();
+    updateReports();
+</script>
+
 </body>
 </html>
