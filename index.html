@@ -390,7 +390,7 @@
                         </select>
                     </div>
                 </div>
-                <button class="btn btn-primary" style="background:var(--danger)" onclick="addExpense()">💾 ثبت هزینه</button>
+                <button class="btn btn-primary" id="btn-add-expense" style="background:var(--danger)" onclick="addExpense()">💾 ثبت هزینه</button>
             </div>
             
             <div class="table-wrapper">
@@ -400,7 +400,7 @@
                             <th>شماره</th>
                             <th>دسته‌بندی</th>
                             <th>مبلغ</th>
-                            <th>ارز</th>
+                            <th>ارز</th> <!-- این ستون اضافه شد -->
                             <th>تاریخ</th>
                             <th>عملیات</th>
                         </tr>
@@ -440,6 +440,7 @@
     let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
     let expenses = JSON.parse(localStorage.getItem('expenses')) || [];
     let editIndex = null;
+    let editExpenseIndex = null; // متغیر جدید برای ویرایش مصارف
     const currencies = ['AFN', 'USD', 'EUR', 'IRR', 'PKR'];
 
     // ===== Afghanistan Time Functions =====
@@ -536,7 +537,7 @@
         return Number(num).toLocaleString('fa-IR');
     }
 
-    // ===== Helper: Format Currency Breakdown (FIXED) =====
+    // ===== Helper: Format Currency Breakdown =====
     function formatCurrencyBreakdown(items, inline = false) {
         const totals = { AFN: 0, USD: 0, EUR: 0, IRR: 0, PKR: 0 };
         if (items && items.length > 0) {
@@ -598,7 +599,6 @@
         document.getElementById(subTabId).classList.add('active');
         event.currentTarget.classList.add('active');
         
-        // Force update when switching to daily-balance to ensure cards are active
         if (subTabId === 'daily-balance') {
             updateDailyBalance();
         }
@@ -638,7 +638,7 @@
         saveData();
     }
 
-    // ===== Add Expense =====
+    // ===== Add / Edit Expense =====
     function addExpense() {
         const cat = document.getElementById('e-cat').value;
         const amount = document.getElementById('e-amount').value;
@@ -646,14 +646,44 @@
         
         if(!cat || !amount) return alert('لطفاً اطلاعات را کامل کنید');
 
-        expenses.push({ id: Date.now(), cat, amount, currency, date: getAfghanistanDateString() });
+        if (editExpenseIndex !== null) {
+            // حالت ویرایش
+            expenses[editExpenseIndex].cat = cat;
+            expenses[editExpenseIndex].amount = amount;
+            expenses[editExpenseIndex].currency = currency;
+            editExpenseIndex = null;
+            document.getElementById('btn-add-expense').innerText = '💾 ثبت هزینه';
+            document.getElementById('btn-add-expense').style.background = 'var(--danger)';
+        } else {
+            // حالت ثبت جدید
+            expenses.push({ id: Date.now(), cat, amount, currency, date: getAfghanistanDateString() });
+        }
         
         document.getElementById('e-cat').value = '';
         document.getElementById('e-amount').value = '';
+        document.getElementById('e-currency').value = 'AFN';
         saveData();
     }
 
-    // ===== Delete & Edit =====
+    // ===== Edit Expense Function =====
+    function editExpense(id) {
+        const item = expenses.find(e => e.id === id);
+        if(item) {
+            document.getElementById('e-cat').value = item.cat;
+            document.getElementById('e-amount').value = item.amount;
+            document.getElementById('e-currency').value = item.currency || 'AFN';
+            editExpenseIndex = expenses.indexOf(item);
+            
+            // تغییر متن دکمه برای اطلاع به کاربر
+            const btn = document.getElementById('btn-add-expense');
+            btn.innerText = '✏️ بروزرسانی هزینه';
+            btn.style.background = 'var(--warning)';
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    }
+
+    // ===== Delete Item =====
     function deleteItem(type, id) {
         if(confirm('آیا از حذف این مورد اطمینان دارید؟')) {
             if(type === 'trans') transactions = transactions.filter(t => t.id !== id);
@@ -662,6 +692,7 @@
         }
     }
 
+    // ===== Edit Transaction =====
     function editTransaction(id) {
         const item = transactions.find(t => t.id === id);
         if(item) {
@@ -698,6 +729,7 @@
 
     // ===== Render Tables =====
     function renderTables() {
+        // Received Transactions
         const transBody = document.getElementById('trans-table-body');
         transBody.innerHTML = '';
         const receivedList = transactions.filter(t => t.type === 'received');
@@ -725,6 +757,7 @@
             });
         }
 
+        // Sent Transactions
         const sentBody = document.getElementById('sent-table-body');
         sentBody.innerHTML = '';
         const sentList = transactions.filter(t => t.type === 'sent');
@@ -752,6 +785,7 @@
             });
         }
 
+        // Expenses (اصلاح شده)
         const expBody = document.getElementById('exp-table-body');
         expBody.innerHTML = '';
         
@@ -769,6 +803,7 @@
                         <td class="action-cell">
                             <button class="action-btn" onclick="toggleDropdown(${e.id})">⚙️ عملیات</button>
                             <div id="menu-${e.id}" class="dropdown-menu">
+                                <button class="dropdown-item text-warning" onclick="editExpense(${e.id})">✏️ ویرایش</button>
                                 <button class="dropdown-item text-danger" onclick="deleteItem('exp', ${e.id})">🗑️ حذف</button>
                             </div>
                         </td>
@@ -790,7 +825,7 @@
         document.getElementById('total-expenses-today').innerHTML = formatCurrencyBreakdown(expenses);
     }
 
-    // ===== Update Daily Balance (دخل) - FIXED =====
+    // ===== Update Daily Balance (دخل) =====
     function updateDailyBalance() {
         const prevBalances = JSON.parse(localStorage.getItem('lastClosingBalancesByCurrency')) || {AFN:0, USD:0, EUR:0, IRR:0, PKR:0};
         const todayReceived = transactions.filter(t => t.type === 'received');
