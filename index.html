@@ -234,7 +234,6 @@
                         </div>
                         <div class="input-group">
                             <label>مبلغ</label>
-                            <!-- inputmode="numeric" کیبورد عددی موبایل را باز می‌کند -->
                             <input type="text" inputmode="numeric" pattern="[0-9]*" id="t-amount" class="form-input" placeholder="0" oninput="convertToEnglish(this)">
                         </div>
                         <div class="input-group">
@@ -355,7 +354,7 @@
 
                 <div class="form-card" style="background: linear-gradient(135deg, #eff6ff 0%, #f0f9ff 100%); border-color: var(--info);">
                     <h3 style="color:var(--info); margin-bottom:15px;">📊 ریز وضعیت دخل امروز</h3>
-                    <div id="balance-status" style="font-size:1rem; line-height:2;"></div>
+                    <div id="balance-status" style="font-size:1rem; line-height:2.2;"></div>
                 </div>
             </div>
         </div>
@@ -537,33 +536,42 @@
         return Number(num).toLocaleString('fa-IR');
     }
 
-    // ===== Helper: Format Currency Breakdown =====
-    function formatCurrencyBreakdown(items, amountKey = 'amount') {
+    // ===== Helper: Format Currency Breakdown (FIXED) =====
+    function formatCurrencyBreakdown(items, inline = false) {
         const totals = { AFN: 0, USD: 0, EUR: 0, IRR: 0, PKR: 0 };
-        items.forEach(item => {
-            const curr = item.currency || 'AFN';
-            totals[curr] += Number(item[amountKey]);
-        });
+        if (items && items.length > 0) {
+            items.forEach(item => {
+                const curr = item.currency || 'AFN';
+                totals[curr] += Number(item.amount) || 0;
+            });
+        }
         
         let html = '';
+        const style = inline ? 'display:inline-block; margin-left:8px;' : '';
+        let hasData = false;
+        
         for (const [curr, amount] of Object.entries(totals)) {
             if (amount !== 0) {
-                html += `<div>${formatNumber(amount)} <span class="badge badge-${curr.toLowerCase()}">${curr}</span></div>`;
+                hasData = true;
+                html += `<div style="${style}">${formatNumber(amount)} <span class="badge badge-${curr.toLowerCase()}">${curr}</span></div>`;
             }
         }
-        return html || '<div style="color:var(--text-light)">۰</div>';
+        return hasData ? html : '<div style="color:var(--text-light)">۰</div>';
     }
 
     function formatCurrencyBreakdownObject(balances, inline = false) {
         let html = '';
-        const style = inline ? 'display:inline-block; margin-left:10px;' : '';
+        const style = inline ? 'display:inline-block; margin-left:8px;' : '';
+        let hasData = false;
+        
         for (const [curr, amount] of Object.entries(balances)) {
             if (amount !== 0) {
+                hasData = true;
                 const color = amount > 0 ? 'var(--success)' : 'var(--danger)';
                 html += `<div style="${style}color:${color}">${formatNumber(Math.abs(amount))} <span class="badge badge-${curr.toLowerCase()}">${curr}</span></div>`;
             }
         }
-        return html || '<div style="color:var(--text-light)">۰</div>';
+        return hasData ? html : '<div style="color:var(--text-light)">۰</div>';
     }
 
     // ===== Save Data =====
@@ -589,6 +597,11 @@
         document.querySelectorAll('#transactions .sub-tab-btn').forEach(el => el.classList.remove('active'));
         document.getElementById(subTabId).classList.add('active');
         event.currentTarget.classList.add('active');
+        
+        // Force update when switching to daily-balance to ensure cards are active
+        if (subTabId === 'daily-balance') {
+            updateDailyBalance();
+        }
     }
 
     // ===== Add Transaction =====
@@ -777,7 +790,7 @@
         document.getElementById('total-expenses-today').innerHTML = formatCurrencyBreakdown(expenses);
     }
 
-    // ===== Update Daily Balance (دخل) =====
+    // ===== Update Daily Balance (دخل) - FIXED =====
     function updateDailyBalance() {
         const prevBalances = JSON.parse(localStorage.getItem('lastClosingBalancesByCurrency')) || {AFN:0, USD:0, EUR:0, IRR:0, PKR:0};
         const todayReceived = transactions.filter(t => t.type === 'received');
