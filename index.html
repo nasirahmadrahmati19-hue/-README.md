@@ -17,9 +17,9 @@
             --success: #10b981;
             --danger: #ef4444;
             --warning: #f59e0b;
+            --info: #3b82f6;
         }
 
-        /* Dark Mode Variables */
         body.dark-mode {
             --bg: #0f172a;
             --card: #1e293b;
@@ -51,8 +51,8 @@
         }
         
         .header h1 { font-size: 1.8rem; margin-bottom: 5px; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .header .date-display { font-size: 0.9rem; opacity: 0.9; margin-top: 8px; }
         
-        /* Theme Toggle */
         .theme-toggle {
             position: absolute;
             top: 20px;
@@ -80,9 +80,57 @@
         .tab-content.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
+        /* Sub-tabs */
+        .sub-tabs { display: flex; gap: 10px; margin-bottom: 25px; flex-wrap: wrap; }
+        .sub-tab-btn {
+            padding: 10px 20px; border: 2px solid var(--border); background: var(--bg);
+            border-radius: 50px; cursor: pointer; font-weight: bold; color: var(--text-light); transition: 0.3s;
+        }
+        .sub-tab-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+        .sub-tab-content { display: none; animation: fadeIn 0.4s; }
+        .sub-tab-content.active { display: block; }
+
+        /* Summary Cards */
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        .summary-card {
+            background: var(--card);
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .summary-card::before {
+            content: '';
+            position: absolute;
+            top: 0; right: 0; left: 0;
+            height: 4px;
+        }
+        .summary-card.success { border-color: var(--success); }
+        .summary-card.success::before { background: var(--success); }
+        .summary-card.danger { border-color: var(--danger); }
+        .summary-card.danger::before { background: var(--danger); }
+        .summary-card.info { border-color: var(--info); }
+        .summary-card.info::before { background: var(--info); }
+        .summary-card.warning { border-color: var(--warning); }
+        .summary-card.warning::before { background: var(--warning); }
+        
+        .summary-card .label { font-size: 0.9rem; color: var(--text-light); margin-bottom: 8px; font-weight: 600; }
+        .summary-card .value { font-size: 1.5rem; font-weight: 800; }
+        .summary-card.success .value { color: var(--success); }
+        .summary-card.danger .value { color: var(--danger); }
+        .summary-card.info .value { color: var(--info); }
+        .summary-card.warning .value { color: var(--warning); }
+
         /* Form Styles */
         .form-card {
-            background: var(--bg); border: 1px solid var(--border); border-radius: 16px; padding: 25px; margin-bottom: 30px;
+            background: var(--bg); border: 1px solid var(--border); border-radius: 16px; padding: 25px; margin-bottom: 25px;
         }
         .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 20px; }
         .input-group label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 0.9rem; color: var(--text-light); }
@@ -110,8 +158,9 @@
         .badge { padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: 700; }
         .badge-afn { background: #dbeafe; color: #1e40af; }
         .badge-usd { background: #dcfce7; color: #166534; }
+        .badge-eur { background: #fef3c7; color: #92400e; }
+        .badge-irr { background: #fce7f3; color: #9f1239; }
 
-        /* Action Dropdown */
         .action-cell { position: relative; }
         .action-btn {
             background: var(--bg); border: 1px solid var(--border); padding: 6px 12px;
@@ -131,6 +180,27 @@
         .text-danger { color: var(--danger); }
         .text-warning { color: var(--warning); }
 
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-light);
+        }
+        .empty-state .icon { font-size: 3rem; margin-bottom: 10px; }
+
+        /* Archive List */
+        .archive-item {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 15px 20px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .archive-date { font-weight: bold; color: var(--primary); }
     </style>
 </head>
 <body>
@@ -140,6 +210,7 @@
         <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
         <h1>💼 مدیریت مالی غلام سرور حسنی</h1>
         <p style="opacity: 0.9;">سیستم هوشمند ثبت و پیگیری معاملات</p>
+        <div class="date-display" id="current-date"></div>
     </div>
 
     <div class="tabs-nav">
@@ -151,54 +222,162 @@
     <div class="content-area">
         <!-- Tab: Transactions -->
         <div id="transactions" class="tab-content active">
-            <div class="sub-tabs" style="display:flex; gap:10px; margin-bottom:20px;">
-                <button class="btn" style="background:#e0e7ff; color:var(--primary)" onclick="setTransType('received')">⬇️ رسید</button>
-                <button class="btn" style="background:#fee2e2; color:var(--danger)" onclick="setTransType('sent')">⬆️ برده</button>
+            <div class="sub-tabs">
+                <button class="sub-tab-btn active" onclick="switchSubTab('received')">⬇️ رسید</button>
+                <button class="sub-tab-btn" onclick="switchSubTab('sent')">⬆️ برده</button>
+                <button class="sub-tab-btn" onclick="switchSubTab('daily-balance')" style="background:var(--info); color:white; border-color:var(--info);">💰 دخل</button>
             </div>
 
-            <div class="form-card">
-                <h3 style="margin-bottom:15px; color:var(--primary)">➕ ثبت معامله جدید</h3>
-                <div class="form-grid">
-                    <div class="input-group">
-                        <label>شرح معامله</label>
-                        <input type="text" id="t-desc" class="form-input" placeholder="مثال: فروش کالا">
+            <!-- Sub-tab: Received -->
+            <div id="received" class="sub-tab-content active">
+                <div class="summary-cards">
+                    <div class="summary-card success">
+                        <div class="label">مجموع رسیدات امروز</div>
+                        <div class="value" id="total-received-today">۰</div>
                     </div>
-                    <div class="input-group">
-                        <label>مبلغ (فارسی یا انگلیسی)</label>
-                        <input type="text" id="t-amount" class="form-input" placeholder="0" oninput="convertToEnglish(this)">
-                    </div>
-                    <div class="input-group">
-                        <label>ارز</label>
-                        <select id="t-currency" class="form-select">
-                            <option value="AFN">AFN</option>
-                            <option value="USD">USD</option>
-                            <option value="EUR">EUR</option>
-                            <option value="IRR">IRR</option>
-                        </select>
+                    <div class="summary-card info">
+                        <div class="label">تعداد رسیدات</div>
+                        <div class="value" id="count-received-today">۰</div>
                     </div>
                 </div>
-                <button class="btn btn-primary" onclick="addTransaction()">💾 ذخیره معامله</button>
+
+                <div class="form-card">
+                    <h3 style="margin-bottom:15px; color:var(--primary)">➕ ثبت دریافت جدید</h3>
+                    <div class="form-grid">
+                        <div class="input-group">
+                            <label>شرح معامله</label>
+                            <input type="text" id="t-desc" class="form-input" placeholder="مثال: فروش کالا">
+                        </div>
+                        <div class="input-group">
+                            <label>مبلغ (فارسی یا انگلیسی)</label>
+                            <input type="text" id="t-amount" class="form-input" placeholder="0" oninput="convertToEnglish(this)">
+                        </div>
+                        <div class="input-group">
+                            <label>ارز</label>
+                            <select id="t-currency" class="form-select">
+                                <option value="AFN">AFN</option>
+                                <option value="USD">USD</option>
+                                <option value="EUR">EUR</option>
+                                <option value="IRR">IRR</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="addTransaction()">💾 ذخیره معامله</button>
+                </div>
+
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>شماره</th>
+                                <th>شرح</th>
+                                <th>مبلغ</th>
+                                <th>ارز</th>
+                                <th>تاریخ</th>
+                                <th>عملیات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="trans-table-body"></tbody>
+                    </table>
+                </div>
             </div>
 
-            <div class="table-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>شماره</th>
-                            <th>شرح</th>
-                            <th>مبلغ</th>
-                            <th>ارز</th>
-                            <th>تاریخ</th>
-                            <th>عملیات</th>
-                        </tr>
-                    </thead>
-                    <tbody id="trans-table-body"></tbody>
-                </table>
+            <!-- Sub-tab: Sent -->
+            <div id="sent" class="sub-tab-content">
+                <div class="summary-cards">
+                    <div class="summary-card danger">
+                        <div class="label">مجموع برده‌های امروز</div>
+                        <div class="value" id="total-sent-today">۰</div>
+                    </div>
+                    <div class="summary-card info">
+                        <div class="label">تعداد برده‌ها</div>
+                        <div class="value" id="count-sent-today">۰</div>
+                    </div>
+                </div>
+
+                <div class="form-card">
+                    <h3 style="margin-bottom:15px; color:var(--danger)">➕ ثبت پرداخت جدید</h3>
+                    <div class="form-grid">
+                        <div class="input-group">
+                            <label>شرح معامله</label>
+                            <input type="text" id="t-desc-sent" class="form-input" placeholder="مثال: خرید مواد اولیه">
+                        </div>
+                        <div class="input-group">
+                            <label>مبلغ (فارسی یا انگلیسی)</label>
+                            <input type="text" id="t-amount-sent" class="form-input" placeholder="0" oninput="convertToEnglish(this)">
+                        </div>
+                        <div class="input-group">
+                            <label>ارز</label>
+                            <select id="t-currency-sent" class="form-select">
+                                <option value="AFN">AFN</option>
+                                <option value="USD">USD</option>
+                                <option value="EUR">EUR</option>
+                                <option value="IRR">IRR</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" style="background:var(--danger)" onclick="addTransaction('sent')">💾 ذخیره برده</button>
+                </div>
+
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>شماره</th>
+                                <th>شرح</th>
+                                <th>مبلغ</th>
+                                <th>ارز</th>
+                                <th>تاریخ</th>
+                                <th>عملیات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="sent-table-body"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Sub-tab: Daily Balance (دخل) -->
+            <div id="daily-balance" class="sub-tab-content">
+                <h2 style="margin-bottom:20px; color:var(--info)">💰 دخل روزانه</h2>
+                <p style="color:var(--text-light); margin-bottom:20px; font-size:0.95rem;">
+                    فرمول: مانده روز قبل + رسیدات امروز - برده‌های امروز
+                </p>
+
+                <div class="summary-cards">
+                    <div class="summary-card warning">
+                        <div class="label">📅 مانده روز قبل</div>
+                        <div class="value" id="prev-balance">۰</div>
+                    </div>
+                    <div class="summary-card success">
+                        <div class="label">⬇️ رسیدات امروز</div>
+                        <div class="value" id="db-received">۰</div>
+                    </div>
+                    <div class="summary-card danger">
+                        <div class="label">⬆️ برده‌های امروز</div>
+                        <div class="value" id="db-sent">۰</div>
+                    </div>
+                    <div class="summary-card info">
+                        <div class="label">💵 مانده فعلی دخل</div>
+                        <div class="value" id="current-balance">۰</div>
+                    </div>
+                </div>
+
+                <div class="form-card" style="background: linear-gradient(135deg, #eff6ff 0%, #f0f9ff 100%); border-color: var(--info);">
+                    <h3 style="color:var(--info); margin-bottom:15px;">📊 وضعیت دخل امروز</h3>
+                    <div id="balance-status" style="font-size:1.1rem; line-height:2;"></div>
+                </div>
             </div>
         </div>
 
         <!-- Tab: Expenses -->
         <div id="expenses" class="tab-content">
+            <div class="summary-cards">
+                <div class="summary-card danger">
+                    <div class="label">مجموع مصارف امروز</div>
+                    <div class="value" id="total-expenses-today">۰</div>
+                </div>
+            </div>
+
             <div class="form-card">
                 <h3 style="margin-bottom:15px; color:var(--danger)">➕ ثبت هزینه جدید</h3>
                 <div class="form-grid">
@@ -232,38 +411,115 @@
 
         <!-- Tab: Reports -->
         <div id="reports" class="tab-content">
-            <div class="form-card" style="text-align:center;">
-                <h2>خلاصه وضعیت مالی</h2>
-                <div style="display:flex; justify-content:space-around; margin-top:20px; flex-wrap:wrap; gap:20px;">
-                    <div style="padding:20px; background:var(--bg); border-radius:16px; min-width:200px;">
-                        <h3 style="color:var(--success)">درآمد کل</h3>
-                        <h1 id="total-income" style="font-size:2rem;">0</h1>
-                    </div>
-                    <div style="padding:20px; background:var(--bg); border-radius:16px; min-width:200px;">
-                        <h3 style="color:var(--danger)">هزینه کل</h3>
-                        <h1 id="total-expense" style="font-size:2rem;">0</h1>
-                    </div>
+            <h2 style="margin-bottom:20px; color:var(--primary)">📊 گزارشات و آرشیو روزانه</h2>
+            
+            <div class="summary-cards">
+                <div class="summary-card success">
+                    <div class="label">کل درآمد (همه روزها)</div>
+                    <div class="value" id="total-income-all">۰</div>
+                </div>
+                <div class="summary-card danger">
+                    <div class="label">کل هزینه (همه روزها)</div>
+                    <div class="value" id="total-expense-all">۰</div>
+                </div>
+                <div class="summary-card info">
+                    <div class="label">مانده فعلی</div>
+                    <div class="value" id="total-balance-all">۰</div>
                 </div>
             </div>
+
+            <h3 style="margin:25px 0 15px; color:var(--primary)">📚 آرشیو روزهای قبل</h3>
+            <div id="archive-list"></div>
         </div>
     </div>
 </div>
 
 <script>
-    // Data & State
+    // ===== Data & State =====
     let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
     let expenses = JSON.parse(localStorage.getItem('expenses')) || [];
-    let currentType = 'received';
     let editIndex = null;
 
-    // Theme Toggle
+    // ===== Afghanistan Time Functions =====
+    function getAfghanistanDate(date = new Date()) {
+        return new Date(date.toLocaleString('en-US', { timeZone: 'Asia/Kabul' }));
+    }
+
+    function getAfghanistanDateString(date = new Date()) {
+        const afDate = getAfghanistanDate(date);
+        return afDate.toLocaleDateString('fa-IR');
+    }
+
+    function getAfghanistanDateTimeString(date = new Date()) {
+        const afDate = getAfghanistanDate(date);
+        return afDate.toLocaleString('fa-IR', { 
+            year: 'numeric', month: 'long', day: 'numeric',
+            hour: '2-digit', minute: '2-digit'
+        });
+    }
+
+    // ===== Day Closing Logic =====
+    function checkDayClosing() {
+        const today = getAfghanistanDateString();
+        const lastDate = localStorage.getItem('lastDate');
+        
+        if (lastDate && lastDate !== today) {
+            // روز عوض شده - باید معاملات روز قبل را آرشیو کنیم
+            const previousTransactions = JSON.parse(localStorage.getItem('transactions')) || [];
+            const previousExpenses = JSON.parse(localStorage.getItem('expenses')) || [];
+            const archives = JSON.parse(localStorage.getItem('dailyArchives')) || [];
+            
+            const totalReceived = previousTransactions
+                .filter(t => t.type === 'received')
+                .reduce((sum, t) => sum + Number(t.amount), 0);
+            const totalSent = previousTransactions
+                .filter(t => t.type === 'sent')
+                .reduce((sum, t) => sum + Number(t.amount), 0);
+            const totalExp = previousExpenses.reduce((sum, e) => sum + Number(e.amount), 0);
+            
+            const lastBalance = Number(localStorage.getItem('lastClosingBalance') || 0);
+            const newBalance = lastBalance + totalReceived - totalSent;
+            
+            // ذخیره آرشیو
+            archives.push({
+                date: lastDate,
+                transactions: previousTransactions,
+                expenses: previousExpenses,
+                openingBalance: lastBalance,
+                closingBalance: newBalance,
+                totalReceived,
+                totalSent,
+                totalExpenses: totalExp
+            });
+            
+            localStorage.setItem('dailyArchives', JSON.stringify(archives));
+            localStorage.setItem('lastClosingBalance', newBalance);
+            localStorage.setItem('transactions', JSON.stringify([]));
+            localStorage.setItem('expenses', JSON.stringify([]));
+            
+            // بروزرسانی متغیرها
+            transactions = [];
+            expenses = [];
+        }
+        
+        localStorage.setItem('lastDate', today);
+    }
+
+    // ===== Theme Toggle =====
     function toggleTheme() {
         document.body.classList.toggle('dark-mode');
         const btn = document.querySelector('.theme-toggle');
         btn.innerText = document.body.classList.contains('dark-mode') ? '☀️' : '🌙';
+        localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
     }
 
-    // Persian Number Converter
+    // Load saved theme
+    if (localStorage.getItem('theme') === 'dark') {
+        document.body.classList.add('dark-mode');
+        document.querySelector('.theme-toggle').innerText = '☀️';
+    }
+
+    // ===== Persian Number Converter =====
     function convertToEnglish(input) {
         let val = input.value;
         const persianNumbers = [/۰/g, /۱/g, /۲/g, /۳/g, /۴/g, /۵/g, /۶/g, /۷/g, /۸/g, /۹/g];
@@ -272,17 +528,24 @@
         for(let i=0; i<10; i++) {
             val = val.replace(persianNumbers[i], i).replace(arabicNumbers[i], i);
         }
-        // Allow only numbers
         input.value = val.replace(/[^0-9]/g, '');
     }
 
+    function formatNumber(num) {
+        return Number(num).toLocaleString('fa-IR');
+    }
+
+    // ===== Save Data =====
     function saveData() {
         localStorage.setItem('transactions', JSON.stringify(transactions));
         localStorage.setItem('expenses', JSON.stringify(expenses));
         renderTables();
+        updateSummaryCards();
+        updateDailyBalance();
         updateReports();
     }
 
+    // ===== Tab Switching =====
     function switchTab(tabId) {
         document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
         document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
@@ -290,15 +553,26 @@
         event.currentTarget.classList.add('active');
     }
 
-    function setTransType(type) {
-        currentType = type;
-        document.querySelector('.form-card h3').innerText = type === 'received' ? '➕ ثبت دریافت جدید' : '➕ ثبت پرداخت جدید';
+    function switchSubTab(subTabId) {
+        document.querySelectorAll('#transactions .sub-tab-content').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('#transactions .sub-tab-btn').forEach(el => el.classList.remove('active'));
+        document.getElementById(subTabId).classList.add('active');
+        event.currentTarget.classList.add('active');
     }
 
-    function addTransaction() {
-        const desc = document.getElementById('t-desc').value;
-        const amount = document.getElementById('t-amount').value;
-        const currency = document.getElementById('t-currency').value;
+    // ===== Add Transaction =====
+    function addTransaction(type = 'received') {
+        let desc, amount, currency;
+        
+        if (type === 'received') {
+            desc = document.getElementById('t-desc').value;
+            amount = document.getElementById('t-amount').value;
+            currency = document.getElementById('t-currency').value;
+        } else {
+            desc = document.getElementById('t-desc-sent').value;
+            amount = document.getElementById('t-amount-sent').value;
+            currency = document.getElementById('t-currency-sent').value;
+        }
 
         if(!desc || !amount) return alert('لطفاً تمام فیلدها را پر کنید');
 
@@ -307,34 +581,48 @@
             desc,
             amount,
             currency,
-            type: currentType,
-            date: new Date().toLocaleDateString('fa-IR')
+            type,
+            date: getAfghanistanDateString()
         };
 
         if(editIndex !== null) {
             transactions[editIndex] = newTrans;
             editIndex = null;
-            document.querySelector('.btn-primary').innerText = '💾 ذخیره معامله';
         } else {
             transactions.push(newTrans);
         }
 
-        document.getElementById('t-desc').value = '';
-        document.getElementById('t-amount').value = '';
+        // Clear inputs
+        if (type === 'received') {
+            document.getElementById('t-desc').value = '';
+            document.getElementById('t-amount').value = '';
+        } else {
+            document.getElementById('t-desc-sent').value = '';
+            document.getElementById('t-amount-sent').value = '';
+        }
+        
         saveData();
     }
 
+    // ===== Add Expense =====
     function addExpense() {
         const cat = document.getElementById('e-cat').value;
         const amount = document.getElementById('e-amount').value;
         if(!cat || !amount) return alert('لطفاً اطلاعات را کامل کنید');
 
-        expenses.push({ id: Date.now(), cat, amount, date: new Date().toLocaleDateString('fa-IR') });
+        expenses.push({ 
+            id: Date.now(), 
+            cat, 
+            amount, 
+            date: getAfghanistanDateString() 
+        });
+        
         document.getElementById('e-cat').value = '';
         document.getElementById('e-amount').value = '';
         saveData();
     }
 
+    // ===== Delete Item =====
     function deleteItem(type, id) {
         if(confirm('آیا از حذف این مورد اطمینان دارید؟')) {
             if(type === 'trans') transactions = transactions.filter(t => t.id !== id);
@@ -343,20 +631,27 @@
         }
     }
 
+    // ===== Edit Transaction =====
     function editTransaction(id) {
         const item = transactions.find(t => t.id === id);
         if(item) {
-            document.getElementById('t-desc').value = item.desc;
-            document.getElementById('t-amount').value = item.amount;
-            document.getElementById('t-currency').value = item.currency;
-            setTransType(item.type);
+            if (item.type === 'received') {
+                document.getElementById('t-desc').value = item.desc;
+                document.getElementById('t-amount').value = item.amount;
+                document.getElementById('t-currency').value = item.currency;
+                switchSubTab('received');
+            } else {
+                document.getElementById('t-desc-sent').value = item.desc;
+                document.getElementById('t-amount-sent').value = item.amount;
+                document.getElementById('t-currency-sent').value = item.currency;
+                switchSubTab('sent');
+            }
             editIndex = transactions.indexOf(item);
-            document.querySelector('.btn-primary').innerText = '✏️ بروزرسانی معامله';
             window.scrollTo(0,0);
         }
     }
 
-    // Dropdown Logic
+    // ===== Dropdown Logic =====
     function toggleDropdown(id) {
         const menu = document.getElementById(`menu-${id}`);
         const allMenus = document.querySelectorAll('.dropdown-menu');
@@ -366,68 +661,223 @@
         menu.classList.toggle('show');
     }
 
-    // Close dropdowns when clicking outside
     window.onclick = function(event) {
         if (!event.target.matches('.action-btn')) {
             document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove('show'));
         }
     }
 
+    // ===== Render Tables =====
     function renderTables() {
+        // Received Transactions
         const transBody = document.getElementById('trans-table-body');
         transBody.innerHTML = '';
-        transactions.forEach((t, index) => {
-            const isRec = t.type === 'received';
-            const sign = isRec ? '⬇️' : '⬆️';
-            const colorClass = isRec ? 'amount-pos' : 'amount-neg';
-            
-            transBody.innerHTML += `
-                <tr>
-                    <td>${index + 1}</td>
-                    <td>${t.desc}</td>
-                    <td><span class="${colorClass}">${sign} ${Number(t.amount).toLocaleString('fa-IR')}</span></td>
-                    <td><span class="badge badge-${t.currency.toLowerCase()}">${t.currency}</span></td>
-                    <td>${t.date}</td>
-                    <td class="action-cell">
-                        <button class="action-btn" onclick="toggleDropdown(${t.id})">⚙️ عملیات</button>
-                        <div id="menu-${t.id}" class="dropdown-menu">
-                            <button class="dropdown-item text-warning" onclick="editTransaction(${t.id})">✏️ ویرایش</button>
-                            <button class="dropdown-item text-danger" onclick="deleteItem('trans', ${t.id})">🗑️ حذف</button>
-                        </div>
-                    </td>
-                </tr>
-            `;
-        });
+        const receivedList = transactions.filter(t => t.type === 'received');
+        
+        if (receivedList.length === 0) {
+            transBody.innerHTML = `<tr><td colspan="6"><div class="empty-state"><div class="icon">📭</div><div>هنوز رسیدی ثبت نشده است</div></div></td></tr>`;
+        } else {
+            receivedList.forEach((t, index) => {
+                transBody.innerHTML += `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${t.desc}</td>
+                        <td><span class="amount-pos">⬇️ ${formatNumber(t.amount)}</span></td>
+                        <td><span class="badge badge-${t.currency.toLowerCase()}">${t.currency}</span></td>
+                        <td>${t.date}</td>
+                        <td class="action-cell">
+                            <button class="action-btn" onclick="toggleDropdown(${t.id})">⚙️ عملیات</button>
+                            <div id="menu-${t.id}" class="dropdown-menu">
+                                <button class="dropdown-item text-warning" onclick="editTransaction(${t.id})">✏️ ویرایش</button>
+                                <button class="dropdown-item text-danger" onclick="deleteItem('trans', ${t.id})">🗑️ حذف</button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
 
+        // Sent Transactions
+        const sentBody = document.getElementById('sent-table-body');
+        sentBody.innerHTML = '';
+        const sentList = transactions.filter(t => t.type === 'sent');
+        
+        if (sentList.length === 0) {
+            sentBody.innerHTML = `<tr><td colspan="6"><div class="empty-state"><div class="icon">📭</div><div>هنوز برده‌ای ثبت نشده است</div></div></td></tr>`;
+        } else {
+            sentList.forEach((t, index) => {
+                sentBody.innerHTML += `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${t.desc}</td>
+                        <td><span class="amount-neg">⬆️ ${formatNumber(t.amount)}</span></td>
+                        <td><span class="badge badge-${t.currency.toLowerCase()}">${t.currency}</span></td>
+                        <td>${t.date}</td>
+                        <td class="action-cell">
+                            <button class="action-btn" onclick="toggleDropdown(${t.id})">⚙️ عملیات</button>
+                            <div id="menu-${t.id}" class="dropdown-menu">
+                                <button class="dropdown-item text-warning" onclick="editTransaction(${t.id})">✏️ ویرایش</button>
+                                <button class="dropdown-item text-danger" onclick="deleteItem('trans', ${t.id})">🗑️ حذف</button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        // Expenses
         const expBody = document.getElementById('exp-table-body');
         expBody.innerHTML = '';
-        expenses.forEach((e, index) => {
-            expBody.innerHTML += `
-                <tr>
-                    <td>${index + 1}</td>
-                    <td>${e.cat}</td>
-                    <td class="amount-neg">${Number(e.amount).toLocaleString('fa-IR')}</td>
-                    <td>${e.date}</td>
-                    <td class="action-cell">
-                        <button class="action-btn" onclick="toggleDropdown(${e.id})">⚙️ عملیات</button>
-                        <div id="menu-${e.id}" class="dropdown-menu">
-                            <button class="dropdown-item text-danger" onclick="deleteItem('exp', ${e.id})">🗑️ حذف</button>
-                        </div>
-                    </td>
-                </tr>
-            `;
-        });
+        
+        if (expenses.length === 0) {
+            expBody.innerHTML = `<tr><td colspan="5"><div class="empty-state"><div class="icon">📭</div><div>هنوز هزینه‌ای ثبت نشده است</div></div></td></tr>`;
+        } else {
+            expenses.forEach((e, index) => {
+                expBody.innerHTML += `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${e.cat}</td>
+                        <td class="amount-neg">${formatNumber(e.amount)}</td>
+                        <td>${e.date}</td>
+                        <td class="action-cell">
+                            <button class="action-btn" onclick="toggleDropdown(${e.id})">⚙️ عملیات</button>
+                            <div id="menu-${e.id}" class="dropdown-menu">
+                                <button class="dropdown-item text-danger" onclick="deleteItem('exp', ${e.id})">🗑️ حذف</button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
     }
 
-    function updateReports() {
-        const totalInc = transactions.filter(t => t.type === 'received').reduce((sum, t) => sum + Number(t.amount), 0);
+    // ===== Update Summary Cards =====
+    function updateSummaryCards() {
+        const todayReceived = transactions.filter(t => t.type === 'received');
+        const todaySent = transactions.filter(t => t.type === 'sent');
+        
+        const totalRec = todayReceived.reduce((sum, t) => sum + Number(t.amount), 0);
+        const totalSent = todaySent.reduce((sum, t) => sum + Number(t.amount), 0);
         const totalExp = expenses.reduce((sum, e) => sum + Number(e.amount), 0);
-        document.getElementById('total-income').innerText = totalInc.toLocaleString('fa-IR');
-        document.getElementById('total-expense').innerText = totalExp.toLocaleString('fa-IR');
+        
+        document.getElementById('total-received-today').innerText = formatNumber(totalRec);
+        document.getElementById('count-received-today').innerText = formatNumber(todayReceived.length);
+        document.getElementById('total-sent-today').innerText = formatNumber(totalSent);
+        document.getElementById('count-sent-today').innerText = formatNumber(todaySent.length);
+        document.getElementById('total-expenses-today').innerText = formatNumber(totalExp);
     }
 
+    // ===== Update Daily Balance (دخل) =====
+    function updateDailyBalance() {
+        const prevBalance = Number(localStorage.getItem('lastClosingBalance') || 0);
+        const todayReceived = transactions.filter(t => t.type === 'received').reduce((sum, t) => sum + Number(t.amount), 0);
+        const todaySent = transactions.filter(t => t.type === 'sent').reduce((sum, t) => sum + Number(t.amount), 0);
+        const currentBalance = prevBalance + todayReceived - todaySent;
+        
+        document.getElementById('prev-balance').innerText = formatNumber(prevBalance);
+        document.getElementById('db-received').innerText = '+' + formatNumber(todayReceived);
+        document.getElementById('db-sent').innerText = '-' + formatNumber(todaySent);
+        document.getElementById('current-balance').innerText = formatNumber(currentBalance);
+        
+        // وضعیت دخل
+        const statusEl = document.getElementById('balance-status');
+        const isProfit = currentBalance >= prevBalance;
+        statusEl.innerHTML = `
+            <div>📅 <strong>مانده روز قبل:</strong> ${formatNumber(prevBalance)}</div>
+            <div>⬇️ <strong>رسیدات امروز:</strong> <span style="color:var(--success)">+${formatNumber(todayReceived)}</span></div>
+            <div>⬆️ <strong>برده‌های امروز:</strong> <span style="color:var(--danger)">-${formatNumber(todaySent)}</span></div>
+            <hr style="margin:15px 0; border:none; border-top:2px dashed var(--border)">
+            <div style="font-size:1.3rem; font-weight:800; color:${isProfit ? 'var(--success)' : 'var(--danger)'}">
+                💵 <strong>مانده فعلی دخل:</strong> ${formatNumber(currentBalance)}
+            </div>
+            <div style="margin-top:10px; color:${isProfit ? 'var(--success)' : 'var(--danger)'}">
+                ${isProfit ? '✅ دخل امروز مثبت است' : '⚠️ دخل امروز منفی است'}
+            </div>
+        `;
+    }
+
+    // ===== Update Reports =====
+    function updateReports() {
+        const archives = JSON.parse(localStorage.getItem('dailyArchives')) || [];
+        const prevBalance = Number(localStorage.getItem('lastClosingBalance') || 0);
+        
+        // محاسبه کل از آرشیو + امروز
+        let totalIncomeAll = 0;
+        let totalExpenseAll = 0;
+        
+        archives.forEach(a => {
+            totalIncomeAll += a.totalReceived || 0;
+            totalExpenseAll += (a.totalSent || 0) + (a.totalExpenses || 0);
+        });
+        
+        // امروز
+        const todayReceived = transactions.filter(t => t.type === 'received').reduce((sum, t) => sum + Number(t.amount), 0);
+        const todaySent = transactions.filter(t => t.type === 'sent').reduce((sum, t) => sum + Number(t.amount), 0);
+        const todayExp = expenses.reduce((sum, e) => sum + Number(e.amount), 0);
+        
+        totalIncomeAll += todayReceived;
+        totalExpenseAll += todaySent + todayExp;
+        
+        const currentBalance = prevBalance + todayReceived - todaySent;
+        
+        document.getElementById('total-income-all').innerText = formatNumber(totalIncomeAll);
+        document.getElementById('total-expense-all').innerText = formatNumber(totalExpenseAll);
+        document.getElementById('total-balance-all').innerText = formatNumber(currentBalance);
+        
+        // نمایش آرشیو
+        const archiveList = document.getElementById('archive-list');
+        if (archives.length === 0) {
+            archiveList.innerHTML = `<div class="empty-state"><div class="icon">📚</div><div>هنوز روزی بسته نشده است</div></div>`;
+        } else {
+            archiveList.innerHTML = '';
+            archives.slice().reverse().forEach(a => {
+                archiveList.innerHTML += `
+                    <div class="archive-item">
+                        <div>
+                            <div class="archive-date">📅 ${a.date}</div>
+                            <div style="font-size:0.85rem; color:var(--text-light); margin-top:5px;">
+                                ⬇️ ${formatNumber(a.totalReceived)} | ⬆️ ${formatNumber(a.totalSent)} | 💸 ${formatNumber(a.totalExpenses || 0)}
+                            </div>
+                        </div>
+                        <div style="text-align:left;">
+                            <div style="font-size:0.8rem; color:var(--text-light)">مانده پایان روز</div>
+                            <div style="font-weight:800; color:var(--primary); font-size:1.2rem;">${formatNumber(a.closingBalance)}</div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+    }
+
+    // ===== Update Current Date Display =====
+    function updateDateDisplay() {
+        document.getElementById('current-date').innerText = 
+            '📅 امروز: ' + getAfghanistanDateTimeString() + ' (به وقت افغانستان)';
+    }
+
+    // ===== Initialization =====
+    checkDayClosing();
     renderTables();
+    updateSummaryCards();
+    updateDailyBalance();
     updateReports();
+    updateDateDisplay();
+    
+    // آپدیت ساعت هر دقیقه
+    setInterval(updateDateDisplay, 60000);
+    
+    // چک کردن روز جدید هر ۳۰ ثانیه
+    setInterval(() => {
+        const lastDate = localStorage.getItem('lastDate');
+        const today = getAfghanistanDateString();
+        if (lastDate !== today) {
+            checkDayClosing();
+            renderTables();
+            updateSummaryCards();
+            updateDailyBalance();
+            updateReports();
+        }
+    }, 30000);
 </script>
 
 </body>
