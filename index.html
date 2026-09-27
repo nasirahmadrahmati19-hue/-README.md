@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>برنامه مدیریت مالی غلام سرور حسنی</title>
-    <!-- اضافه کردن فونت وزیرمتن برای ظاهر مدرن -->
     <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
     
     <style>
@@ -20,12 +19,7 @@
             --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Vazirmatn', sans-serif;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Vazirmatn', sans-serif; }
         
         body {
             background-color: var(--bg-color);
@@ -47,7 +41,6 @@
             margin-top: 20px;
         }
         
-        /* Header Style */
         .header {
             padding: 30px;
             text-align: center;
@@ -55,17 +48,12 @@
             color: white;
         }
         
-        .header h1 {
-            font-size: 1.8rem;
-            margin-bottom: 10px;
-        }
-        
-        /* Modern Tabs Navigation */
         .tabs-nav {
             display: flex;
             background: #f9fafb;
             padding: 10px;
             gap: 10px;
+            overflow-x: auto; /* برای موبایل */
         }
         
         .tab-btn {
@@ -79,15 +67,7 @@
             color: var(--text-light);
             border-radius: 12px;
             transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-        
-        .tab-btn:hover {
-            background: #e5e7eb;
-            color: var(--text-main);
+            white-space: nowrap;
         }
         
         .tab-btn.active {
@@ -96,27 +76,15 @@
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
         
-        /* Content Area */
-        .content-area {
-            padding: 30px;
-            min-height: 400px;
-        }
-        
-        .tab-content {
-            display: none;
-            animation: slideUp 0.4s ease-out;
-        }
-        
-        .tab-content.active {
-            display: block;
-        }
+        .content-area { padding: 30px; min-height: 400px; }
+        .tab-content { display: none; animation: slideUp 0.4s ease-out; }
+        .tab-content.active { display: block; }
         
         @keyframes slideUp {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
         
-        /* Sub-tabs Styling */
         .sub-tabs {
             display: flex;
             gap: 15px;
@@ -142,16 +110,9 @@
             box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3);
         }
         
-        .sub-tab-content {
-            display: none;
-        }
+        .sub-tab-content { display: none; }
+        .sub-tab-content.active { display: block; animation: fadeIn 0.5s; }
         
-        .sub-tab-content.active {
-            display: block;
-            animation: fadeIn 0.5s;
-        }
-        
-        /* Cards & Stats */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -168,36 +129,16 @@
             transition: transform 0.2s;
         }
         
-        .stat-card:hover {
-            transform: translateY(-5px);
-            border-color: var(--primary);
-        }
+        .stat-value { font-size: 1.5rem; font-weight: 800; color: var(--text-main); margin-top: 5px; }
+        .stat-label { font-size: 0.9rem; color: var(--text-light); }
         
-        .stat-value {
-            font-size: 1.5rem;
-            font-weight: 800;
-            color: var(--text-main);
-            margin-top: 5px;
-        }
-        
-        .stat-label {
-            font-size: 0.9rem;
-            color: var(--text-light);
-        }
-        
-        /* Modern Table */
         .table-container {
             overflow-x: auto;
             border-radius: 16px;
             border: 1px solid #e5e7eb;
         }
         
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background: white;
-        }
-        
+        table { width: 100%; border-collapse: collapse; background: white; }
         th {
             background: #f9fafb;
             padding: 15px;
@@ -206,40 +147,45 @@
             color: var(--text-light);
             border-bottom: 2px solid #e5e7eb;
         }
-        
-        td {
-            padding: 15px;
-            border-bottom: 1px solid #f3f4f6;
-            color: var(--text-main);
-        }
-        
-        tr:last-child td {
-            border-bottom: none;
-        }
-        
-        /* Icons & Colors */
-        .icon-up { color: var(--success); font-size: 1.2em; }
-        .icon-down { color: var(--danger); font-size: 1.2em; }
+        td { padding: 15px; border-bottom: 1px solid #f3f4f6; color: var(--text-main); }
         
         .amount-positive { color: var(--success); font-weight: bold; direction: ltr; display: inline-block; }
         .amount-negative { color: var(--danger); font-weight: bold; direction: ltr; display: inline-block; }
         
-        .badge {
-            padding: 4px 10px;
-            border-radius: 6px;
-            font-size: 0.85rem;
-            font-weight: 600;
-        }
+        .badge { padding: 4px 10px; border-radius: 6px; font-size: 0.85rem; font-weight: 600; }
         .badge-afn { background: #dbeafe; color: #1e40af; }
         .badge-usd { background: #dcfce7; color: #166534; }
-        
+
+        /* Customer Form Styles */
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: bold; color: var(--text-main); }
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        .form-input:focus { outline: none; border-color: var(--primary); }
+        .btn-submit {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .btn-submit:hover { background: #4338ca; }
     </style>
 </head>
 <body>
 
     <div class="app-container">
         <div class="header">
-            <!-- ایموجی الماس حذف شد -->
             <h1>برنامه مدیریت مالی غلام سرور حسنی</h1>
             <p style="opacity: 0.9;">مدیریت هوشمند درآمد ها و هزینه‌ها</p>
         </div>
@@ -248,35 +194,24 @@
         <div class="tabs-nav">
             <button class="tab-btn active" onclick="showTab('tab1')">🔄 معاملات</button>
             <button class="tab-btn" onclick="showTab('tab2')">💸 مصارف</button>
-            <button class="tab-btn" onclick="showTab('tab3')">📊 گزارشات</button>
+            <button class="tab-btn" onclick="showTab('tab3')">👥 مشتریان</button>
+            <button class="tab-btn" onclick="showTab('tab4')">📊 گزارشات</button>
         </div>
         
         <div class="content-area">
             <!-- Tab 1: Transactions -->
             <div id="tab1" class="tab-content active">
                 <div class="sub-tabs">
-                    <!-- جای فلش‌ها عوض شد: رسید با فلش پایین، برده با فلش بالا -->
                     <button class="sub-tab-btn active" onclick="showSubTab('received')">⬇️ رسید</button>
                     <button class="sub-tab-btn" onclick="showSubTab('sent')">⬆️ برده</button>
                 </div>
                 
-                <!-- Received Sub-tab -->
                 <div id="received" class="sub-tab-content active">
-                    <div class="stats-grid">
-                        <div class="stat-card">
-                            <div class="stat-label">دریافتی امروز</div>
-                            <div class="stat-value amount-positive">+۱۷۵,۰۰۰</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-label">تعداد تراکنش</div>
-                            <div class="stat-value">۳ فقره</div>
-                        </div>
-                    </div>
-                    
                     <div class="table-container">
                         <table>
                             <thead>
                                 <tr>
+                                    <th>شماره</th>
                                     <th>شرح</th>
                                     <th>مبلغ</th>
                                     <th>ارز</th>
@@ -285,35 +220,23 @@
                             </thead>
                             <tbody>
                                 <tr>
+                                    <td>۱</td>
                                     <td>فروش کالا</td>
                                     <td><span class="amount-positive">⬇️ ۵۰,۰۰۰</span></td>
                                     <td><span class="badge badge-afn">AFN</span></td>
                                     <td>۱۴۰۵/۰۷/۰۵</td>
-                                </tr>
-                                <tr>
-                                    <td>حواله بانکی</td>
-                                    <td><span class="amount-positive">⬇️ ۱۰۰,۰۰۰</span></td>
-                                    <td><span class="badge badge-usd">USD</span></td>
-                                    <td>۱۴۰۵/۰۷/۰۴</td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
                 
-                <!-- Sent Sub-tab -->
                 <div id="sent" class="sub-tab-content">
-                    <div class="stats-grid">
-                        <div class="stat-card">
-                            <div class="stat-label">پرداختی امروز</div>
-                            <div class="stat-value amount-negative">-۱۲۵,۰۰۰</div>
-                        </div>
-                    </div>
-                    
                     <div class="table-container">
                         <table>
                             <thead>
                                 <tr>
+                                    <th>شماره</th>
                                     <th>شرح</th>
                                     <th>مبلغ</th>
                                     <th>ارز</th>
@@ -322,12 +245,7 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>خرید مواد اولیه</td>
-                                    <td><span class="amount-negative">⬆️ ۷۵,۰۰۰</span></td>
-                                    <td><span class="badge badge-usd">USD</span></td>
-                                    <td>۱۴۰۵/۰۷/۰۴</td>
-                                </tr>
-                                <tr>
+                                    <td>۱</td>
                                     <td>اجاره مغازه</td>
                                     <td><span class="amount-negative">⬆️ ۳۰,۰۰۰</span></td>
                                     <td><span class="badge badge-afn">AFN</span></td>
@@ -342,56 +260,85 @@
             <!-- Tab 2: Expenses -->
             <div id="tab2" class="tab-content">
                 <h2 style="margin-bottom: 20px; color: var(--primary);">📉 تحلیل مصارف</h2>
-                <div class="stats-grid">
-                    <div class="stat-card" style="border-right: 4px solid var(--secondary);">
-                        <div class="stat-label">مجموع هزینه ماه</div>
-                        <div class="stat-value">۱۳۰,۰۰۰ AFN</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-label">بیشترین هزینه</div>
-                        <div class="stat-value">اجاره</div>
-                    </div>
-                </div>
-                
                 <div class="table-container">
                     <table>
                         <thead>
                             <tr>
+                                <th>شماره</th>
                                 <th>دسته‌بندی</th>
                                 <th>مبلغ</th>
                                 <th>وضعیت</th>
+                                <th>تاریخ</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
+                                <td>۱</td>
                                 <td>حمل و نقل</td>
                                 <td class="amount-negative">۱۵,۰۰۰ AFN</td>
                                 <td><span class="badge" style="background:#fef3c7; color:#92400e;">عادی</span></td>
+                                <td>۱۴۰۵/۰۷/۰۳</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Tab 3: Customers (New) -->
+            <div id="tab3" class="tab-content">
+                <h2 style="margin-bottom: 20px; color: var(--primary);">👥 مدیریت مشتریان</h2>
+                
+                <div class="card" style="background: #f9fafb; padding: 25px; border-radius: 16px; margin-bottom: 30px;">
+                    <h3 style="margin-bottom: 15px;">➕ افزودن مشتری جدید</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <div class="form-group">
+                            <label>نام و تخلص</label>
+                            <input type="text" class="form-input" placeholder="مثال: احمد محمدی">
+                        </div>
+                        <div class="form-group">
+                            <label>شماره تماس</label>
+                            <input type="tel" class="form-input" placeholder="۰۷۰۰۰۰۰۰۰۰">
+                        </div>
+                    </div>
+                    <button class="btn-submit">ذخیره مشتری</button>
+                </div>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>شماره</th>
+                                <th>نام مشتری</th>
+                                <th>شماره تماس</th>
+                                <th>تاریخ ثبت</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>۱</td>
+                                <td>علی رضایی</td>
+                                <td>۰۷۹۹۱۲۳۴۵۶</td>
+                                <td>۱۴۰۵/۰۷/۰۱</td>
                             </tr>
                             <tr>
-                                <td>پذیرایی</td>
-                                <td class="amount-negative">۲۵,۰۰۰ AFN</td>
-                                <td><span class="badge" style="background:#fee2e2; color:#991b1b;">بالا</span></td>
+                                <td>۲</td>
+                                <td>محمد کریمی</td>
+                                <td>۰۷۸۸۹۸۷۶۵۴</td>
+                                <td>۱۴۰۵/۰۷/۰۲</td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
             </div>
             
-            <!-- Tab 3: Reports -->
-            <div id="tab3" class="tab-content">
+            <!-- Tab 4: Reports -->
+            <div id="tab4" class="tab-content">
                 <h2 style="margin-bottom: 20px; color: var(--primary);">📈 گزارش عملکرد</h2>
-                <div class="stats-grid">
-                    <div class="stat-card" style="background: linear-gradient(135deg, #4f46e5, #8b5cf6); color: white;">
-                        <div class="stat-label" style="color: rgba(255,255,255,0.8);">سود خالص</div>
-                        <div class="stat-value" style="color: white;">۴۵,۰۰۰ AFN</div>
-                    </div>
-                </div>
-                
                 <div class="table-container">
                     <table>
                         <thead>
                             <tr>
+                                <th>شماره</th>
                                 <th>ماه</th>
                                 <th>درآمد کل</th>
                                 <th>هزینه کل</th>
@@ -400,6 +347,7 @@
                         </thead>
                         <tbody>
                             <tr>
+                                <td>۱</td>
                                 <td>مهر ۱۴۰۵</td>
                                 <td class="amount-positive">۱۷۵,۰۰۰</td>
                                 <td class="amount-negative">۱۳۰,۰۰۰</td>
