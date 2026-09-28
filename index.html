@@ -148,13 +148,21 @@
         .tab-content.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .sub-tabs { display: flex; gap: 8px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 5px; }
+        .sub-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
         .sub-tab-btn {
             padding: 10px 18px; border: 2px solid var(--border);
             background: var(--card); backdrop-filter: blur(10px);
             border-radius: 50px; cursor: pointer; font-weight: 700;
             font-size: 0.85rem; color: var(--text-light);
             transition: 0.3s; white-space: nowrap;
+            flex: 1 1 auto;
+            text-align: center;
+            min-width: fit-content;
         }
         .sub-tab-btn.active {
             background: var(--primary); color: white;
@@ -586,8 +594,8 @@
     <div id="reports" class="tab-content">
         <h2 style="margin-bottom:20px; color:var(--primary)">📊 گزارشات و آرشیو</h2>
         <div class="summary-cards">
-            <div class="summary-card success"><div class="label">کل فروش (درآمد)</div><div class="value" id="total-income-all">۰</div></div>
-            <div class="summary-card danger"><div class="label">کل خرید (هزینه)</div><div class="value" id="total-purchase-all">۰</div></div>
+            <div class="summary-card success"><div class="label">کل خرید</div><div class="value" id="total-purchase-all">۰</div></div>
+            <div class="summary-card danger"><div class="label">کل فروش</div><div class="value" id="total-income-all">۰</div></div>
             <div class="summary-card expense"><div class="label">💸 کل مصارف</div><div class="value" id="total-expense-all">۰</div></div>
             <div class="summary-card info"><div class="label">مانده فعلی دخل</div><div class="value" id="total-balance-all">۰</div></div>
         </div>
@@ -662,7 +670,6 @@
                 }
             });
 
-            // مصارف دیگر از مانده دخل کم نمی‌شوند، فقط برای آمار ذخیره می‌شوند
             prevExp.forEach(e => {
                 const c = e.currency || 'AFN';
                 todayStats.expenses[c] = (todayStats.expenses[c] || 0) + Number(e.amount);
@@ -1073,7 +1080,6 @@
         const r = transactions.filter(t => t.type === 'received');
         const s = transactions.filter(t => t.type === 'sent');
 
-        // محاسبه مانده فعلی: فقط فروش و خرید (مصارف کم نمی‌شوند)
         const cb = { ...pb };
         r.forEach(t => cb[t.currency] += Number(t.amount));
         s.forEach(t => cb[t.currency] -= Number(t.amount));
@@ -1096,13 +1102,9 @@
         const archives = JSON.parse(localStorage.getItem('dailyArchives')) || [];
         const pb = JSON.parse(localStorage.getItem('lastClosingBalancesByCurrency')) || {AFN:0,USD:0,EUR:0,IRR:0,PKR:0};
         
-        // مانده فعلی دخل (بدون کم کردن مصارف)
         const tb = { ...pb };
-        // مجموع فروش
         const ti = {AFN:0,USD:0,EUR:0,IRR:0,PKR:0};
-        // مجموع خرید
         const tp = {AFN:0,USD:0,EUR:0,IRR:0,PKR:0};
-        // مجموع مصارف (کارت جدید)
         const te = {AFN:0,USD:0,EUR:0,IRR:0,PKR:0};
 
         archives.forEach(a => {
@@ -1122,7 +1124,6 @@
             tb[t.currency] -= Number(t.amount);
             tp[t.currency] += Number(t.amount);
         });
-        // مصارف فقط در کارت مصارف جمع می‌شوند، از مانده دخل کم نمی‌شوند
         expenses.forEach(e => {
             const c = e.currency || 'AFN';
             te[c] += Number(e.amount);
