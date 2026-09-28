@@ -390,11 +390,11 @@
                 <div class="form-grid">
                     <div class="input-group">
                         <label>شرح معامله</label>
-                        <input type="text" id="t-desc" class="form-input" placeholder="مثال: فروش کالا">
+                        <input type="text" id="t-desc" class="form-input">
                     </div>
                     <div class="input-group">
                         <label>مبلغ</label>
-                        <input type="text" inputmode="numeric" pattern="[0-9]*" id="t-amount" class="form-input" placeholder="0" oninput="convertToEnglish(this)">
+                        <input type="text" inputmode="numeric" pattern="[0-9]*" id="t-amount" class="form-input" oninput="convertToEnglish(this)">
                     </div>
                     <div class="input-group">
                         <label>ارز</label>
@@ -433,11 +433,11 @@
                 <div class="form-grid">
                     <div class="input-group">
                         <label>شرح معامله</label>
-                        <input type="text" id="t-desc-sent" class="form-input" placeholder="مثال: خرید مواد اولیه">
+                        <input type="text" id="t-desc-sent" class="form-input">
                     </div>
                     <div class="input-group">
                         <label>مبلغ</label>
-                        <input type="text" inputmode="numeric" pattern="[0-9]*" id="t-amount-sent" class="form-input" placeholder="0" oninput="convertToEnglish(this)">
+                        <input type="text" inputmode="numeric" pattern="[0-9]*" id="t-amount-sent" class="form-input" oninput="convertToEnglish(this)">
                     </div>
                     <div class="input-group">
                         <label>ارز</label>
@@ -484,15 +484,15 @@
                 <div class="form-grid">
                     <div class="input-group">
                         <label>شرح معامله</label>
-                        <input type="text" id="search-desc" class="form-input" placeholder="جستجو در شرح...">
+                        <input type="text" id="search-desc" class="form-input">
                     </div>
                     <div class="input-group">
                         <label>مبلغ</label>
-                        <input type="text" inputmode="numeric" pattern="[0-9]*" id="search-amount" class="form-input" placeholder="جستجو بر اساس مبلغ" oninput="convertToEnglish(this)">
+                        <input type="text" inputmode="numeric" pattern="[0-9]*" id="search-amount" class="form-input" oninput="convertToEnglish(this)">
                     </div>
                     <div class="input-group">
                         <label>تاریخ</label>
-                        <input type="text" id="search-date" class="form-input" placeholder="مثال: ۱۴۰۳/۰۱/۱۵">
+                        <input type="text" id="search-date" class="form-input">
                     </div>
                 </div>
                 <button class="btn btn-primary" onclick="searchTransactions()">🔍 جستجو</button>
@@ -525,11 +525,11 @@
                 <div class="form-grid">
                     <div class="input-group">
                         <label>دسته‌بندی</label>
-                        <input type="text" id="e-cat" class="form-input" placeholder="مثال: اجاره">
+                        <input type="text" id="e-cat" class="form-input">
                     </div>
                     <div class="input-group">
                         <label>مبلغ</label>
-                        <input type="text" inputmode="numeric" pattern="[0-9]*" id="e-amount" class="form-input" placeholder="0" oninput="convertToEnglish(this)">
+                        <input type="text" inputmode="numeric" pattern="[0-9]*" id="e-amount" class="form-input" oninput="convertToEnglish(this)">
                     </div>
                     <div class="input-group">
                         <label>ارز</label>
@@ -558,15 +558,15 @@
                 <div class="form-grid">
                     <div class="input-group">
                         <label>دسته‌بندی</label>
-                        <input type="text" id="search-exp-cat" class="form-input" placeholder="جستجو در دسته‌بندی...">
+                        <input type="text" id="search-exp-cat" class="form-input">
                     </div>
                     <div class="input-group">
                         <label>مبلغ</label>
-                        <input type="text" inputmode="numeric" pattern="[0-9]*" id="search-exp-amount" class="form-input" placeholder="جستجو بر اساس مبلغ" oninput="convertToEnglish(this)">
+                        <input type="text" inputmode="numeric" pattern="[0-9]*" id="search-exp-amount" class="form-input" oninput="convertToEnglish(this)">
                     </div>
                     <div class="input-group">
                         <label>تاریخ</label>
-                        <input type="text" id="search-exp-date" class="form-input" placeholder="مثال: ۱۴۰۳/۰۱/۱۵">
+                        <input type="text" id="search-exp-date" class="form-input">
                     </div>
                 </div>
                 <button class="btn btn-primary" onclick="searchExpenses()">🔍 جستجو</button>
@@ -627,12 +627,21 @@
         });
     }
 
-    // ===== Day Closing Logic =====
+    // ===== Day Closing Logic (اصلاح شده) =====
     function checkDayClosing() {
         const today = getAfghanistanDateString();
         const lastDate = localStorage.getItem('lastDate');
 
-        if (lastDate && lastDate !== today) {
+        // اگر اولین بار است، مقدار اولیه را ذخیره کن
+        if (!lastDate) {
+            localStorage.setItem('lastDate', today);
+            if (!localStorage.getItem('lastClosingBalancesByCurrency')) {
+                localStorage.setItem('lastClosingBalancesByCurrency', JSON.stringify({AFN:0,USD:0,EUR:0,IRR:0,PKR:0}));
+            }
+            return;
+        }
+
+        if (lastDate !== today) {
             const prevTrans = JSON.parse(localStorage.getItem('transactions')) || [];
             const prevExp = JSON.parse(localStorage.getItem('expenses')) || [];
             const archives = JSON.parse(localStorage.getItem('dailyArchives')) || [];
@@ -670,11 +679,11 @@
             localStorage.setItem('lastClosingBalancesByCurrency', JSON.stringify(currentBalances));
             localStorage.setItem('transactions', JSON.stringify([]));
             localStorage.setItem('expenses', JSON.stringify([]));
+            localStorage.setItem('lastDate', today);
 
             transactions = [];
             expenses = [];
         }
-        localStorage.setItem('lastDate', today);
     }
 
     // ===== Theme Toggle =====
@@ -1158,7 +1167,9 @@
 
     setInterval(updateDateDisplay, 60000);
     setInterval(() => {
-        if (localStorage.getItem('lastDate') !== getAfghanistanDateString()) {
+        const lastDate = localStorage.getItem('lastDate');
+        const today = getAfghanistanDateString();
+        if (lastDate !== today) {
             checkDayClosing();
             renderTables();
             updateSummaryCards();
