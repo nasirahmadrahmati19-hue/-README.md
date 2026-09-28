@@ -271,7 +271,7 @@
             box-shadow: var(--shadow);
             -webkit-overflow-scrolling: touch;
         }
-        table { width: 100%; border-collapse: collapse; background: var(--card-solid); min-width: 550px; }
+        table { width: 100%; border-collapse: collapse; background: var(--card-solid); min-width: 600px; }
         th {
             background: var(--bg); padding: 14px 10px;
             text-align: right; font-weight: 700;
@@ -400,6 +400,10 @@
                 <h3 style="color:var(--danger)">➕ ثبت فروش جدید</h3>
                 <div class="form-grid">
                     <div class="input-group">
+                        <label>مشتری</label>
+                        <input type="text" id="t-customer" class="form-input">
+                    </div>
+                    <div class="input-group">
                         <label>شرح معامله</label>
                         <input type="text" id="t-desc" class="form-input">
                     </div>
@@ -422,7 +426,7 @@
             </div>
             <div class="table-wrapper">
                 <table>
-                    <thead><tr><th>شماره</th><th>شرح</th><th>مبلغ</th><th>ارز</th><th>تاریخ</th><th>عملیات</th></tr></thead>
+                    <thead><tr><th>شماره</th><th>مشتری</th><th>شرح</th><th>مبلغ</th><th>ارز</th><th>تاریخ</th><th>عملیات</th></tr></thead>
                     <tbody id="trans-table-body"></tbody>
                 </table>
             </div>
@@ -442,6 +446,10 @@
             <div class="form-card">
                 <h3 style="color:var(--success)">➕ ثبت خرید جدید</h3>
                 <div class="form-grid">
+                    <div class="input-group">
+                        <label>مشتری</label>
+                        <input type="text" id="t-customer-sent" class="form-input">
+                    </div>
                     <div class="input-group">
                         <label>شرح معامله</label>
                         <input type="text" id="t-desc-sent" class="form-input">
@@ -465,7 +473,7 @@
             </div>
             <div class="table-wrapper">
                 <table>
-                    <thead><tr><th>شماره</th><th>شرح</th><th>مبلغ</th><th>ارز</th><th>تاریخ</th><th>عملیات</th></tr></thead>
+                    <thead><tr><th>شماره</th><th>مشتری</th><th>شرح</th><th>مبلغ</th><th>ارز</th><th>تاریخ</th><th>عملیات</th></tr></thead>
                     <tbody id="sent-table-body"></tbody>
                 </table>
             </div>
@@ -493,6 +501,10 @@
                 <h3 style="color:var(--primary)">🔍 جستجو در معاملات</h3>
                 <div class="form-grid">
                     <div class="input-group">
+                        <label>نام مشتری</label>
+                        <input type="text" id="search-customer" class="form-input">
+                    </div>
+                    <div class="input-group">
                         <label>شرح معامله</label>
                         <input type="text" id="search-desc" class="form-input">
                     </div>
@@ -510,7 +522,7 @@
             </div>
             <div class="table-wrapper">
                 <table>
-                    <thead><tr><th>شماره</th><th>نوع</th><th>شرح</th><th>مبلغ</th><th>ارز</th><th>تاریخ</th></tr></thead>
+                    <thead><tr><th>شماره</th><th>نوع</th><th>مشتری</th><th>شرح</th><th>مبلغ</th><th>ارز</th><th>تاریخ</th></tr></thead>
                     <tbody id="search-results-body"></tbody>
                 </table>
             </div>
@@ -793,12 +805,14 @@
 
     // ===== Add Transaction =====
     function addTransaction(type = 'received') {
-        let desc, amount, currency;
+        let customer, desc, amount, currency;
         if (type === 'received') {
+            customer = document.getElementById('t-customer').value;
             desc = document.getElementById('t-desc').value;
             amount = document.getElementById('t-amount').value;
             currency = document.getElementById('t-currency').value;
         } else {
+            customer = document.getElementById('t-customer-sent').value;
             desc = document.getElementById('t-desc-sent').value;
             amount = document.getElementById('t-amount-sent').value;
             currency = document.getElementById('t-currency-sent').value;
@@ -806,7 +820,15 @@
 
         if (!desc || !amount) return alert('لطفاً تمام فیلدها را پر کنید');
 
-        const newTrans = { id: Date.now(), desc, amount, currency, type, date: getAfghanistanDateString() };
+        const newTrans = { 
+            id: Date.now(), 
+            customer: customer || '',
+            desc, 
+            amount, 
+            currency, 
+            type, 
+            date: getAfghanistanDateString() 
+        };
 
         if (editIndex !== null) {
             transactions[editIndex] = newTrans;
@@ -816,9 +838,11 @@
         }
 
         if (type === 'received') {
+            document.getElementById('t-customer').value = '';
             document.getElementById('t-desc').value = '';
             document.getElementById('t-amount').value = '';
         } else {
+            document.getElementById('t-customer-sent').value = '';
             document.getElementById('t-desc-sent').value = '';
             document.getElementById('t-amount-sent').value = '';
         }
@@ -878,11 +902,13 @@
         const item = transactions.find(t => t.id === id);
         if (item) {
             if (item.type === 'received') {
+                document.getElementById('t-customer').value = item.customer || '';
                 document.getElementById('t-desc').value = item.desc;
                 document.getElementById('t-amount').value = item.amount;
                 document.getElementById('t-currency').value = item.currency;
                 switchSubTab('received');
             } else {
+                document.getElementById('t-customer-sent').value = item.customer || '';
                 document.getElementById('t-desc-sent').value = item.desc;
                 document.getElementById('t-amount-sent').value = item.amount;
                 document.getElementById('t-currency-sent').value = item.currency;
@@ -908,12 +934,14 @@
 
     // ===== Search Functions =====
     function searchTransactions() {
+        const searchCustomer = document.getElementById('search-customer').value.trim().toLowerCase();
         const searchDesc = document.getElementById('search-desc').value.trim().toLowerCase();
         const searchAmount = document.getElementById('search-amount').value.trim();
         const searchDate = document.getElementById('search-date').value.trim();
 
         let results = transactions.filter(t => {
             let match = true;
+            if (searchCustomer && !(t.customer || '').toLowerCase().includes(searchCustomer)) match = false;
             if (searchDesc && !t.desc.toLowerCase().includes(searchDesc)) match = false;
             if (searchAmount && t.amount !== searchAmount) match = false;
             if (searchDate && !t.date.includes(searchDate)) match = false;
@@ -924,7 +952,7 @@
         tbody.innerHTML = '';
 
         if (!results.length) {
-            tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state"><div class="icon">🔍</div>نتیجه‌ای یافت نشد</div></td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state"><div class="icon">🔍</div>نتیجه‌ای یافت نشد</div></td></tr>`;
         } else {
             results.forEach((t, i) => {
                 const typeText = t.type === 'received' ? 'فروش' : 'خرید';
@@ -933,6 +961,7 @@
                     <tr>
                         <td>${i+1}</td>
                         <td style="color:${typeColor};font-weight:700">${typeText}</td>
+                        <td>${t.customer || '-'}</td>
                         <td>${t.desc}</td>
                         <td style="color:${typeColor};font-weight:800;direction:ltr;display:inline-block">${formatNumber(t.amount)}</td>
                         <td><span class="badge badge-${t.currency.toLowerCase()}">${t.currency}</span></td>
@@ -943,6 +972,7 @@
     }
 
     function clearTransactionSearch() {
+        document.getElementById('search-customer').value = '';
         document.getElementById('search-desc').value = '';
         document.getElementById('search-amount').value = '';
         document.getElementById('search-date').value = '';
@@ -994,12 +1024,13 @@
         tb.innerHTML = '';
         const rl = transactions.filter(t => t.type === 'received');
         if (!rl.length) {
-            tb.innerHTML = `<tr><td colspan="6"><div class="empty-state"><div class="icon">📭</div>هنوز فروشی ثبت نشده</div></td></tr>`;
+            tb.innerHTML = `<tr><td colspan="7"><div class="empty-state"><div class="icon">📭</div>هنوز فروشی ثبت نشده</div></td></tr>`;
         } else {
             rl.forEach((t, i) => {
                 tb.innerHTML += `
                     <tr>
                         <td>${i+1}</td>
+                        <td>${t.customer || '-'}</td>
                         <td>${t.desc}</td>
                         <td style="color:var(--danger);font-weight:800;direction:ltr;display:inline-block">⬇️ ${formatNumber(t.amount)}</td>
                         <td><span class="badge badge-${t.currency.toLowerCase()}">${t.currency}</span></td>
@@ -1019,12 +1050,13 @@
         sb.innerHTML = '';
         const sl = transactions.filter(t => t.type === 'sent');
         if (!sl.length) {
-            sb.innerHTML = `<tr><td colspan="6"><div class="empty-state"><div class="icon">📭</div>هنوز خریدی ثبت نشده</div></td></tr>`;
+            sb.innerHTML = `<tr><td colspan="7"><div class="empty-state"><div class="icon">📭</div>هنوز خریدی ثبت نشده</div></td></tr>`;
         } else {
             sl.forEach((t, i) => {
                 sb.innerHTML += `
                     <tr>
                         <td>${i+1}</td>
+                        <td>${t.customer || '-'}</td>
                         <td>${t.desc}</td>
                         <td style="color:var(--success);font-weight:800;direction:ltr;display:inline-block">⬆️ ${formatNumber(t.amount)}</td>
                         <td><span class="badge badge-${t.currency.toLowerCase()}">${t.currency}</span></td>
