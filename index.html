@@ -190,6 +190,8 @@
         .summary-card.info::before { background: linear-gradient(90deg, var(--info), var(--primary-light)); }
         .summary-card.warning { border-color: rgba(253,203,110,0.3); }
         .summary-card.warning::before { background: linear-gradient(90deg, var(--warning), #e17055); }
+        .summary-card.expense { border-color: rgba(253,121,168,0.3); }
+        .summary-card.expense::before { background: linear-gradient(90deg, var(--accent), #e84393); }
 
         .summary-card .label { font-size: 0.75rem; color: var(--text-light); margin-bottom: 8px; font-weight: 600; }
         .summary-card .value {
@@ -200,6 +202,7 @@
         .summary-card.danger .value { color: var(--danger); }
         .summary-card.info .value { color: var(--info); }
         .summary-card.warning .value { color: #e17055; }
+        .summary-card.expense .value { color: var(--accent); }
 
         .form-card {
             background: var(--card);
@@ -463,13 +466,12 @@
         <div id="daily-balance" class="sub-tab-content">
             <h2 style="margin-bottom:10px; color:var(--secondary)">💰 دخل روزانه</h2>
             <p style="color:var(--text-light); margin-bottom:20px; font-size:0.85rem;">
-                فرمول: مانده روز قبل + فروش - خرید - مصارف
+                فرمول: مانده روز قبل + فروش - خرید
             </p>
             <div class="summary-cards">
                 <div class="summary-card warning"><div class="label">📅 مانده روز قبل</div><div class="value" id="prev-balance">۰</div></div>
                 <div class="summary-card danger"><div class="label">⬇️ فروش امروز</div><div class="value" id="db-received">۰</div></div>
                 <div class="summary-card success"><div class="label">⬆️ خرید امروز</div><div class="value" id="db-sent">۰</div></div>
-                <div class="summary-card danger"><div class="label">💸 مصارف امروز</div><div class="value" id="db-expenses">۰</div></div>
                 <div class="summary-card info"><div class="label">💵 مانده فعلی دخل</div><div class="value" id="current-balance">۰</div></div>
             </div>
             <div class="form-card" style="border-color: var(--secondary);">
@@ -584,9 +586,10 @@
     <div id="reports" class="tab-content">
         <h2 style="margin-bottom:20px; color:var(--primary)">📊 گزارشات و آرشیو</h2>
         <div class="summary-cards">
-            <div class="summary-card success"><div class="label">کل درآمد</div><div class="value" id="total-income-all">۰</div></div>
-            <div class="summary-card danger"><div class="label">کل هزینه</div><div class="value" id="total-expense-all">۰</div></div>
-            <div class="summary-card info"><div class="label">مانده فعلی</div><div class="value" id="total-balance-all">۰</div></div>
+            <div class="summary-card success"><div class="label">کل فروش (درآمد)</div><div class="value" id="total-income-all">۰</div></div>
+            <div class="summary-card danger"><div class="label">کل خرید (هزینه)</div><div class="value" id="total-purchase-all">۰</div></div>
+            <div class="summary-card expense"><div class="label">💸 کل مصارف</div><div class="value" id="total-expense-all">۰</div></div>
+            <div class="summary-card info"><div class="label">مانده فعلی دخل</div><div class="value" id="total-balance-all">۰</div></div>
         </div>
         <h3 style="margin:20px 0 10px; color:var(--primary)">📚 آرشیو روزهای قبل</h3>
         <div id="archive-list"></div>
@@ -627,12 +630,11 @@
         });
     }
 
-    // ===== Day Closing Logic (اصلاح شده) =====
+    // ===== Day Closing Logic =====
     function checkDayClosing() {
         const today = getAfghanistanDateString();
         const lastDate = localStorage.getItem('lastDate');
 
-        // اگر اولین بار است، مقدار اولیه را ذخیره کن
         if (!lastDate) {
             localStorage.setItem('lastDate', today);
             if (!localStorage.getItem('lastClosingBalancesByCurrency')) {
@@ -660,9 +662,9 @@
                 }
             });
 
+            // مصارف دیگر از مانده دخل کم نمی‌شوند، فقط برای آمار ذخیره می‌شوند
             prevExp.forEach(e => {
                 const c = e.currency || 'AFN';
-                currentBalances[c] = (currentBalances[c] || 0) - Number(e.amount);
                 todayStats.expenses[c] = (todayStats.expenses[c] || 0) + Number(e.amount);
             });
 
@@ -1070,41 +1072,45 @@
         const pb = JSON.parse(localStorage.getItem('lastClosingBalancesByCurrency')) || {AFN:0,USD:0,EUR:0,IRR:0,PKR:0};
         const r = transactions.filter(t => t.type === 'received');
         const s = transactions.filter(t => t.type === 'sent');
-        const e = expenses;
 
+        // محاسبه مانده فعلی: فقط فروش و خرید (مصارف کم نمی‌شوند)
         const cb = { ...pb };
         r.forEach(t => cb[t.currency] += Number(t.amount));
         s.forEach(t => cb[t.currency] -= Number(t.amount));
-        e.forEach(x => cb[x.currency || 'AFN'] -= Number(x.amount));
 
         document.getElementById('prev-balance').innerHTML = formatCurrencyBreakdownObject(pb);
         document.getElementById('db-received').innerHTML = formatCurrencyBreakdown(r);
         document.getElementById('db-sent').innerHTML = formatCurrencyBreakdown(s);
-        document.getElementById('db-expenses').innerHTML = formatCurrencyBreakdown(e);
         document.getElementById('current-balance').innerHTML = formatCurrencyBreakdownObject(cb);
 
         document.getElementById('balance-status').innerHTML = `
             <div>📅 <strong>مانده روز قبل:</strong><br>${formatCurrencyBreakdownObject(pb, true)}</div>
             <div style="color:var(--danger)">⬇️ <strong>فروش:</strong><br>${formatCurrencyBreakdown(r, true)}</div>
             <div style="color:var(--success)">⬆️ <strong>خرید:</strong><br>${formatCurrencyBreakdown(s, true)}</div>
-            <div>💸 <strong>مصارف:</strong><br>${formatCurrencyBreakdown(e, true)}</div>
             <hr style="margin:12px 0;border:none;border-top:2px dashed var(--border)">
-            <div style="font-size:1.1rem;font-weight:800;color:var(--secondary)">💵 <strong>مانده فعلی:</strong><br>${formatCurrencyBreakdownObject(cb, true)}</div>
+            <div style="font-size:1.1rem;font-weight:800;color:var(--secondary)">💵 <strong>مانده فعلی دخل:</strong><br>${formatCurrencyBreakdownObject(cb, true)}</div>
         `;
     }
 
     function updateReports() {
         const archives = JSON.parse(localStorage.getItem('dailyArchives')) || [];
         const pb = JSON.parse(localStorage.getItem('lastClosingBalancesByCurrency')) || {AFN:0,USD:0,EUR:0,IRR:0,PKR:0};
+        
+        // مانده فعلی دخل (بدون کم کردن مصارف)
         const tb = { ...pb };
+        // مجموع فروش
         const ti = {AFN:0,USD:0,EUR:0,IRR:0,PKR:0};
+        // مجموع خرید
+        const tp = {AFN:0,USD:0,EUR:0,IRR:0,PKR:0};
+        // مجموع مصارف (کارت جدید)
         const te = {AFN:0,USD:0,EUR:0,IRR:0,PKR:0};
 
         archives.forEach(a => {
             currencies.forEach(c => {
-                tb[c] += (a.stats.received[c] || 0) - (a.stats.sent[c] || 0) - (a.stats.expenses[c] || 0);
+                tb[c] += (a.stats.received[c] || 0) - (a.stats.sent[c] || 0);
                 ti[c] += (a.stats.received[c] || 0);
-                te[c] += (a.stats.sent[c] || 0) + (a.stats.expenses[c] || 0);
+                tp[c] += (a.stats.sent[c] || 0);
+                te[c] += (a.stats.expenses[c] || 0);
             });
         });
 
@@ -1114,15 +1120,16 @@
         });
         transactions.filter(t => t.type === 'sent').forEach(t => {
             tb[t.currency] -= Number(t.amount);
-            te[t.currency] += Number(t.amount);
+            tp[t.currency] += Number(t.amount);
         });
+        // مصارف فقط در کارت مصارف جمع می‌شوند، از مانده دخل کم نمی‌شوند
         expenses.forEach(e => {
             const c = e.currency || 'AFN';
-            tb[c] -= Number(e.amount);
             te[c] += Number(e.amount);
         });
 
         document.getElementById('total-income-all').innerHTML = formatCurrencyBreakdownObject(ti, true);
+        document.getElementById('total-purchase-all').innerHTML = formatCurrencyBreakdownObject(tp, true);
         document.getElementById('total-expense-all').innerHTML = formatCurrencyBreakdownObject(te, true);
         document.getElementById('total-balance-all').innerHTML = formatCurrencyBreakdownObject(tb, true);
 
@@ -1137,9 +1144,9 @@
                         <div>
                             <div class="archive-date">📅 ${a.date}</div>
                             <div style="font-size:0.8rem;color:var(--text-light);margin-top:4px">
-                                ⬇️ ${formatCurrencyBreakdownObject(a.stats.received || {}, true)}<br>
-                                ⬆️ ${formatCurrencyBreakdownObject(a.stats.sent || {}, true)}<br>
-                                💸 ${formatCurrencyBreakdownObject(a.stats.expenses || {}, true)}
+                                ⬇️ فروش: ${formatCurrencyBreakdownObject(a.stats.received || {}, true)}
+                                ⬆️ خرید: ${formatCurrencyBreakdownObject(a.stats.sent || {}, true)}
+                                💸 مصارف: ${formatCurrencyBreakdownObject(a.stats.expenses || {}, true)}
                             </div>
                         </div>
                         <div style="text-align:left">
