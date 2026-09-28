@@ -375,7 +375,7 @@
 
         <div id="received" class="sub-tab-content active">
             <div class="summary-cards">
-                <div class="summary-card success">
+                <div class="summary-card danger">
                     <div class="label">مجموع فروش امروز</div>
                     <div class="value" id="total-received-today">۰</div>
                 </div>
@@ -385,7 +385,7 @@
                 </div>
             </div>
             <div class="form-card">
-                <h3 style="color:var(--success)">➕ ثبت فروش جدید</h3>
+                <h3 style="color:var(--danger)">➕ ثبت فروش جدید</h3>
                 <div class="form-grid">
                     <div class="input-group">
                         <label>شرح معامله</label>
@@ -406,7 +406,7 @@
                         </select>
                     </div>
                 </div>
-                <button class="btn btn-success" onclick="addTransaction()">💾 ذخیره فروش</button>
+                <button class="btn btn-danger" onclick="addTransaction()">💾 ذخیره فروش</button>
             </div>
             <div class="table-wrapper">
                 <table>
@@ -418,7 +418,7 @@
 
         <div id="sent" class="sub-tab-content">
             <div class="summary-cards">
-                <div class="summary-card danger">
+                <div class="summary-card success">
                     <div class="label">مجموع خرید امروز</div>
                     <div class="value" id="total-sent-today">۰</div>
                 </div>
@@ -428,7 +428,7 @@
                 </div>
             </div>
             <div class="form-card">
-                <h3 style="color:var(--danger)">➕ ثبت خرید جدید</h3>
+                <h3 style="color:var(--success)">➕ ثبت خرید جدید</h3>
                 <div class="form-grid">
                     <div class="input-group">
                         <label>شرح معامله</label>
@@ -449,7 +449,7 @@
                         </select>
                     </div>
                 </div>
-                <button class="btn btn-danger" onclick="addTransaction('sent')">💾 ذخیره خرید</button>
+                <button class="btn btn-success" onclick="addTransaction('sent')">💾 ذخیره خرید</button>
             </div>
             <div class="table-wrapper">
                 <table>
@@ -466,8 +466,8 @@
             </p>
             <div class="summary-cards">
                 <div class="summary-card warning"><div class="label">📅 مانده روز قبل</div><div class="value" id="prev-balance">۰</div></div>
-                <div class="summary-card success"><div class="label">⬇️ فروش امروز</div><div class="value" id="db-received">۰</div></div>
-                <div class="summary-card danger"><div class="label">⬆️ خرید امروز</div><div class="value" id="db-sent">۰</div></div>
+                <div class="summary-card danger"><div class="label">⬇️ فروش امروز</div><div class="value" id="db-received">۰</div></div>
+                <div class="summary-card success"><div class="label">⬆️ خرید امروز</div><div class="value" id="db-sent">۰</div></div>
                 <div class="summary-card danger"><div class="label">💸 مصارف امروز</div><div class="value" id="db-expenses">۰</div></div>
                 <div class="summary-card info"><div class="label">💵 مانده فعلی دخل</div><div class="value" id="current-balance">۰</div></div>
             </div>
@@ -830,7 +830,7 @@
                     <tr>
                         <td>${i+1}</td>
                         <td>${t.desc}</td>
-                        <td style="color:var(--success);font-weight:800;direction:ltr;display:inline-block">⬇️ ${formatNumber(t.amount)}</td>
+                        <td style="color:var(--danger);font-weight:800;direction:ltr;display:inline-block">⬇️ ${formatNumber(t.amount)}</td>
                         <td><span class="badge badge-${t.currency.toLowerCase()}">${t.currency}</span></td>
                         <td>${t.date}</td>
                         <td class="action-cell">
@@ -855,7 +855,7 @@
                     <tr>
                         <td>${i+1}</td>
                         <td>${t.desc}</td>
-                        <td style="color:var(--danger);font-weight:800;direction:ltr;display:inline-block">⬆️ ${formatNumber(t.amount)}</td>
+                        <td style="color:var(--success);font-weight:800;direction:ltr;display:inline-block">⬆️ ${formatNumber(t.amount)}</td>
                         <td><span class="badge badge-${t.currency.toLowerCase()}">${t.currency}</span></td>
                         <td>${t.date}</td>
                         <td class="action-cell">
@@ -923,8 +923,8 @@
 
         document.getElementById('balance-status').innerHTML = `
             <div>📅 <strong>مانده روز قبل:</strong><br>${formatCurrencyBreakdownObject(pb, true)}</div>
-            <div>⬇️ <strong>فروش:</strong><br>${formatCurrencyBreakdown(r, true)}</div>
-            <div>⬆️ <strong>خرید:</strong><br>${formatCurrencyBreakdown(s, true)}</div>
+            <div style="color:var(--danger)">⬇️ <strong>فروش:</strong><br>${formatCurrencyBreakdown(r, true)}</div>
+            <div style="color:var(--success)">⬆️ <strong>خرید:</strong><br>${formatCurrencyBreakdown(s, true)}</div>
             <div>💸 <strong>مصارف:</strong><br>${formatCurrencyBreakdown(e, true)}</div>
             <hr style="margin:12px 0;border:none;border-top:2px dashed var(--border)">
             <div style="font-size:1.1rem;font-weight:800;color:var(--secondary)">💵 <strong>مانده فعلی:</strong><br>${formatCurrencyBreakdownObject(cb, true)}</div>
