@@ -6,10 +6,6 @@
     <title>مدیریت مالی غلام سرور حسنی</title>
     <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
     
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
-    
     <style>
         :root {
             --primary: #6C5CE7;
@@ -70,10 +66,9 @@
             100% { background-position: 0% 50%; }
         }
 
-        /* ===== چیدمان جدید هدر برای جلوگیری از تداخل ===== */
         .header-top-row {
             display: flex;
-            justify-content: space-between;
+            justify-content: flex-end;
             align-items: center;
             margin-bottom: 10px;
             width: 100%;
@@ -103,23 +98,6 @@
             cursor: pointer; font-size: 1.2rem;
             backdrop-filter: blur(10px);
             display: flex; align-items: center; justify-content: center;
-        }
-
-        .sync-status {
-            background: rgba(255,255,255,0.25);
-            padding: 6px 10px; border-radius: 20px;
-            font-size: 0.7rem; backdrop-filter: blur(10px);
-            display: flex; align-items: center; gap: 5px;
-            white-space: nowrap;
-        }
-        .sync-dot {
-            width: 8px; height: 8px; border-radius: 50%;
-            background: #ff6b6b;
-        }
-        .sync-dot.connected { background: #00b894; animation: pulse 2s infinite; }
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
         }
 
         .tabs-nav {
@@ -263,6 +241,10 @@
             background: linear-gradient(135deg, var(--primary), var(--primary-light));
             color: white; box-shadow: 0 4px 15px rgba(108,92,231,0.3);
         }
+        .btn-success {
+            background: linear-gradient(135deg, var(--success), var(--secondary));
+            color: white; box-shadow: 0 4px 15px rgba(0,184,148,0.3);
+        }
         .btn-danger {
             background: linear-gradient(135deg, var(--danger), var(--accent));
             color: white; box-shadow: 0 4px 15px rgba(255,107,107,0.3);
@@ -343,44 +325,6 @@
         }
         .archive-date { font-weight: 700; color: var(--primary); font-size: 0.9rem; }
 
-        /* ===== MODAL ===== */
-        .modal-overlay {
-            display: none;
-            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.6);
-            backdrop-filter: blur(5px);
-            z-index: 1000;
-            align-items: center; justify-content: center;
-            padding: 20px;
-        }
-        .modal-overlay.show { display: flex; animation: fadeIn 0.3s; }
-        .modal {
-            background: var(--card-solid);
-            border-radius: 24px;
-            padding: 25px;
-            max-width: 500px;
-            width: 100%;
-            max-height: 90vh;
-            overflow-y: auto;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-        }
-        .modal h2 { margin-bottom: 15px; color: var(--primary); font-size: 1.2rem; }
-        .modal p { color: var(--text-light); margin-bottom: 15px; line-height: 1.8; font-size: 0.9rem; }
-        .modal ol { padding-right: 20px; margin-bottom: 15px; color: var(--text-light); font-size: 0.85rem; line-height: 2; }
-        .modal-close {
-            background: var(--bg); border: 1px solid var(--border);
-            padding: 10px 20px; border-radius: 10px;
-            cursor: pointer; color: var(--text); font-weight: 600;
-            margin-top: 10px; width: 100%;
-        }
-        .modal textarea {
-            width: 100%; min-height: 150px; padding: 12px;
-            border: 2px solid var(--border); border-radius: 10px;
-            font-family: monospace; font-size: 0.8rem;
-            background: var(--bg); color: var(--text);
-            margin-bottom: 10px;
-        }
-
         @media (min-width: 768px) {
             body { padding-bottom: 20px; }
             .header { padding: 25px 30px 40px; border-radius: 0 0 40px 40px; }
@@ -404,13 +348,8 @@
 
 <div class="header">
     <div class="header-top-row">
-        <div class="sync-status" id="sync-status">
-            <span class="sync-dot" id="sync-dot"></span>
-            <span id="sync-text">آفلاین</span>
-        </div>
         <div class="header-actions">
             <button class="icon-btn" onclick="toggleTheme()">🌙</button>
-            <button class="icon-btn" onclick="openSettings()">⚙️</button>
         </div>
     </div>
     <div class="header-title-group">
@@ -429,24 +368,24 @@
 <div class="content-area">
     <div id="transactions" class="tab-content active">
         <div class="sub-tabs">
-            <button class="sub-tab-btn active" onclick="switchSubTab('received')">فروش</button>
             <button class="sub-tab-btn" onclick="switchSubTab('sent')">خرید</button>
+            <button class="sub-tab-btn active" onclick="switchSubTab('received')">فروش</button>
             <button class="sub-tab-btn" onclick="switchSubTab('daily-balance')" style="background:linear-gradient(135deg,var(--secondary),var(--info)); color:white; border-color:transparent;">💰 دخل</button>
         </div>
 
         <div id="received" class="sub-tab-content active">
             <div class="summary-cards">
                 <div class="summary-card success">
-                    <div class="label">مجموع رسیدات امروز</div>
+                    <div class="label">مجموع فروش امروز</div>
                     <div class="value" id="total-received-today">۰</div>
                 </div>
                 <div class="summary-card info">
-                    <div class="label">تعداد رسیدات</div>
+                    <div class="label">تعداد فروش</div>
                     <div class="value" id="count-received-today">۰</div>
                 </div>
             </div>
             <div class="form-card">
-                <h3 style="color:var(--primary)">➕ ثبت دریافت جدید</h3>
+                <h3 style="color:var(--success)">➕ ثبت فروش جدید</h3>
                 <div class="form-grid">
                     <div class="input-group">
                         <label>شرح معامله</label>
@@ -467,7 +406,7 @@
                         </select>
                     </div>
                 </div>
-                <button class="btn btn-primary" onclick="addTransaction()">💾 ذخیره معامله</button>
+                <button class="btn btn-success" onclick="addTransaction()">💾 ذخیره فروش</button>
             </div>
             <div class="table-wrapper">
                 <table>
@@ -480,16 +419,16 @@
         <div id="sent" class="sub-tab-content">
             <div class="summary-cards">
                 <div class="summary-card danger">
-                    <div class="label">مجموع برده‌های امروز</div>
+                    <div class="label">مجموع خرید امروز</div>
                     <div class="value" id="total-sent-today">۰</div>
                 </div>
                 <div class="summary-card info">
-                    <div class="label">تعداد برده‌ها</div>
+                    <div class="label">تعداد خرید</div>
                     <div class="value" id="count-sent-today">۰</div>
                 </div>
             </div>
             <div class="form-card">
-                <h3 style="color:var(--danger)">➕ ثبت پرداخت جدید</h3>
+                <h3 style="color:var(--danger)">➕ ثبت خرید جدید</h3>
                 <div class="form-grid">
                     <div class="input-group">
                         <label>شرح معامله</label>
@@ -510,7 +449,7 @@
                         </select>
                     </div>
                 </div>
-                <button class="btn btn-danger" onclick="addTransaction('sent')">💾 ذخیره برده</button>
+                <button class="btn btn-danger" onclick="addTransaction('sent')">💾 ذخیره خرید</button>
             </div>
             <div class="table-wrapper">
                 <table>
@@ -523,12 +462,12 @@
         <div id="daily-balance" class="sub-tab-content">
             <h2 style="margin-bottom:10px; color:var(--secondary)">💰 دخل روزانه</h2>
             <p style="color:var(--text-light); margin-bottom:20px; font-size:0.85rem;">
-                فرمول: مانده روز قبل + رسیدات - برده‌ها - مصارف
+                فرمول: مانده روز قبل + فروش - خرید - مصارف
             </p>
             <div class="summary-cards">
                 <div class="summary-card warning"><div class="label">📅 مانده روز قبل</div><div class="value" id="prev-balance">۰</div></div>
-                <div class="summary-card success"><div class="label">⬇️ رسیدات امروز</div><div class="value" id="db-received">۰</div></div>
-                <div class="summary-card danger"><div class="label">⬆️ برده‌های امروز</div><div class="value" id="db-sent">۰</div></div>
+                <div class="summary-card success"><div class="label">⬇️ فروش امروز</div><div class="value" id="db-received">۰</div></div>
+                <div class="summary-card danger"><div class="label">⬆️ خرید امروز</div><div class="value" id="db-sent">۰</div></div>
                 <div class="summary-card danger"><div class="label">💸 مصارف امروز</div><div class="value" id="db-expenses">۰</div></div>
                 <div class="summary-card info"><div class="label">💵 مانده فعلی دخل</div><div class="value" id="current-balance">۰</div></div>
             </div>
@@ -602,130 +541,7 @@
     </button>
 </div>
 
-<!-- Settings Modal -->
-<div class="modal-overlay" id="settings-modal">
-    <div class="modal">
-        <h2>⚙️ تنظیمات همگام‌سازی</h2>
-        <p>برای همگام‌سازی بین موبایل و کامپیوتر:</p>
-        <ol>
-            <li>به <strong>console.firebase.google.com</strong> بروید</li>
-            <li>یک پروژه جدید بسازید</li>
-            <li>Realtime Database را در حالت <strong>test mode</strong> فعال کنید</li>
-            <li>کد config را از بخش Web app کپی کنید</li>
-            <li>در کادر زیر جایگزین کنید</li>
-            <li>یک <strong>کد همگام‌سازی</strong> دلخواه وارد کنید (مثل نام خودتان)</li>
-            <li>همان کد را در همه دستگاه‌ها وارد کنید</li>
-        </ol>
-        
-        <div class="input-group">
-            <label>🔑 کد همگام‌سازی (در همه دستگاه‌ها یکسان)</label>
-            <input type="text" id="sync-code" class="form-input" placeholder="مثال: ghulam123">
-        </div>
-        
-        <div class="input-group" style="margin-top:15px;">
-            <label>📝 Firebase Config (JSON)</label>
-            <textarea id="firebase-config" placeholder='{
-  "apiKey": "...",
-  "authDomain": "...",
-  "databaseURL": "...",
-  "projectId": "...",
-  ...
-}'></textarea>
-        </div>
-        
-        <button class="btn btn-primary" onclick="saveSettings()" style="margin-top:15px;">💾 ذخیره تنظیمات</button>
-        <button class="modal-close" onclick="closeSettings()">بستن</button>
-    </div>
-</div>
-
 <script>
-    // ===== Firebase Configuration =====
-    let db = null;
-    let useFirebase = false;
-    let syncCode = localStorage.getItem('syncCode') || '';
-    let isSyncing = false;
-
-    function initFirebase() {
-        const configStr = localStorage.getItem('firebaseConfig');
-        if (!configStr || !syncCode) {
-            updateSyncStatus(false);
-            return;
-        }
-        
-        try {
-            const config = JSON.parse(configStr);
-            if (!config.apiKey || config.apiKey === '...') {
-                updateSyncStatus(false);
-                return;
-            }
-            
-            if (firebase.apps.length === 0) {
-                firebase.initializeApp(config);
-            }
-            db = firebase.database();
-            useFirebase = true;
-            updateSyncStatus(true);
-            startSync();
-        } catch (e) {
-            console.error('Firebase init error:', e);
-            updateSyncStatus(false);
-        }
-    }
-
-    function updateSyncStatus(connected) {
-        const dot = document.getElementById('sync-dot');
-        const text = document.getElementById('sync-text');
-        if (connected) {
-            dot.classList.add('connected');
-            text.innerText = 'آنلاین ✓';
-        } else {
-            dot.classList.remove('connected');
-            text.innerText = 'آفلاین';
-        }
-    }
-
-    function openSettings() {
-        document.getElementById('sync-code').value = syncCode;
-        document.getElementById('firebase-config').value = localStorage.getItem('firebaseConfig') || '';
-        document.getElementById('settings-modal').classList.add('show');
-    }
-
-    function closeSettings() {
-        document.getElementById('settings-modal').classList.remove('show');
-    }
-
-    function saveSettings() {
-        const newCode = document.getElementById('sync-code').value.trim();
-        const configStr = document.getElementById('firebase-config').value.trim();
-        
-        if (!newCode) {
-            alert('لطفاً کد همگام‌سازی را وارد کنید');
-            return;
-        }
-        
-        try {
-            if (configStr) {
-                JSON.parse(configStr); // Validate JSON
-                localStorage.setItem('firebaseConfig', configStr);
-            }
-            localStorage.setItem('syncCode', newCode);
-            syncCode = newCode;
-            
-            // Reinitialize Firebase
-            useFirebase = false;
-            db = null;
-            if (firebase.apps.length > 0) {
-                firebase.app().delete();
-            }
-            initFirebase();
-            
-            closeSettings();
-            alert('✅ تنظیمات ذخیره شد. در حال همگام‌سازی...');
-        } catch (e) {
-            alert('❌ خطا در فرمت JSON. لطفاً کد config را درست کپی کنید.');
-        }
-    }
-
     // ===== Data & State =====
     let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
     let expenses = JSON.parse(localStorage.getItem('expenses')) || [];
@@ -744,65 +560,6 @@
         return getAfghanistanDate(d).toLocaleString('fa-IR', {
             year: 'numeric', month: 'long', day: 'numeric',
             hour: '2-digit', minute: '2-digit'
-        });
-    }
-
-    // ===== Firebase Sync Functions =====
-    function startSync() {
-        if (!useFirebase || !syncCode) return;
-        
-        const userPath = `users/${syncCode}`;
-        
-        // Listen for changes
-        db.ref(userPath).on('value', (snapshot) => {
-            if (isSyncing) return;
-            isSyncing = true;
-            
-            const data = snapshot.val();
-            if (data) {
-                transactions = data.transactions || [];
-                expenses = data.expenses || [];
-                
-                // Update localStorage
-                localStorage.setItem('transactions', JSON.stringify(transactions));
-                localStorage.setItem('expenses', JSON.stringify(expenses));
-                
-                if (data.lastDate) localStorage.setItem('lastDate', data.lastDate);
-                if (data.lastClosingBalancesByCurrency) {
-                    localStorage.setItem('lastClosingBalancesByCurrency', JSON.stringify(data.lastClosingBalancesByCurrency));
-                }
-                if (data.dailyArchives) {
-                    localStorage.setItem('dailyArchives', JSON.stringify(data.dailyArchives));
-                }
-                
-                renderTables();
-                updateSummaryCards();
-                updateDailyBalance();
-                updateReports();
-            }
-            
-            isSyncing = false;
-        }, (error) => {
-            console.error('Sync error:', error);
-            updateSyncStatus(false);
-        });
-    }
-
-    function pushToFirebase() {
-        if (!useFirebase || !syncCode || isSyncing) return;
-        
-        const userPath = `users/${syncCode}`;
-        const data = {
-            transactions: transactions,
-            expenses: expenses,
-            lastDate: localStorage.getItem('lastDate'),
-            lastClosingBalancesByCurrency: JSON.parse(localStorage.getItem('lastClosingBalancesByCurrency') || 'null'),
-            dailyArchives: JSON.parse(localStorage.getItem('dailyArchives') || 'null'),
-            lastUpdate: Date.now()
-        };
-        
-        db.ref(userPath).set(data).catch(err => {
-            console.error('Push error:', err);
         });
     }
 
@@ -859,13 +616,13 @@
     // ===== Theme Toggle =====
     function toggleTheme() {
         document.body.classList.toggle('dark-mode');
-        const btn = document.querySelectorAll('.icon-btn')[0];
+        const btn = document.querySelector('.icon-btn');
         btn.innerText = document.body.classList.contains('dark-mode') ? '☀️' : '🌙';
         localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
     }
     if (localStorage.getItem('theme') === 'dark') {
         document.body.classList.add('dark-mode');
-        document.querySelectorAll('.icon-btn')[0].innerText = '☀️';
+        document.querySelector('.icon-btn').innerText = '☀️';
     }
 
     // ===== Persian Number Converter =====
@@ -916,7 +673,6 @@
         updateSummaryCards();
         updateDailyBalance();
         updateReports();
-        pushToFirebase(); // Push to Firebase
     }
 
     // ===== Tab Switching =====
@@ -1067,7 +823,7 @@
         tb.innerHTML = '';
         const rl = transactions.filter(t => t.type === 'received');
         if (!rl.length) {
-            tb.innerHTML = `<tr><td colspan="6"><div class="empty-state"><div class="icon">📭</div>هنوز رسیدی ثبت نشده</div></td></tr>`;
+            tb.innerHTML = `<tr><td colspan="6"><div class="empty-state"><div class="icon">📭</div>هنوز فروشی ثبت نشده</div></td></tr>`;
         } else {
             rl.forEach((t, i) => {
                 tb.innerHTML += `
@@ -1092,7 +848,7 @@
         sb.innerHTML = '';
         const sl = transactions.filter(t => t.type === 'sent');
         if (!sl.length) {
-            sb.innerHTML = `<tr><td colspan="6"><div class="empty-state"><div class="icon">📭</div>هنوز برده‌ای ثبت نشده</div></td></tr>`;
+            sb.innerHTML = `<tr><td colspan="6"><div class="empty-state"><div class="icon">📭</div>هنوز خریدی ثبت نشده</div></td></tr>`;
         } else {
             sl.forEach((t, i) => {
                 sb.innerHTML += `
@@ -1167,8 +923,8 @@
 
         document.getElementById('balance-status').innerHTML = `
             <div>📅 <strong>مانده روز قبل:</strong><br>${formatCurrencyBreakdownObject(pb, true)}</div>
-            <div>⬇️ <strong>رسیدات:</strong><br>${formatCurrencyBreakdown(r, true)}</div>
-            <div>⬆️ <strong>برده‌ها:</strong><br>${formatCurrencyBreakdown(s, true)}</div>
+            <div>⬇️ <strong>فروش:</strong><br>${formatCurrencyBreakdown(r, true)}</div>
+            <div>⬆️ <strong>خرید:</strong><br>${formatCurrencyBreakdown(s, true)}</div>
             <div>💸 <strong>مصارف:</strong><br>${formatCurrencyBreakdown(e, true)}</div>
             <hr style="margin:12px 0;border:none;border-top:2px dashed var(--border)">
             <div style="font-size:1.1rem;font-weight:800;color:var(--secondary)">💵 <strong>مانده فعلی:</strong><br>${formatCurrencyBreakdownObject(cb, true)}</div>
@@ -1240,7 +996,6 @@
     }
 
     // ===== Initialization =====
-    initFirebase();
     checkDayClosing();
     renderTables();
     updateSummaryCards();
@@ -1256,7 +1011,6 @@
             updateSummaryCards();
             updateDailyBalance();
             updateReports();
-            pushToFirebase();
         }
     }, 30000);
 </script>
