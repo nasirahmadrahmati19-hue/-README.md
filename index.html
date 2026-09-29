@@ -268,24 +268,36 @@
         }
 
         .table-wrapper {
-            overflow-x: auto; border-radius: 18px;
+            overflow-x: auto; 
+            border-radius: 18px;
             border: 1px solid var(--border);
             box-shadow: var(--shadow);
             -webkit-overflow-scrolling: touch;
         }
-        table { width: 100%; border-collapse: collapse; background: var(--card-solid); min-width: 650px; }
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            background: var(--card-solid); 
+            min-width: 800px; /* عرض حداقلی برای جلوگیری از فشرده‌شدن ستون‌ها */
+        }
         th {
-            background: var(--bg); padding: 14px 10px;
-            text-align: center !important;
+            background: var(--bg); 
+            padding: 14px 12px;
+            text-align: center;
             font-weight: 700;
-            color: var(--text-light); font-size: 0.8rem;
-            position: sticky; top: 0;
+            color: var(--text-light); 
+            font-size: 0.85rem;
+            position: sticky; 
+            top: 0;
+            white-space: nowrap; /* جلوگیری از شکستن متن سرستون */
         }
         td {
-            padding: 14px 10px; border-bottom: 1px solid var(--border);
+            padding: 14px 12px; 
+            border-bottom: 1px solid var(--border);
             font-size: 0.85rem; 
             vertical-align: middle;
-            text-align: center !important;
+            text-align: center;
+            white-space: nowrap; /* جلوگیری از شکستن متن و حفظ ستون‌بندی دقیق */
         }
         tr:last-child td { border-bottom: none; }
 
@@ -293,8 +305,9 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 2px;
+            gap: 4px;
             font-size: 0.8rem;
+            white-space: nowrap;
         }
         .amount-breakdown .total {
             font-weight: 800;
@@ -324,6 +337,7 @@
         .action-cell { 
             position: relative; 
             text-align: center;
+            white-space: nowrap;
         }
         .action-btn {
             background: var(--bg); border: 1px solid var(--border);
