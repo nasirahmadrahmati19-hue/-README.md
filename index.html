@@ -74,9 +74,7 @@
             width: 100%;
         }
 
-        .header-title-group {
-            margin-top: 5px;
-        }
+        .header-title-group { margin-top: 5px; }
 
         .header h1 { 
             font-size: 1.3rem; 
@@ -88,9 +86,7 @@
         .header p { opacity: 0.9; font-size: 0.8rem; }
         .header .date-display { font-size: 0.7rem; opacity: 0.85; margin-top: 8px; }
 
-        .header-actions {
-            display: flex; gap: 8px;
-        }
+        .header-actions { display: flex; gap: 8px; }
 
         .icon-btn {
             background: rgba(255,255,255,0.25); border: none; color: white;
@@ -240,6 +236,12 @@
             outline: none; border-color: var(--primary);
             box-shadow: 0 0 0 4px rgba(108,92,231,0.15);
         }
+        .form-input[readonly] {
+            background: var(--bg);
+            color: var(--primary);
+            font-weight: 800;
+            cursor: not-allowed;
+        }
 
         .btn {
             padding: 14px 24px; border: none; border-radius: 14px;
@@ -271,7 +273,7 @@
             box-shadow: var(--shadow);
             -webkit-overflow-scrolling: touch;
         }
-        table { width: 100%; border-collapse: collapse; background: var(--card-solid); min-width: 600px; }
+        table { width: 100%; border-collapse: collapse; background: var(--card-solid); min-width: 650px; }
         th {
             background: var(--bg); padding: 14px 10px;
             text-align: right; font-weight: 700;
@@ -283,6 +285,21 @@
             font-size: 0.85rem; vertical-align: middle;
         }
         tr:last-child td { border-bottom: none; }
+
+        .amount-breakdown {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            font-size: 0.8rem;
+        }
+        .amount-breakdown .total {
+            font-weight: 800;
+            font-size: 0.95rem;
+        }
+        .amount-breakdown .detail {
+            color: var(--text-light);
+            font-size: 0.75rem;
+        }
 
         .badge {
             padding: 4px 8px; border-radius: 8px;
@@ -408,8 +425,16 @@
                         <input type="text" id="t-desc" class="form-input">
                     </div>
                     <div class="input-group">
-                        <label>مبلغ</label>
-                        <input type="text" inputmode="numeric" pattern="[0-9]*" id="t-amount" class="form-input" oninput="convertToEnglish(this)">
+                        <label>تعداد</label>
+                        <input type="text" inputmode="numeric" pattern="[0-9]*" id="t-qty" class="form-input" oninput="convertToEnglish(this); calcTotal('received')">
+                    </div>
+                    <div class="input-group">
+                        <label>فی (قیمت واحد)</label>
+                        <input type="text" inputmode="numeric" pattern="[0-9]*" id="t-price" class="form-input" oninput="convertToEnglish(this); calcTotal('received')">
+                    </div>
+                    <div class="input-group">
+                        <label>مجموع (خودکار)</label>
+                        <input type="text" id="t-total" class="form-input" readonly>
                     </div>
                     <div class="input-group">
                         <label>ارز</label>
@@ -426,7 +451,7 @@
             </div>
             <div class="table-wrapper">
                 <table>
-                    <thead><tr><th>شماره</th><th>مشتری</th><th>شرح</th><th>مبلغ</th><th>ارز</th><th>تاریخ</th><th>عملیات</th></tr></thead>
+                    <thead><tr><th>شماره</th><th>مشتری</th><th>شرح</th><th>تعداد × فی</th><th>مجموع</th><th>تاریخ</th><th>عملیات</th></tr></thead>
                     <tbody id="trans-table-body"></tbody>
                 </table>
             </div>
@@ -455,8 +480,16 @@
                         <input type="text" id="t-desc-sent" class="form-input">
                     </div>
                     <div class="input-group">
-                        <label>مبلغ</label>
-                        <input type="text" inputmode="numeric" pattern="[0-9]*" id="t-amount-sent" class="form-input" oninput="convertToEnglish(this)">
+                        <label>تعداد</label>
+                        <input type="text" inputmode="numeric" pattern="[0-9]*" id="t-qty-sent" class="form-input" oninput="convertToEnglish(this); calcTotal('sent')">
+                    </div>
+                    <div class="input-group">
+                        <label>فی (قیمت واحد)</label>
+                        <input type="text" inputmode="numeric" pattern="[0-9]*" id="t-price-sent" class="form-input" oninput="convertToEnglish(this); calcTotal('sent')">
+                    </div>
+                    <div class="input-group">
+                        <label>مجموع (خودکار)</label>
+                        <input type="text" id="t-total-sent" class="form-input" readonly>
                     </div>
                     <div class="input-group">
                         <label>ارز</label>
@@ -473,7 +506,7 @@
             </div>
             <div class="table-wrapper">
                 <table>
-                    <thead><tr><th>شماره</th><th>مشتری</th><th>شرح</th><th>مبلغ</th><th>ارز</th><th>تاریخ</th><th>عملیات</th></tr></thead>
+                    <thead><tr><th>شماره</th><th>مشتری</th><th>شرح</th><th>تعداد × فی</th><th>مجموع</th><th>تاریخ</th><th>عملیات</th></tr></thead>
                     <tbody id="sent-table-body"></tbody>
                 </table>
             </div>
@@ -509,7 +542,7 @@
                         <input type="text" id="search-desc" class="form-input">
                     </div>
                     <div class="input-group">
-                        <label>مبلغ</label>
+                        <label>مجموع مبلغ</label>
                         <input type="text" inputmode="numeric" pattern="[0-9]*" id="search-amount" class="form-input" oninput="convertToEnglish(this)">
                     </div>
                     <div class="input-group">
@@ -522,7 +555,7 @@
             </div>
             <div class="table-wrapper">
                 <table>
-                    <thead><tr><th>شماره</th><th>نوع</th><th>مشتری</th><th>شرح</th><th>مبلغ</th><th>ارز</th><th>تاریخ</th></tr></thead>
+                    <thead><tr><th>شماره</th><th>نوع</th><th>مشتری</th><th>شرح</th><th>تعداد × فی</th><th>مجموع</th><th>تاریخ</th></tr></thead>
                     <tbody id="search-results-body"></tbody>
                 </table>
             </div>
@@ -673,12 +706,13 @@
             const todayStats = { received: {}, sent: {}, expenses: {} };
 
             prevTrans.forEach(t => {
+                const amt = Number(t.amount) || 0;
                 if (t.type === 'received') {
-                    currentBalances[t.currency] = (currentBalances[t.currency] || 0) + Number(t.amount);
-                    todayStats.received[t.currency] = (todayStats.received[t.currency] || 0) + Number(t.amount);
+                    currentBalances[t.currency] = (currentBalances[t.currency] || 0) + amt;
+                    todayStats.received[t.currency] = (todayStats.received[t.currency] || 0) + amt;
                 } else {
-                    currentBalances[t.currency] = (currentBalances[t.currency] || 0) - Number(t.amount);
-                    todayStats.sent[t.currency] = (todayStats.sent[t.currency] || 0) + Number(t.amount);
+                    currentBalances[t.currency] = (currentBalances[t.currency] || 0) - amt;
+                    todayStats.sent[t.currency] = (todayStats.sent[t.currency] || 0) + amt;
                 }
             });
 
@@ -725,10 +759,24 @@
         const p = [/۰/g,/۱/g,/۲/g,/۳/g,/۴/g,/۵/g,/۶/g,/۷/g,/۸/g,/۹/g];
         const a = [/٠/g,/١/g,/٢/g,/٣/g,/٤/g,/٥/g,/٦/g,/٧/g,/٨/g,/٩/g];
         for(let i=0; i<10; i++) { v = v.replace(p[i],i).replace(a[i],i); }
-        input.value = v.replace(/[^0-9]/g, '');
+        input.value = v.replace(/[^0-9.]/g, '');
     }
 
     function formatNumber(n) { return Number(n).toLocaleString('fa-IR'); }
+
+    // ===== محاسبه خودکار مجموع =====
+    function calcTotal(type) {
+        let qtyId, priceId, totalId;
+        if (type === 'received') {
+            qtyId = 't-qty'; priceId = 't-price'; totalId = 't-total';
+        } else {
+            qtyId = 't-qty-sent'; priceId = 't-price-sent'; totalId = 't-total-sent';
+        }
+        const qty = parseFloat(document.getElementById(qtyId).value) || 0;
+        const price = parseFloat(document.getElementById(priceId).value) || 0;
+        const total = qty * price;
+        document.getElementById(totalId).value = total > 0 ? formatNumber(total) : '';
+    }
 
     function formatCurrencyBreakdown(items, inline = false) {
         const t = {AFN:0, USD:0, EUR:0, IRR:0, PKR:0};
@@ -805,25 +853,31 @@
 
     // ===== Add Transaction =====
     function addTransaction(type = 'received') {
-        let customer, desc, amount, currency;
+        let customer, desc, qty, price, amount, currency;
         if (type === 'received') {
             customer = document.getElementById('t-customer').value;
             desc = document.getElementById('t-desc').value;
-            amount = document.getElementById('t-amount').value;
+            qty = parseFloat(document.getElementById('t-qty').value) || 0;
+            price = parseFloat(document.getElementById('t-price').value) || 0;
+            amount = qty * price;
             currency = document.getElementById('t-currency').value;
         } else {
             customer = document.getElementById('t-customer-sent').value;
             desc = document.getElementById('t-desc-sent').value;
-            amount = document.getElementById('t-amount-sent').value;
+            qty = parseFloat(document.getElementById('t-qty-sent').value) || 0;
+            price = parseFloat(document.getElementById('t-price-sent').value) || 0;
+            amount = qty * price;
             currency = document.getElementById('t-currency-sent').value;
         }
 
-        if (!desc || !amount) return alert('لطفاً تمام فیلدها را پر کنید');
+        if (!desc || amount <= 0) return alert('لطفاً تمام فیلدها را پر کنید (مجموع باید بیشتر از صفر باشد)');
 
         const newTrans = { 
             id: Date.now(), 
             customer: customer || '',
             desc, 
+            qty,
+            price,
             amount, 
             currency, 
             type, 
@@ -840,11 +894,15 @@
         if (type === 'received') {
             document.getElementById('t-customer').value = '';
             document.getElementById('t-desc').value = '';
-            document.getElementById('t-amount').value = '';
+            document.getElementById('t-qty').value = '';
+            document.getElementById('t-price').value = '';
+            document.getElementById('t-total').value = '';
         } else {
             document.getElementById('t-customer-sent').value = '';
             document.getElementById('t-desc-sent').value = '';
-            document.getElementById('t-amount-sent').value = '';
+            document.getElementById('t-qty-sent').value = '';
+            document.getElementById('t-price-sent').value = '';
+            document.getElementById('t-total-sent').value = '';
         }
         saveData();
     }
@@ -904,14 +962,18 @@
             if (item.type === 'received') {
                 document.getElementById('t-customer').value = item.customer || '';
                 document.getElementById('t-desc').value = item.desc;
-                document.getElementById('t-amount').value = item.amount;
+                document.getElementById('t-qty').value = item.qty || '';
+                document.getElementById('t-price').value = item.price || '';
                 document.getElementById('t-currency').value = item.currency;
+                calcTotal('received');
                 switchSubTab('received');
             } else {
                 document.getElementById('t-customer-sent').value = item.customer || '';
                 document.getElementById('t-desc-sent').value = item.desc;
-                document.getElementById('t-amount-sent').value = item.amount;
+                document.getElementById('t-qty-sent').value = item.qty || '';
+                document.getElementById('t-price-sent').value = item.price || '';
                 document.getElementById('t-currency-sent').value = item.currency;
+                calcTotal('sent');
                 switchSubTab('sent');
             }
             editIndex = transactions.indexOf(item);
@@ -943,7 +1005,7 @@
             let match = true;
             if (searchCustomer && !(t.customer || '').toLowerCase().includes(searchCustomer)) match = false;
             if (searchDesc && !t.desc.toLowerCase().includes(searchDesc)) match = false;
-            if (searchAmount && t.amount !== searchAmount) match = false;
+            if (searchAmount && String(Math.round(Number(t.amount) || 0)) !== searchAmount) match = false;
             if (searchDate && !t.date.includes(searchDate)) match = false;
             return match;
         });
@@ -957,14 +1019,21 @@
             results.forEach((t, i) => {
                 const typeText = t.type === 'received' ? 'فروش' : 'خرید';
                 const typeColor = t.type === 'received' ? 'var(--danger)' : 'var(--success)';
+                const qty = t.qty || 0;
+                const price = t.price || 0;
+                const amount = Number(t.amount) || 0;
                 tbody.innerHTML += `
                     <tr>
                         <td>${i+1}</td>
                         <td style="color:${typeColor};font-weight:700">${typeText}</td>
                         <td>${t.customer || '-'}</td>
                         <td>${t.desc}</td>
-                        <td style="color:${typeColor};font-weight:800;direction:ltr;display:inline-block">${formatNumber(t.amount)}</td>
-                        <td><span class="badge badge-${t.currency.toLowerCase()}">${t.currency}</span></td>
+                        <td class="amount-breakdown">
+                            <span class="detail">${formatNumber(qty)} × ${formatNumber(price)} ${t.currency}</span>
+                        </td>
+                        <td class="amount-breakdown">
+                            <span class="total" style="color:${typeColor}">${formatNumber(amount)} <span class="badge badge-${t.currency.toLowerCase()}">${t.currency}</span></span>
+                        </td>
                         <td>${t.date}</td>
                     </tr>`;
             });
@@ -1027,13 +1096,20 @@
             tb.innerHTML = `<tr><td colspan="7"><div class="empty-state"><div class="icon">📭</div>هنوز فروشی ثبت نشده</div></td></tr>`;
         } else {
             rl.forEach((t, i) => {
+                const qty = t.qty || 0;
+                const price = t.price || 0;
+                const amount = Number(t.amount) || 0;
                 tb.innerHTML += `
                     <tr>
                         <td>${i+1}</td>
                         <td>${t.customer || '-'}</td>
                         <td>${t.desc}</td>
-                        <td style="color:var(--danger);font-weight:800;direction:ltr;display:inline-block">⬇️ ${formatNumber(t.amount)}</td>
-                        <td><span class="badge badge-${t.currency.toLowerCase()}">${t.currency}</span></td>
+                        <td class="amount-breakdown">
+                            <span class="detail">${formatNumber(qty)} × ${formatNumber(price)} ${t.currency}</span>
+                        </td>
+                        <td class="amount-breakdown">
+                            <span class="total" style="color:var(--danger)">⬇️ ${formatNumber(amount)} <span class="badge badge-${t.currency.toLowerCase()}">${t.currency}</span></span>
+                        </td>
                         <td>${t.date}</td>
                         <td class="action-cell">
                             <button class="action-btn" onclick="toggleDropdown(${t.id})">⚙️ عملیات</button>
@@ -1053,13 +1129,20 @@
             sb.innerHTML = `<tr><td colspan="7"><div class="empty-state"><div class="icon">📭</div>هنوز خریدی ثبت نشده</div></td></tr>`;
         } else {
             sl.forEach((t, i) => {
+                const qty = t.qty || 0;
+                const price = t.price || 0;
+                const amount = Number(t.amount) || 0;
                 sb.innerHTML += `
                     <tr>
                         <td>${i+1}</td>
                         <td>${t.customer || '-'}</td>
                         <td>${t.desc}</td>
-                        <td style="color:var(--success);font-weight:800;direction:ltr;display:inline-block">⬆️ ${formatNumber(t.amount)}</td>
-                        <td><span class="badge badge-${t.currency.toLowerCase()}">${t.currency}</span></td>
+                        <td class="amount-breakdown">
+                            <span class="detail">${formatNumber(qty)} × ${formatNumber(price)} ${t.currency}</span>
+                        </td>
+                        <td class="amount-breakdown">
+                            <span class="total" style="color:var(--success)">⬆️ ${formatNumber(amount)} <span class="badge badge-${t.currency.toLowerCase()}">${t.currency}</span></span>
+                        </td>
                         <td>${t.date}</td>
                         <td class="action-cell">
                             <button class="action-btn" onclick="toggleDropdown(${t.id})">⚙️ عملیات</button>
