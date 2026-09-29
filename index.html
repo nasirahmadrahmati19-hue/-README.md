@@ -276,7 +276,7 @@
         table { width: 100%; border-collapse: collapse; background: var(--card-solid); min-width: 650px; }
         th {
             background: var(--bg); padding: 14px 10px;
-            text-align: center;
+            text-align: center !important;
             font-weight: 700;
             color: var(--text-light); font-size: 0.8rem;
             position: sticky; top: 0;
@@ -285,7 +285,7 @@
             padding: 14px 10px; border-bottom: 1px solid var(--border);
             font-size: 0.85rem; 
             vertical-align: middle;
-            text-align: center;
+            text-align: center !important;
         }
         tr:last-child td { border-bottom: none; }
 
@@ -321,15 +321,19 @@
         body.dark-mode .badge-irr { background: #3d1a1a; color: #f1948a; }
         body.dark-mode .badge-pkr { background: #2d1a3d; color: #c39bd3; }
 
-        .action-cell { position: relative; }
+        .action-cell { 
+            position: relative; 
+            text-align: center;
+        }
         .action-btn {
             background: var(--bg); border: 1px solid var(--border);
             padding: 8px 14px; border-radius: 10px;
             cursor: pointer; color: var(--text); font-size: 0.8rem;
             font-weight: 600;
+            display: inline-block;
         }
         .dropdown-menu {
-            display: none; position: absolute; left: 0; top: 100%;
+            display: none; position: absolute; left: 50%; transform: translateX(-50%); top: 100%;
             background: var(--card-solid); border: 1px solid var(--border);
             border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.15);
             z-index: 50; min-width: 130px; overflow: hidden;
@@ -1076,7 +1080,7 @@
                     <tr>
                         <td>${i+1}</td>
                         <td>${e.cat}</td>
-                        <td style="color:var(--danger);font-weight:800;direction:ltr;display:inline-block">${formatNumber(e.amount)}</td>
+                        <td style="color:var(--danger);font-weight:800;direction:ltr">${formatNumber(e.amount)}</td>
                         <td><span class="badge badge-${(e.currency||'AFN').toLowerCase()}">${e.currency||'AFN'}</span></td>
                         <td>${e.date}</td>
                     </tr>`;
@@ -1169,7 +1173,7 @@
                     <tr>
                         <td>${i+1}</td>
                         <td>${e.cat}</td>
-                        <td style="color:var(--danger);font-weight:800;direction:ltr;display:inline-block">${formatNumber(e.amount)}</td>
+                        <td style="color:var(--danger);font-weight:800;direction:ltr">${formatNumber(e.amount)}</td>
                         <td><span class="badge badge-${(e.currency||'AFN').toLowerCase()}">${e.currency||'AFN'}</span></td>
                         <td>${e.date}</td>
                         <td class="action-cell">
