@@ -449,11 +449,11 @@
                     </div>
                     <div class="input-group">
                         <label>تعداد</label>
-                        <input type="text" inputmode="numeric" pattern="[0-9]*" id="t-qty" class="form-input" oninput="convertToEnglish(this); calcTotal('received')">
+                        <input type="text" inputmode="numeric" pattern="[0-9]*" id="t-qty" class="form-input" oninput="formatInputNumber(this); calcTotal('received')">
                     </div>
                     <div class="input-group">
                         <label>فی (قیمت واحد)</label>
-                        <input type="text" inputmode="numeric" pattern="[0-9]*" id="t-price" class="form-input" oninput="convertToEnglish(this); calcTotal('received')">
+                        <input type="text" inputmode="numeric" pattern="[0-9]*" id="t-price" class="form-input" oninput="formatInputNumber(this); calcTotal('received')">
                     </div>
                     <div class="input-group">
                         <label>مجموع (خودکار)</label>
@@ -504,11 +504,11 @@
                     </div>
                     <div class="input-group">
                         <label>تعداد</label>
-                        <input type="text" inputmode="numeric" pattern="[0-9]*" id="t-qty-sent" class="form-input" oninput="convertToEnglish(this); calcTotal('sent')">
+                        <input type="text" inputmode="numeric" pattern="[0-9]*" id="t-qty-sent" class="form-input" oninput="formatInputNumber(this); calcTotal('sent')">
                     </div>
                     <div class="input-group">
                         <label>فی (قیمت واحد)</label>
-                        <input type="text" inputmode="numeric" pattern="[0-9]*" id="t-price-sent" class="form-input" oninput="convertToEnglish(this); calcTotal('sent')">
+                        <input type="text" inputmode="numeric" pattern="[0-9]*" id="t-price-sent" class="form-input" oninput="formatInputNumber(this); calcTotal('sent')">
                     </div>
                     <div class="input-group">
                         <label>مجموع (خودکار)</label>
@@ -566,7 +566,7 @@
                     </div>
                     <div class="input-group">
                         <label>مجموع مبلغ</label>
-                        <input type="text" inputmode="numeric" pattern="[0-9]*" id="search-amount" class="form-input" oninput="convertToEnglish(this)">
+                        <input type="text" inputmode="numeric" pattern="[0-9]*" id="search-amount" class="form-input" oninput="formatInputNumber(this)">
                     </div>
                     <div class="input-group">
                         <label>تاریخ</label>
@@ -607,7 +607,7 @@
                     </div>
                     <div class="input-group">
                         <label>مبلغ</label>
-                        <input type="text" inputmode="numeric" pattern="[0-9]*" id="e-amount" class="form-input" oninput="convertToEnglish(this)">
+                        <input type="text" inputmode="numeric" pattern="[0-9]*" id="e-amount" class="form-input" oninput="formatInputNumber(this)">
                     </div>
                     <div class="input-group">
                         <label>ارز</label>
@@ -640,7 +640,7 @@
                     </div>
                     <div class="input-group">
                         <label>مبلغ</label>
-                        <input type="text" inputmode="numeric" pattern="[0-9]*" id="search-exp-amount" class="form-input" oninput="convertToEnglish(this)">
+                        <input type="text" inputmode="numeric" pattern="[0-9]*" id="search-exp-amount" class="form-input" oninput="formatInputNumber(this)">
                     </div>
                     <div class="input-group">
                         <label>تاریخ</label>
@@ -776,13 +776,31 @@
         document.querySelector('.icon-btn').innerText = '☀️';
     }
 
-    // ===== Persian Number Converter =====
-    function convertToEnglish(input) {
+    // ===== Persian Number Converter & Formatter =====
+    function formatInputNumber(input) {
+        let cursorPosition = input.selectionStart || 0;
+        let oldLength = input.value.length;
+
         let v = input.value;
+        // تبدیل اعداد فارسی/عربی به انگلیسی
         const p = [/۰/g,/۱/g,/۲/g,/۳/g,/۴/g,/۵/g,/۶/g,/۷/g,/۸/g,/۹/g];
         const a = [/٠/g,/١/g,/٢/g,/٣/g,/٤/g,/٥/g,/٦/g,/٧/g,/٨/g,/٩/g];
         for(let i=0; i<10; i++) { v = v.replace(p[i],i).replace(a[i],i); }
-        input.value = v.replace(/[^0-9.]/g, '');
+        
+        // حذف کاماهای قبلی و کاراکترهای غیر عددی (به جز نقطه برای اعشار)
+        v = v.replace(/,/g, '').replace(/[^0-9.]/g, '');
+        
+        // فرمت‌دهی با جداکننده هزارگان
+        let parts = v.split('.');
+        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        let newValue = parts.join('.');
+        
+        input.value = newValue;
+
+        // تنظیم مجدد مکان نشانگر موس برای تجربه تایپ روان
+        let newLength = input.value.length;
+        let diff = newLength - oldLength;
+        input.setSelectionRange(cursorPosition + diff, cursorPosition + diff);
     }
 
     function formatNumber(n) { return Number(n).toLocaleString('fa-IR'); }
@@ -795,8 +813,12 @@
         } else {
             qtyId = 't-qty-sent'; priceId = 't-price-sent'; totalId = 't-total-sent';
         }
-        const qty = parseFloat(document.getElementById(qtyId).value) || 0;
-        const price = parseFloat(document.getElementById(priceId).value) || 0;
+        // حذف کاما قبل از تبدیل به عدد برای محاسبه صحیح
+        const qtyStr = document.getElementById(qtyId).value.replace(/,/g, '');
+        const priceStr = document.getElementById(priceId).value.replace(/,/g, '');
+        
+        const qty = parseFloat(qtyStr) || 0;
+        const price = parseFloat(priceStr) || 0;
         const total = qty * price;
         document.getElementById(totalId).value = total > 0 ? formatNumber(total) : '';
     }
@@ -880,15 +902,17 @@
         if (type === 'received') {
             customer = document.getElementById('t-customer').value;
             desc = document.getElementById('t-desc').value;
-            qty = parseFloat(document.getElementById('t-qty').value) || 0;
-            price = parseFloat(document.getElementById('t-price').value) || 0;
+            // حذف کاما قبل از ذخیره‌سازی
+            qty = parseFloat(document.getElementById('t-qty').value.replace(/,/g, '')) || 0;
+            price = parseFloat(document.getElementById('t-price').value.replace(/,/g, '')) || 0;
             amount = qty * price;
             currency = document.getElementById('t-currency').value;
         } else {
             customer = document.getElementById('t-customer-sent').value;
             desc = document.getElementById('t-desc-sent').value;
-            qty = parseFloat(document.getElementById('t-qty-sent').value) || 0;
-            price = parseFloat(document.getElementById('t-price-sent').value) || 0;
+            // حذف کاما قبل از ذخیره‌سازی
+            qty = parseFloat(document.getElementById('t-qty-sent').value.replace(/,/g, '')) || 0;
+            price = parseFloat(document.getElementById('t-price-sent').value.replace(/,/g, '')) || 0;
             amount = qty * price;
             currency = document.getElementById('t-currency-sent').value;
         }
@@ -933,21 +957,22 @@
     // ===== Add/Edit Expense =====
     function addExpense() {
         const cat = document.getElementById('e-cat').value;
-        const amount = document.getElementById('e-amount').value;
+        // حذف کاما از مبلغ قبل از ذخیره
+        const amountStr = document.getElementById('e-amount').value.replace(/,/g, '');
         const currency = document.getElementById('e-currency').value;
 
-        if (!cat || !amount) return alert('لطفاً اطلاعات را کامل کنید');
+        if (!cat || !amountStr) return alert('لطفاً اطلاعات را کامل کنید');
 
         if (editExpenseIndex !== null) {
             expenses[editExpenseIndex].cat = cat;
-            expenses[editExpenseIndex].amount = amount;
+            expenses[editExpenseIndex].amount = amountStr;
             expenses[editExpenseIndex].currency = currency;
             editExpenseIndex = null;
             const btn = document.getElementById('btn-add-expense');
             btn.innerText = '✏️ بروزرسانی هزینه';
             btn.className = 'btn btn-primary';
         } else {
-            expenses.push({ id: Date.now(), cat, amount, currency, date: getAfghanistanDateString() });
+            expenses.push({ id: Date.now(), cat, amount: amountStr, currency, date: getAfghanistanDateString() });
         }
 
         document.getElementById('e-cat').value = '';
@@ -960,7 +985,12 @@
         const item = expenses.find(e => e.id === id);
         if (item) {
             document.getElementById('e-cat').value = item.cat;
-            document.getElementById('e-amount').value = item.amount;
+            
+            // فرمت‌دهی مبلغ هنگام بارگذاری برای ویرایش
+            const amountInput = document.getElementById('e-amount');
+            amountInput.value = item.amount;
+            formatInputNumber(amountInput);
+            
             document.getElementById('e-currency').value = item.currency || 'AFN';
             editExpenseIndex = expenses.indexOf(item);
             const btn = document.getElementById('btn-add-expense');
@@ -985,16 +1015,30 @@
             if (item.type === 'received') {
                 document.getElementById('t-customer').value = item.customer || '';
                 document.getElementById('t-desc').value = item.desc;
-                document.getElementById('t-qty').value = item.qty || '';
-                document.getElementById('t-price').value = item.price || '';
+                
+                let qtyInput = document.getElementById('t-qty');
+                qtyInput.value = item.qty || '';
+                formatInputNumber(qtyInput);
+                
+                let priceInput = document.getElementById('t-price');
+                priceInput.value = item.price || '';
+                formatInputNumber(priceInput);
+                
                 document.getElementById('t-currency').value = item.currency;
                 calcTotal('received');
                 switchSubTab('received');
             } else {
                 document.getElementById('t-customer-sent').value = item.customer || '';
                 document.getElementById('t-desc-sent').value = item.desc;
-                document.getElementById('t-qty-sent').value = item.qty || '';
-                document.getElementById('t-price-sent').value = item.price || '';
+                
+                let qtyInput = document.getElementById('t-qty-sent');
+                qtyInput.value = item.qty || '';
+                formatInputNumber(qtyInput);
+                
+                let priceInput = document.getElementById('t-price-sent');
+                priceInput.value = item.price || '';
+                formatInputNumber(priceInput);
+                
                 document.getElementById('t-currency-sent').value = item.currency;
                 calcTotal('sent');
                 switchSubTab('sent');
@@ -1021,7 +1065,8 @@
     function searchTransactions() {
         const searchCustomer = document.getElementById('search-customer').value.trim().toLowerCase();
         const searchDesc = document.getElementById('search-desc').value.trim().toLowerCase();
-        const searchAmount = document.getElementById('search-amount').value.trim();
+        // حذف کاما از مقدار جستجو
+        const searchAmount = document.getElementById('search-amount').value.replace(/,/g, '').trim();
         const searchDate = document.getElementById('search-date').value.trim();
 
         let results = transactions.filter(t => {
@@ -1077,7 +1122,8 @@
 
     function searchExpenses() {
         const searchCat = document.getElementById('search-exp-cat').value.trim().toLowerCase();
-        const searchAmount = document.getElementById('search-exp-amount').value.trim();
+        // حذف کاما از مقدار جستجو
+        const searchAmount = document.getElementById('search-exp-amount').value.replace(/,/g, '').trim();
         const searchDate = document.getElementById('search-exp-date').value.trim();
 
         let results = expenses.filter(e => {
