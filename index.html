@@ -302,14 +302,14 @@
         tr:last-child td { border-bottom: none; }
 
         .amount-breakdown {
-            display: inline-flex;
+            display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             gap: 4px;
             font-size: 0.8rem;
-            margin: 0 auto;
-            vertical-align: middle;
+            width: 100%;
+            text-align: center;
         }
         .amount-breakdown .total {
             font-weight: 800;
@@ -944,8 +944,8 @@
             expenses[editExpenseIndex].currency = currency;
             editExpenseIndex = null;
             const btn = document.getElementById('btn-add-expense');
-            btn.innerText = '💾 ثبت هزینه';
-            btn.className = 'btn btn-danger';
+            btn.innerText = '✏️ بروزرسانی هزینه';
+            btn.className = 'btn btn-primary';
         } else {
             expenses.push({ id: Date.now(), cat, amount, currency, date: getAfghanistanDateString() });
         }
@@ -1051,11 +1051,15 @@
                         <td style="color:${typeColor};font-weight:700">${typeText}</td>
                         <td>${t.customer || '-'}</td>
                         <td>${t.desc}</td>
-                        <td class="amount-breakdown">
-                            <span class="detail">${formatNumber(qty)} × ${formatNumber(price)} ${t.currency}</span>
+                        <td>
+                            <div class="amount-breakdown">
+                                <span class="detail">${formatNumber(qty)} × ${formatNumber(price)} ${t.currency}</span>
+                            </div>
                         </td>
-                        <td class="amount-breakdown">
-                            <span class="total" style="color:${typeColor}">${formatNumber(amount)} <span class="badge badge-${t.currency.toLowerCase()}">${t.currency}</span></span>
+                        <td>
+                            <div class="amount-breakdown">
+                                <span class="total" style="color:${typeColor}">${formatNumber(amount)} <span class="badge badge-${t.currency.toLowerCase()}">${t.currency}</span></span>
+                            </div>
                         </td>
                         <td>${t.date}</td>
                     </tr>`;
@@ -1127,11 +1131,15 @@
                         <td>${i+1}</td>
                         <td>${t.customer || '-'}</td>
                         <td>${t.desc}</td>
-                        <td class="amount-breakdown">
-                            <span class="detail">${formatNumber(qty)} × ${formatNumber(price)} ${t.currency}</span>
+                        <td>
+                            <div class="amount-breakdown">
+                                <span class="detail">${formatNumber(qty)} × ${formatNumber(price)} ${t.currency}</span>
+                            </div>
                         </td>
-                        <td class="amount-breakdown">
-                            <span class="total" style="color:var(--danger)">⬇️ ${formatNumber(amount)} <span class="badge badge-${t.currency.toLowerCase()}">${t.currency}</span></span>
+                        <td>
+                            <div class="amount-breakdown">
+                                <span class="total" style="color:var(--danger)">⬇️ ${formatNumber(amount)} <span class="badge badge-${t.currency.toLowerCase()}">${t.currency}</span></span>
+                            </div>
                         </td>
                         <td>${t.date}</td>
                         <td class="action-cell">
@@ -1160,11 +1168,15 @@
                         <td>${i+1}</td>
                         <td>${t.customer || '-'}</td>
                         <td>${t.desc}</td>
-                        <td class="amount-breakdown">
-                            <span class="detail">${formatNumber(qty)} × ${formatNumber(price)} ${t.currency}</span>
+                        <td>
+                            <div class="amount-breakdown">
+                                <span class="detail">${formatNumber(qty)} × ${formatNumber(price)} ${t.currency}</span>
+                            </div>
                         </td>
-                        <td class="amount-breakdown">
-                            <span class="total" style="color:var(--success)">⬆️ ${formatNumber(amount)} <span class="badge badge-${t.currency.toLowerCase()}">${t.currency}</span></span>
+                        <td>
+                            <div class="amount-breakdown">
+                                <span class="total" style="color:var(--success)">⬆️ ${formatNumber(amount)} <span class="badge badge-${t.currency.toLowerCase()}">${t.currency}</span></span>
+                            </div>
                         </td>
                         <td>${t.date}</td>
                         <td class="action-cell">
