@@ -320,10 +320,6 @@
             background: var(--bg); color: var(--text);
             border: 2px solid var(--border);
         }
-        .btn-warning {
-            background: linear-gradient(135deg, var(--warning), #e17055);
-            color: white; box-shadow: 0 4px 15px rgba(253,203,110,0.3);
-        }
 
         .table-wrapper {
             overflow-x: auto; 
@@ -605,12 +601,6 @@
                 <div class="summary-card success" id="card-db-sent"><div class="label">⬆️ خرید امروز</div><div class="value" id="db-sent">۰</div></div>
                 <div class="summary-card info" id="card-current-balance"><div class="label">💵 مانده فعلی دخل</div><div class="value" id="current-balance">۰</div></div>
             </div>
-            
-            <!-- دکمه جدید برای صفر کردن مانده روز قبل -->
-            <button class="btn btn-warning" onclick="resetPreviousBalance()" style="margin-bottom: 20px; font-size: 0.9rem;">
-                🔄 صفر کردن مانده روز قبل (شروع مجدد از صفر)
-            </button>
-
             <div class="form-card" style="border-color: var(--secondary);">
                 <h3 style="color:var(--secondary); margin-bottom:10px;">📊 ریز وضعیت دخل</h3>
                 <div id="balance-status" style="font-size:0.9rem; line-height:2.2;"></div>
@@ -786,19 +776,8 @@
                 updateSummaryCards();
                 updateDailyBalance();
                 updateReports();
-                alert('✅ تمام اطلاعات سیستم با موفقیت پاک شد.');
+                alert('✅ تمام اطلاعات سیستم با موفقیت پاک شد و حساب از صفر شروع می‌شود.');
             }
-        }
-    }
-
-    // ===== تابع جدید: صفر کردن فقط مانده روز قبل =====
-    function resetPreviousBalance() {
-        if (confirm('⚠️ آیا مطمئن هستید که می‌خواهید «مانده روز قبل» را صفر کنید؟\n\nاین عمل برای زمانی است که می‌خواهید حساب را کاملاً از نو و از صفر شروع کنید.')) {
-            const zeroBalances = {AFN:0, USD:0, EUR:0, IRR:0, PKR:0};
-            localStorage.setItem('lastClosingBalancesByCurrency', JSON.stringify(zeroBalances));
-            updateDailyBalance();
-            updateReports();
-            alert('✅ مانده روز قبل با موفقیت صفر شد و حساب از نو شروع می‌شود.');
         }
     }
 
@@ -1107,10 +1086,17 @@
         }
     }
 
+    // ===== حذف آیتم با قابلیت صفر شدن خودکار مانده روز قبل =====
     function deleteItem(type, id) {
         if (confirm('آیا از حذف اطمینان دارید؟')) {
             if (type === 'trans') transactions = transactions.filter(t => t.id !== id);
             if (type === 'exp') expenses = expenses.filter(e => e.id !== id);
+            
+            // اگر همه معاملات و مصارف حذف شدند، مانده روز قبل را هم به صورت خودکار صفر کن
+            if (transactions.length === 0 && expenses.length === 0) {
+                localStorage.setItem('lastClosingBalancesByCurrency', JSON.stringify({AFN:0, USD:0, EUR:0, IRR:0, PKR:0}));
+            }
+            
             saveData();
         }
     }
