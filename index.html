@@ -278,26 +278,26 @@
             width: 100%; 
             border-collapse: collapse; 
             background: var(--card-solid); 
-            min-width: 800px; /* عرض حداقلی برای جلوگیری از فشرده‌شدن ستون‌ها */
+            min-width: 800px; 
         }
         th {
             background: var(--bg); 
-            padding: 14px 12px;
-            text-align: center;
+            padding: 14px 10px;
+            text-align: center !important;
             font-weight: 700;
             color: var(--text-light); 
             font-size: 0.85rem;
             position: sticky; 
             top: 0;
-            white-space: nowrap; /* جلوگیری از شکستن متن سرستون */
+            white-space: nowrap;
         }
         td {
-            padding: 14px 12px; 
+            padding: 14px 10px; 
             border-bottom: 1px solid var(--border);
             font-size: 0.85rem; 
             vertical-align: middle;
-            text-align: center;
-            white-space: nowrap; /* جلوگیری از شکستن متن و حفظ ستون‌بندی دقیق */
+            text-align: center !important;
+            white-space: nowrap;
         }
         tr:last-child td { border-bottom: none; }
 
@@ -305,9 +305,10 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center;
             gap: 4px;
             font-size: 0.8rem;
-            white-space: nowrap;
+            width: 100%;
         }
         .amount-breakdown .total {
             font-weight: 800;
@@ -321,6 +322,7 @@
         .badge {
             padding: 4px 8px; border-radius: 8px;
             font-size: 0.7rem; font-weight: 700; display: inline-block;
+            vertical-align: middle;
         }
         .badge-afn { background: #dfe6e9; color: #2d3436; }
         .badge-usd { background: #d5f5e3; color: #1e8449; }
@@ -336,8 +338,7 @@
 
         .action-cell { 
             position: relative; 
-            text-align: center;
-            white-space: nowrap;
+            text-align: center !important;
         }
         .action-btn {
             background: var(--bg); border: 1px solid var(--border);
