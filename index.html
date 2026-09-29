@@ -278,21 +278,21 @@
             width: 100%; 
             border-collapse: collapse; 
             background: var(--card-solid); 
-            min-width: 800px; 
+            table-layout: auto;
         }
         th {
             background: var(--bg); 
-            padding: 14px 10px;
+            padding: 14px 8px;
             text-align: center !important;
             font-weight: 700;
             color: var(--text-light); 
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             position: sticky; 
             top: 0;
             white-space: nowrap;
         }
         td {
-            padding: 14px 10px; 
+            padding: 14px 8px; 
             border-bottom: 1px solid var(--border);
             font-size: 0.85rem; 
             vertical-align: middle;
@@ -302,13 +302,14 @@
         tr:last-child td { border-bottom: none; }
 
         .amount-breakdown {
-            display: flex;
+            display: inline-flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             gap: 4px;
             font-size: 0.8rem;
-            width: 100%;
+            margin: 0 auto;
+            vertical-align: middle;
         }
         .amount-breakdown .total {
             font-weight: 800;
@@ -386,7 +387,6 @@
             .summary-cards { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; }
             .form-grid { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
             .btn { width: auto; padding: 14px 30px; }
-            table { min-width: auto; }
             th, td { padding: 16px; font-size: 0.95rem; }
         }
 
@@ -1095,7 +1095,7 @@
                     <tr>
                         <td>${i+1}</td>
                         <td>${e.cat}</td>
-                        <td style="color:var(--danger);font-weight:800;direction:ltr">${formatNumber(e.amount)}</td>
+                        <td style="color:var(--danger);font-weight:800;text-align:center!important">${formatNumber(e.amount)}</td>
                         <td><span class="badge badge-${(e.currency||'AFN').toLowerCase()}">${e.currency||'AFN'}</span></td>
                         <td>${e.date}</td>
                     </tr>`;
@@ -1188,7 +1188,7 @@
                     <tr>
                         <td>${i+1}</td>
                         <td>${e.cat}</td>
-                        <td style="color:var(--danger);font-weight:800;direction:ltr">${formatNumber(e.amount)}</td>
+                        <td style="color:var(--danger);font-weight:800;text-align:center!important">${formatNumber(e.amount)}</td>
                         <td><span class="badge badge-${(e.currency||'AFN').toLowerCase()}">${e.currency||'AFN'}</span></td>
                         <td>${e.date}</td>
                         <td class="action-cell">
