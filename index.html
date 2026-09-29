@@ -208,6 +208,36 @@
         .summary-card.warning .value { color: #e17055; }
         .summary-card.expense .value { color: var(--accent); }
 
+        /* ===== بهینه‌سازی اختصاصی کارت‌های دخل برای موبایل ===== */
+        @media (max-width: 767px) {
+            .daily-balance-cards {
+                grid-template-columns: 1fr; /* تک ستونه برای جلوگیری از فشردگی */
+                gap: 10px;
+            }
+            .daily-balance-cards .summary-card {
+                display: flex;
+                flex-direction: row; /* چیدمان افقی: عنوان در راست، مقدار در چپ */
+                align-items: center;
+                justify-content: space-between;
+                padding: 14px 16px;
+                text-align: right;
+            }
+            .daily-balance-cards .summary-card .label {
+                margin-bottom: 0;
+                font-size: 0.85rem;
+                font-weight: 700;
+                white-space: nowrap; /* جلوگیری از شکستن خط عنوان */
+            }
+            .daily-balance-cards .summary-card .value {
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: flex-end;
+                font-size: 0.85rem;
+                gap: 4px 8px;
+                text-align: left;
+            }
+        }
+
         .form-card {
             background: var(--card);
             backdrop-filter: blur(15px);
@@ -322,7 +352,7 @@
 
         .badge {
             padding: 4px 8px; border-radius: 8px;
-            font-size: 0.7rem; font-weight: 700; display: inline-block;
+            font-size: 0.7rem; font-weight: 700; display: inline-flex; align-items: center;
             vertical-align: middle;
         }
         .badge-afn { background: #dfe6e9; color: #2d3436; }
@@ -540,12 +570,15 @@
             <p style="color:var(--text-light); margin-bottom:20px; font-size:0.85rem;">
                 فرمول: مانده روز قبل + فروش - خرید
             </p>
-            <div class="summary-cards">
+            
+            <!-- اضافه شدن کلاس daily-balance-cards برای بهینه‌سازی موبایل -->
+            <div class="summary-cards daily-balance-cards">
                 <div class="summary-card warning"><div class="label">📅 مانده روز قبل</div><div class="value" id="prev-balance">۰</div></div>
                 <div class="summary-card danger"><div class="label">⬇️ فروش امروز</div><div class="value" id="db-received">۰</div></div>
                 <div class="summary-card success"><div class="label">⬆️ خرید امروز</div><div class="value" id="db-sent">۰</div></div>
                 <div class="summary-card info"><div class="label">💵 مانده فعلی دخل</div><div class="value" id="current-balance">۰</div></div>
             </div>
+            
             <div class="form-card" style="border-color: var(--secondary);">
                 <h3 style="color:var(--secondary); margin-bottom:10px;">📊 ریز وضعیت دخل</h3>
                 <div id="balance-status" style="font-size:0.9rem; line-height:2.2;"></div>
@@ -782,22 +815,18 @@
         let oldLength = input.value.length;
 
         let v = input.value;
-        // تبدیل اعداد فارسی/عربی به انگلیسی
         const p = [/۰/g,/۱/g,/۲/g,/۳/g,/۴/g,/۵/g,/۶/g,/۷/g,/۸/g,/۹/g];
         const a = [/٠/g,/١/g,/٢/g,/٣/g,/٤/g,/٥/g,/٦/g,/٧/g,/٨/g,/٩/g];
         for(let i=0; i<10; i++) { v = v.replace(p[i],i).replace(a[i],i); }
         
-        // حذف کاماهای قبلی و کاراکترهای غیر عددی (به جز نقطه برای اعشار)
         v = v.replace(/,/g, '').replace(/[^0-9.]/g, '');
         
-        // فرمت‌دهی با جداکننده هزارگان
         let parts = v.split('.');
         parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
         let newValue = parts.join('.');
         
         input.value = newValue;
 
-        // تنظیم مجدد مکان نشانگر موس برای تجربه تایپ روان
         let newLength = input.value.length;
         let diff = newLength - oldLength;
         input.setSelectionRange(cursorPosition + diff, cursorPosition + diff);
@@ -813,7 +842,6 @@
         } else {
             qtyId = 't-qty-sent'; priceId = 't-price-sent'; totalId = 't-total-sent';
         }
-        // حذف کاما قبل از تبدیل به عدد برای محاسبه صحیح
         const qtyStr = document.getElementById(qtyId).value.replace(/,/g, '');
         const priceStr = document.getElementById(priceId).value.replace(/,/g, '');
         
@@ -829,7 +857,8 @@
             items.forEach(i => { t[i.currency || 'AFN'] += Number(i.amount) || 0; });
         }
         let h = '', has = false;
-        const s = inline ? 'display:inline-block; margin:2px 4px;' : '';
+        // تغییر به inline-flex برای تراز بهتر در موبایل
+        const s = inline ? 'display:inline-flex; align-items:center; margin:2px 4px;' : '';
         for (const [c, a] of Object.entries(t)) {
             if (a !== 0) {
                 has = true;
@@ -841,7 +870,8 @@
 
     function formatCurrencyBreakdownObject(b, inline = false) {
         let h = '', has = false;
-        const s = inline ? 'display:inline-block; margin:2px 4px;' : '';
+        // تغییر به inline-flex برای تراز بهتر در موبایل
+        const s = inline ? 'display:inline-flex; align-items:center; margin:2px 4px;' : '';
         for (const [c, a] of Object.entries(b)) {
             if (a !== 0) {
                 has = true;
@@ -902,7 +932,6 @@
         if (type === 'received') {
             customer = document.getElementById('t-customer').value;
             desc = document.getElementById('t-desc').value;
-            // حذف کاما قبل از ذخیره‌سازی
             qty = parseFloat(document.getElementById('t-qty').value.replace(/,/g, '')) || 0;
             price = parseFloat(document.getElementById('t-price').value.replace(/,/g, '')) || 0;
             amount = qty * price;
@@ -910,7 +939,6 @@
         } else {
             customer = document.getElementById('t-customer-sent').value;
             desc = document.getElementById('t-desc-sent').value;
-            // حذف کاما قبل از ذخیره‌سازی
             qty = parseFloat(document.getElementById('t-qty-sent').value.replace(/,/g, '')) || 0;
             price = parseFloat(document.getElementById('t-price-sent').value.replace(/,/g, '')) || 0;
             amount = qty * price;
@@ -957,7 +985,6 @@
     // ===== Add/Edit Expense =====
     function addExpense() {
         const cat = document.getElementById('e-cat').value;
-        // حذف کاما از مبلغ قبل از ذخیره
         const amountStr = document.getElementById('e-amount').value.replace(/,/g, '');
         const currency = document.getElementById('e-currency').value;
 
@@ -986,7 +1013,6 @@
         if (item) {
             document.getElementById('e-cat').value = item.cat;
             
-            // فرمت‌دهی مبلغ هنگام بارگذاری برای ویرایش
             const amountInput = document.getElementById('e-amount');
             amountInput.value = item.amount;
             formatInputNumber(amountInput);
@@ -1065,7 +1091,6 @@
     function searchTransactions() {
         const searchCustomer = document.getElementById('search-customer').value.trim().toLowerCase();
         const searchDesc = document.getElementById('search-desc').value.trim().toLowerCase();
-        // حذف کاما از مقدار جستجو
         const searchAmount = document.getElementById('search-amount').value.replace(/,/g, '').trim();
         const searchDate = document.getElementById('search-date').value.trim();
 
@@ -1122,7 +1147,6 @@
 
     function searchExpenses() {
         const searchCat = document.getElementById('search-exp-cat').value.trim().toLowerCase();
-        // حذف کاما از مقدار جستجو
         const searchAmount = document.getElementById('search-exp-amount').value.replace(/,/g, '').trim();
         const searchDate = document.getElementById('search-exp-date').value.trim();
 
