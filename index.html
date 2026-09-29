@@ -204,7 +204,6 @@
         .summary-card.expense { border-color: rgba(253,121,168,0.3); }
         .summary-card.expense::before { background: linear-gradient(90deg, var(--accent), #e84393); }
 
-        /* حالت ویژه کارت منفی (قرض) */
         .summary-card.negative {
             border-color: rgba(255,107,107,0.6) !important;
             background: linear-gradient(135deg, rgba(255,107,107,0.08), rgba(253,121,168,0.08));
@@ -320,6 +319,10 @@
         .btn-secondary {
             background: var(--bg); color: var(--text);
             border: 2px solid var(--border);
+        }
+        .btn-warning {
+            background: linear-gradient(135deg, var(--warning), #e17055);
+            color: white; box-shadow: 0 4px 15px rgba(253,203,110,0.3);
         }
 
         .table-wrapper {
@@ -602,6 +605,12 @@
                 <div class="summary-card success" id="card-db-sent"><div class="label">⬆️ خرید امروز</div><div class="value" id="db-sent">۰</div></div>
                 <div class="summary-card info" id="card-current-balance"><div class="label">💵 مانده فعلی دخل</div><div class="value" id="current-balance">۰</div></div>
             </div>
+            
+            <!-- دکمه جدید برای صفر کردن مانده روز قبل -->
+            <button class="btn btn-warning" onclick="resetPreviousBalance()" style="margin-bottom: 20px; font-size: 0.9rem;">
+                🔄 صفر کردن مانده روز قبل (شروع مجدد از صفر)
+            </button>
+
             <div class="form-card" style="border-color: var(--secondary);">
                 <h3 style="color:var(--secondary); margin-bottom:10px;">📊 ریز وضعیت دخل</h3>
                 <div id="balance-status" style="font-size:0.9rem; line-height:2.2;"></div>
@@ -782,6 +791,17 @@
         }
     }
 
+    // ===== تابع جدید: صفر کردن فقط مانده روز قبل =====
+    function resetPreviousBalance() {
+        if (confirm('⚠️ آیا مطمئن هستید که می‌خواهید «مانده روز قبل» را صفر کنید؟\n\nاین عمل برای زمانی است که می‌خواهید حساب را کاملاً از نو و از صفر شروع کنید.')) {
+            const zeroBalances = {AFN:0, USD:0, EUR:0, IRR:0, PKR:0};
+            localStorage.setItem('lastClosingBalancesByCurrency', JSON.stringify(zeroBalances));
+            updateDailyBalance();
+            updateReports();
+            alert('✅ مانده روز قبل با موفقیت صفر شد و حساب از نو شروع می‌شود.');
+        }
+    }
+
     // ===== Day Closing Logic =====
     function checkDayClosing() {
         const today = getAfghanistanDateString();
@@ -910,7 +930,6 @@
         return has ? h : '<div style="color:var(--text-light)">۰</div>';
     }
 
-    // ===== اصلاح شده: نمایش علامت منفی برای مانده‌های منفی (قرض) =====
     function formatCurrencyBreakdownObject(b, inline = false) {
         let h = '', has = false;
         const s = inline ? 'display:inline-flex; align-items:center; margin:2px 4px;' : '';
@@ -926,7 +945,6 @@
         return has ? h : '<div style="color:var(--text-light)">۰</div>';
     }
 
-    // ===== بررسی منفی بودن مانده و تغییر استایل کارت =====
     function updateBalanceCardState(balanceObj) {
         const card = document.getElementById('card-current-balance');
         if (!card) return;
@@ -1365,7 +1383,6 @@
         document.getElementById('db-sent').innerHTML = formatCurrencyBreakdown(s);
         document.getElementById('current-balance').innerHTML = formatCurrencyBreakdownObject(cb);
 
-        // بررسی و تغییر استایل کارت مانده فعلی در صورت منفی بودن
         updateBalanceCardState(cb);
 
         document.getElementById('balance-status').innerHTML = `
@@ -1413,7 +1430,6 @@
         document.getElementById('total-expense-all').innerHTML = formatCurrencyBreakdownObject(te, true);
         document.getElementById('total-balance-all').innerHTML = formatCurrencyBreakdownObject(tb, true);
 
-        // بررسی منفی بودن مانده کل در گزارشات
         const balanceCard = document.getElementById('card-total-balance');
         if (balanceCard) {
             let hasNeg = false;
