@@ -95,6 +95,13 @@
             backdrop-filter: blur(10px);
             display: flex; align-items: center; justify-content: center;
         }
+        .icon-btn.reset-btn {
+            background: rgba(255,107,107,0.4);
+            font-size: 1rem;
+        }
+        .icon-btn.reset-btn:active {
+            background: rgba(255,107,107,0.7);
+        }
 
         .tabs-nav {
             display: none;
@@ -197,6 +204,24 @@
         .summary-card.expense { border-color: rgba(253,121,168,0.3); }
         .summary-card.expense::before { background: linear-gradient(90deg, var(--accent), #e84393); }
 
+        /* حالت ویژه کارت منفی (قرض) */
+        .summary-card.negative {
+            border-color: rgba(255,107,107,0.6) !important;
+            background: linear-gradient(135deg, rgba(255,107,107,0.08), rgba(253,121,168,0.08));
+            animation: pulseNegative 2s ease-in-out infinite;
+        }
+        .summary-card.negative::before {
+            background: linear-gradient(90deg, #FF6B6B, #e84393) !important;
+            height: 4px;
+        }
+        @keyframes pulseNegative {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(255,107,107,0); }
+            50% { box-shadow: 0 0 20px 2px rgba(255,107,107,0.2); }
+        }
+        body.dark-mode .summary-card.negative {
+            background: linear-gradient(135deg, rgba(255,107,107,0.12), rgba(253,121,168,0.08));
+        }
+
         .summary-card .label { font-size: 0.75rem; color: var(--text-light); margin-bottom: 8px; font-weight: 600; }
         .summary-card .value {
             font-size: 0.95rem; font-weight: 800;
@@ -207,6 +232,7 @@
         .summary-card.info .value { color: var(--info); }
         .summary-card.warning .value { color: #e17055; }
         .summary-card.expense .value { color: var(--accent); }
+        .summary-card.negative .value { color: var(--danger) !important; }
 
         @media (max-width: 767px) {
             .daily-balance-cards {
@@ -294,11 +320,6 @@
         .btn-secondary {
             background: var(--bg); color: var(--text);
             border: 2px solid var(--border);
-        }
-        .btn-reset {
-            background: linear-gradient(135deg, #636e72, #2d3436);
-            color: white; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            margin-top: 15px;
         }
 
         .table-wrapper {
@@ -411,18 +432,6 @@
         }
         .archive-date { font-weight: 700; color: var(--primary); font-size: 0.9rem; }
 
-        .debt-indicator {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            color: var(--danger) !important;
-            font-weight: 900;
-        }
-        .debt-indicator .minus-sign {
-            font-size: 1.1em;
-            font-weight: 900;
-        }
-
         @media (min-width: 768px) {
             body { padding-bottom: 20px; }
             .header { padding: 25px 30px 40px; border-radius: 0 0 40px 40px; }
@@ -446,6 +455,7 @@
 <div class="header">
     <div class="header-top-row">
         <div class="header-actions">
+            <button class="icon-btn reset-btn" onclick="resetAllData()" title="ریست کامل سیستم">🗑️</button>
             <button class="icon-btn" onclick="toggleTheme()">🌙</button>
         </div>
     </div>
@@ -586,11 +596,11 @@
             <p style="color:var(--text-light); margin-bottom:20px; font-size:0.85rem;">
                 فرمول: مانده روز قبل + فروش - خرید
             </p>
-            <div class="summary-cards daily-balance-cards">
-                <div class="summary-card warning"><div class="label">📅 مانده روز قبل</div><div class="value" id="prev-balance">۰</div></div>
-                <div class="summary-card danger"><div class="label">⬇️ فروش امروز</div><div class="value" id="db-received">۰</div></div>
-                <div class="summary-card success"><div class="label">⬆️ خرید امروز</div><div class="value" id="db-sent">۰</div></div>
-                <div class="summary-card info"><div class="label">💵 مانده فعلی دخل</div><div class="value" id="current-balance">۰</div></div>
+            <div class="summary-cards daily-balance-cards" id="daily-balance-cards-container">
+                <div class="summary-card warning" id="card-prev-balance"><div class="label">📅 مانده روز قبل</div><div class="value" id="prev-balance">۰</div></div>
+                <div class="summary-card danger" id="card-db-received"><div class="label">⬇️ فروش امروز</div><div class="value" id="db-received">۰</div></div>
+                <div class="summary-card success" id="card-db-sent"><div class="label">⬆️ خرید امروز</div><div class="value" id="db-sent">۰</div></div>
+                <div class="summary-card info" id="card-current-balance"><div class="label">💵 مانده فعلی دخل</div><div class="value" id="current-balance">۰</div></div>
             </div>
             <div class="form-card" style="border-color: var(--secondary);">
                 <h3 style="color:var(--secondary); margin-bottom:10px;">📊 ریز وضعیت دخل</h3>
@@ -707,17 +717,14 @@
 
     <div id="reports" class="tab-content">
         <h2 style="margin-bottom:20px; color:var(--primary)">📊 گزارشات و آرشیو</h2>
-        <div class="summary-cards">
-            <div class="summary-card success"><div class="label">کل خرید</div><div class="value" id="total-purchase-all">۰</div></div>
-            <div class="summary-card danger"><div class="label">کل فروش</div><div class="value" id="total-income-all">۰</div></div>
-            <div class="summary-card expense"><div class="label">💸 کل مصارف</div><div class="value" id="total-expense-all">۰</div></div>
-            <div class="summary-card info"><div class="label">مانده فعلی دخل</div><div class="value" id="total-balance-all">۰</div></div>
+        <div class="summary-cards" id="reports-cards-container">
+            <div class="summary-card success" id="card-total-purchase"><div class="label">کل خرید</div><div class="value" id="total-purchase-all">۰</div></div>
+            <div class="summary-card danger" id="card-total-income"><div class="label">کل فروش</div><div class="value" id="total-income-all">۰</div></div>
+            <div class="summary-card expense" id="card-total-expense"><div class="label">💸 کل مصارف</div><div class="value" id="total-expense-all">۰</div></div>
+            <div class="summary-card info" id="card-total-balance"><div class="label">مانده فعلی دخل</div><div class="value" id="total-balance-all">۰</div></div>
         </div>
         <h3 style="margin:20px 0 10px; color:var(--primary)">📚 آرشیو روزهای قبل</h3>
         <div id="archive-list"></div>
-        
-        <!-- دکمه پاک کردن کامل همه داده‌ها -->
-        <button class="btn btn-reset" onclick="resetAllData()">🗑️ پاک کردن کامل همه داده‌ها</button>
     </div>
 </div>
 
@@ -755,53 +762,24 @@
         });
     }
 
-    // ===== خواندن امن مانده روز قبل (اصلاح باگ) =====
-    function getPrevBalances() {
-        try {
-            const raw = localStorage.getItem('lastClosingBalancesByCurrency');
-            if (!raw) return {AFN:0, USD:0, EUR:0, IRR:0, PKR:0};
-            const parsed = JSON.parse(raw);
-            if (!parsed || typeof parsed !== 'object') return {AFN:0, USD:0, EUR:0, IRR:0, PKR:0};
-            // اطمینان از اینکه همه ارزها وجود دارند و عددی هستند
-            const result = {AFN:0, USD:0, EUR:0, IRR:0, PKR:0};
-            currencies.forEach(c => {
-                result[c] = Number(parsed[c]) || 0;
-            });
-            return result;
-        } catch(e) {
-            return {AFN:0, USD:0, EUR:0, IRR:0, PKR:0};
-        }
-    }
-
-    // ===== پاک کردن کامل همه داده‌ها (اصلاح باگ) =====
+    // ===== ریست کامل سیستم =====
     function resetAllData() {
-        if (!confirm('⚠️ آیا مطمئن هستید؟\n\nتمام اطلاعات شامل معاملات، مصارف، آرشیو و مانده روز قبل به‌طور کامل حذف خواهد شد و قابل بازگشت نیست!')) return;
-        if (!confirm('⚠️ تأیید نهایی:\n\nآیا واقعاً می‌خواهید همه چیز را پاک کنید؟')) return;
-        
-        // پاک کردن تمام کلیدهای مرتبط
-        localStorage.removeItem('transactions');
-        localStorage.removeItem('expenses');
-        localStorage.removeItem('dailyArchives');
-        localStorage.removeItem('lastClosingBalancesByCurrency');
-        localStorage.removeItem('lastDate');
-        
-        // بازنشانی متغیرها
-        transactions = [];
-        expenses = [];
-        editIndex = null;
-        editExpenseIndex = null;
-        
-        // بازنشانی تاریخ
-        localStorage.setItem('lastDate', getAfghanistanDateString());
-        localStorage.setItem('lastClosingBalancesByCurrency', JSON.stringify({AFN:0, USD:0, EUR:0, IRR:0, PKR:0}));
-        
-        // بروزرسانی همه بخش‌ها
-        renderTables();
-        updateSummaryCards();
-        updateDailyBalance();
-        updateReports();
-        
-        alert('✅ تمام داده‌ها با موفقیت پاک شدند و مانده روز قبل صفر شد.');
+        if (confirm('⚠️ آیا از حذف تمام اطلاعات سیستم اطمینان دارید؟\n\nاین عمل شامل تمام معاملات، مصارف، آرشیو و مانده‌ها می‌شود و قابل بازگشت نیست!')) {
+            if (confirm('⛔ تأیید نهایی: واقعاً همه چیز پاک شود؟')) {
+                localStorage.removeItem('transactions');
+                localStorage.removeItem('expenses');
+                localStorage.removeItem('dailyArchives');
+                localStorage.removeItem('lastClosingBalancesByCurrency');
+                localStorage.removeItem('lastDate');
+                transactions = [];
+                expenses = [];
+                renderTables();
+                updateSummaryCards();
+                updateDailyBalance();
+                updateReports();
+                alert('✅ تمام اطلاعات سیستم با موفقیت پاک شد.');
+            }
+        }
     }
 
     // ===== Day Closing Logic =====
@@ -821,7 +799,7 @@
             const prevTrans = JSON.parse(localStorage.getItem('transactions')) || [];
             const prevExp = JSON.parse(localStorage.getItem('expenses')) || [];
             const archives = JSON.parse(localStorage.getItem('dailyArchives')) || [];
-            const prevBalances = getPrevBalances();
+            const prevBalances = JSON.parse(localStorage.getItem('lastClosingBalancesByCurrency')) || {AFN:0,USD:0,EUR:0,IRR:0,PKR:0};
 
             const currentBalances = { ...prevBalances };
             const todayStats = { received: {}, sent: {}, expenses: {} };
@@ -865,13 +843,13 @@
     // ===== Theme Toggle =====
     function toggleTheme() {
         document.body.classList.toggle('dark-mode');
-        const btn = document.querySelector('.icon-btn');
+        const btn = document.querySelector('.icon-btn:not(.reset-btn)');
         btn.innerText = document.body.classList.contains('dark-mode') ? '☀️' : '🌙';
         localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
     }
     if (localStorage.getItem('theme') === 'dark') {
         document.body.classList.add('dark-mode');
-        document.querySelector('.icon-btn').innerText = '☀️';
+        document.querySelector('.icon-btn:not(.reset-btn)').innerText = '☀️';
     }
 
     // ===== Persian Number Converter & Formatter =====
@@ -932,23 +910,40 @@
         return has ? h : '<div style="color:var(--text-light)">۰</div>';
     }
 
-    // ===== اصلاح: نمایش علامت منفی و رنگ سرخ برای موجودی منفی (قرض) =====
+    // ===== اصلاح شده: نمایش علامت منفی برای مانده‌های منفی (قرض) =====
     function formatCurrencyBreakdownObject(b, inline = false) {
         let h = '', has = false;
         const s = inline ? 'display:inline-flex; align-items:center; margin:2px 4px;' : '';
         for (const [c, a] of Object.entries(b)) {
             if (a !== 0) {
                 has = true;
-                if (a < 0) {
-                    // موجودی منفی = قرض → رنگ سرخ + علامت منفی
-                    h += `<div style="${s}" class="debt-indicator"><span class="minus-sign">−</span>${formatNumber(Math.abs(a))} <span class="badge badge-${c.toLowerCase()}">${c}</span></div>`;
-                } else {
-                    // موجودی مثبت → رنگ سبز
-                    h += `<div style="${s}color:var(--success)">${formatNumber(a)} <span class="badge badge-${c.toLowerCase()}">${c}</span></div>`;
-                }
+                const isNegative = a < 0;
+                const cl = isNegative ? 'var(--danger)' : 'var(--success)';
+                const sign = isNegative ? '−' : '';
+                h += `<div style="${s}color:${cl};font-weight:800;">${sign}${formatNumber(Math.abs(a))} <span class="badge badge-${c.toLowerCase()}">${c}</span></div>`;
             }
         }
         return has ? h : '<div style="color:var(--text-light)">۰</div>';
+    }
+
+    // ===== بررسی منفی بودن مانده و تغییر استایل کارت =====
+    function updateBalanceCardState(balanceObj) {
+        const card = document.getElementById('card-current-balance');
+        if (!card) return;
+        
+        let hasNegative = false;
+        for (const [c, a] of Object.entries(balanceObj)) {
+            if (a < 0) { hasNegative = true; break; }
+        }
+        
+        card.classList.remove('info', 'negative');
+        if (hasNegative) {
+            card.classList.add('negative');
+            card.querySelector('.label').innerHTML = '⚠️ مانده فعلی دخل (قرض)';
+        } else {
+            card.classList.add('info');
+            card.querySelector('.label').innerHTML = '💵 مانده فعلی دخل';
+        }
     }
 
     // ===== Save Data =====
@@ -1357,7 +1352,7 @@
     }
 
     function updateDailyBalance() {
-        const pb = getPrevBalances();
+        const pb = JSON.parse(localStorage.getItem('lastClosingBalancesByCurrency')) || {AFN:0,USD:0,EUR:0,IRR:0,PKR:0};
         const r = transactions.filter(t => t.type === 'received');
         const s = transactions.filter(t => t.type === 'sent');
 
@@ -1370,6 +1365,9 @@
         document.getElementById('db-sent').innerHTML = formatCurrencyBreakdown(s);
         document.getElementById('current-balance').innerHTML = formatCurrencyBreakdownObject(cb);
 
+        // بررسی و تغییر استایل کارت مانده فعلی در صورت منفی بودن
+        updateBalanceCardState(cb);
+
         document.getElementById('balance-status').innerHTML = `
             <div>📅 <strong>مانده روز قبل:</strong><br>${formatCurrencyBreakdownObject(pb, true)}</div>
             <div style="color:var(--danger)">⬇️ <strong>فروش:</strong><br>${formatCurrencyBreakdown(r, true)}</div>
@@ -1381,7 +1379,7 @@
 
     function updateReports() {
         const archives = JSON.parse(localStorage.getItem('dailyArchives')) || [];
-        const pb = getPrevBalances();
+        const pb = JSON.parse(localStorage.getItem('lastClosingBalancesByCurrency')) || {AFN:0,USD:0,EUR:0,IRR:0,PKR:0};
         
         const tb = { ...pb };
         const ti = {AFN:0,USD:0,EUR:0,IRR:0,PKR:0};
@@ -1414,6 +1412,21 @@
         document.getElementById('total-purchase-all').innerHTML = formatCurrencyBreakdownObject(tp, true);
         document.getElementById('total-expense-all').innerHTML = formatCurrencyBreakdownObject(te, true);
         document.getElementById('total-balance-all').innerHTML = formatCurrencyBreakdownObject(tb, true);
+
+        // بررسی منفی بودن مانده کل در گزارشات
+        const balanceCard = document.getElementById('card-total-balance');
+        if (balanceCard) {
+            let hasNeg = false;
+            for (const [c, a] of Object.entries(tb)) { if (a < 0) { hasNeg = true; break; } }
+            balanceCard.classList.remove('info', 'negative');
+            if (hasNeg) {
+                balanceCard.classList.add('negative');
+                balanceCard.querySelector('.label').innerHTML = '⚠️ مانده فعلی دخل (قرض)';
+            } else {
+                balanceCard.classList.add('info');
+                balanceCard.querySelector('.label').innerHTML = 'مانده فعلی دخل';
+            }
+        }
 
         const al = document.getElementById('archive-list');
         if (!archives.length) {
