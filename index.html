@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>سیستم مدیریت مالی غلام سرور حسنی</title>
+    
+    <!-- آیکون تب مرورگر (لوگو به صورت Base64) -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZmZmZmIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHBhdGggZD0iTTE2IDIwdjJhMiAyIDAgMCAxLTIgMkg2YTIgMiAwIDAgMS0yLTJ2LTJhMiAyIDAgMCAxIDItMmg4YTIgMiAwIDAgMSAyIDJ6Ii8+PHBhdGggZD0iTTIgMTBhMiAyIDAgMCAxIDItMmgxNmEyIDIgMCAwIDEgMiAydjhhMiAyIDAgMCAxLTIgMkg0YTIgMiAwIDAgMS0yLTJ2LTh6Ii8+PHBhdGggZD0iTTkgMlY0aDZWMmEzIDMgMCAwIDAtNiAweiIvPjwvc3ZnPg==">
+    
     <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
     
     <style>
@@ -55,7 +59,6 @@
             animation: gradientShift 8s ease infinite;
             color: white;
             padding: 15px 15px 30px;
-            text-align: center;
             position: relative;
             border-radius: 0 0 30px 30px;
         }
@@ -74,17 +77,40 @@
             width: 100%;
         }
 
-        .header-title-group { margin-top: 5px; }
+        .header-title-group { 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            text-align: right;
+        }
+
+        .app-logo {
+            width: 65px;
+            height: 65px;
+            object-fit: contain;
+            border-radius: 16px;
+            background: rgba(255,255,255,0.2);
+            padding: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            backdrop-filter: blur(5px);
+            flex-shrink: 0;
+        }
+
+        .title-text {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
 
         .header h1 { 
-            font-size: 1.3rem; 
+            font-size: 1.2rem; 
             font-weight: 800; 
-            margin-bottom: 5px; 
+            margin-bottom: 4px; 
             line-height: 1.4;
-            word-wrap: break-word;
         }
-        .header p { opacity: 0.9; font-size: 0.8rem; }
-        .header .date-display { font-size: 0.7rem; opacity: 0.85; margin-top: 8px; }
+        .header p { opacity: 0.9; font-size: 0.75rem; margin-bottom: 6px; }
+        .header .date-display { font-size: 0.7rem; opacity: 0.85; }
 
         .header-actions { display: flex; gap: 8px; }
 
@@ -434,7 +460,8 @@
         @media (min-width: 768px) {
             body { padding-bottom: 20px; }
             .header { padding: 25px 30px 40px; border-radius: 0 0 40px 40px; }
-            .header h1 { font-size: 2rem; }
+            .header h1 { font-size: 1.6rem; }
+            .app-logo { width: 80px; height: 80px; }
             .tabs-nav { display: flex; max-width: 800px; margin: 20px auto 0; }
             .bottom-nav { display: none; }
             .content-area { padding: 30px; max-width: 1000px; margin: 0 auto; }
@@ -458,10 +485,16 @@
             <button class="icon-btn" onclick="toggleTheme()">🌙</button>
         </div>
     </div>
+    
     <div class="header-title-group">
-        <h1>💼 سیستم مدیریت مالی غلام سرور حسنی</h1>
-        <p>سیستم هوشمند ثبت و پیگیری معاملات</p>
-        <div class="date-display" id="current-date"></div>
+        <!-- لوگو به صورت Base64 -->
+        <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZmZmZmIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHBhdGggZD0iTTE2IDIwdjJhMiAyIDAgMCAxLTIgMkg2YTIgMiAwIDAgMS0yLTJ2LTJhMiAyIDAgMCAxIDItMmg4YTIgMiAwIDAgMSAyIDJ6Ii8+PHBhdGggZD0iTTIgMTBhMiAyIDAgMCAxIDItMmgxNmEyIDIgMCAwIDEgMiAydjhhMiAyIDAgMCAxLTIgMkg0YTIgMiAwIDAgMS0yLTJ2LTh6Ii8+PHBhdGggZD0iTTkgMlY0aDZWMmEzIDMgMCAwIDAtNiAweiIvPjwvc3ZnPg==" alt="لوگو" class="app-logo">
+        
+        <div class="title-text">
+            <h1>سیستم مدیریت مالی غلام سرور حسنی</h1>
+            <p>سیستم هوشمند ثبت و پیگیری معاملات</p>
+            <div class="date-display" id="current-date"></div>
+        </div>
     </div>
 </div>
 
@@ -740,14 +773,12 @@
 </div>
 
 <script>
-    // ===== Data & State =====
     let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
     let expenses = JSON.parse(localStorage.getItem('expenses')) || [];
     let editIndex = null;
     let editExpenseIndex = null;
     const currencies = ['AFN', 'USD', 'EUR', 'IRR', 'PKR'];
 
-    // ===== Afghanistan Time Functions =====
     function getAfghanistanDate(d = new Date()) {
         return new Date(d.toLocaleString('en-US', { timeZone: 'Asia/Kabul' }));
     }
@@ -761,7 +792,6 @@
         });
     }
 
-    // ===== ریست کامل سیستم =====
     function resetAllData() {
         if (confirm('⚠️ آیا از حذف تمام اطلاعات سیستم اطمینان دارید؟\n\nاین عمل شامل تمام معاملات، مصارف، آرشیو و مانده‌ها می‌شود و قابل بازگشت نیست!')) {
             if (confirm('⛔ تأیید نهایی: واقعاً همه چیز پاک شود؟')) {
@@ -781,7 +811,6 @@
         }
     }
 
-    // ===== Day Closing Logic =====
     function checkDayClosing() {
         const today = getAfghanistanDateString();
         const lastDate = localStorage.getItem('lastDate');
@@ -839,7 +868,6 @@
         }
     }
 
-    // ===== Theme Toggle =====
     function toggleTheme() {
         document.body.classList.toggle('dark-mode');
         const btn = document.querySelector('.icon-btn:not(.reset-btn)');
@@ -851,7 +879,6 @@
         document.querySelector('.icon-btn:not(.reset-btn)').innerText = '☀️';
     }
 
-    // ===== Persian Number Converter & Formatter =====
     function formatInputNumber(input) {
         let cursorPosition = input.selectionStart || 0;
         let oldLength = input.value.length;
@@ -876,7 +903,6 @@
 
     function formatNumber(n) { return Number(n).toLocaleString('fa-IR'); }
 
-    // ===== محاسبه خودکار مجموع =====
     function calcTotal(type) {
         let qtyId, priceId, totalId;
         if (type === 'received') {
@@ -943,7 +969,6 @@
         }
     }
 
-    // ===== Save Data =====
     function saveData() {
         localStorage.setItem('transactions', JSON.stringify(transactions));
         localStorage.setItem('expenses', JSON.stringify(expenses));
@@ -953,7 +978,6 @@
         updateReports();
     }
 
-    // ===== Tab Switching =====
     function switchTab(tabId) {
         document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
         document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
@@ -987,7 +1011,6 @@
         event.currentTarget.classList.add('active');
     }
 
-    // ===== Add Transaction =====
     function addTransaction(type = 'received') {
         let customer, desc, qty, price, amount, currency;
         if (type === 'received') {
@@ -1043,7 +1066,6 @@
         saveData();
     }
 
-    // ===== Add/Edit Expense =====
     function addExpense() {
         const cat = document.getElementById('e-cat').value;
         const amountStr = document.getElementById('e-amount').value.replace(/,/g, '');
@@ -1086,13 +1108,11 @@
         }
     }
 
-    // ===== حذف آیتم با قابلیت صفر شدن خودکار مانده روز قبل =====
     function deleteItem(type, id) {
         if (confirm('آیا از حذف اطمینان دارید؟')) {
             if (type === 'trans') transactions = transactions.filter(t => t.id !== id);
             if (type === 'exp') expenses = expenses.filter(e => e.id !== id);
             
-            // اگر همه معاملات و مصارف حذف شدند، مانده روز قبل را هم به صورت خودکار صفر کن
             if (transactions.length === 0 && expenses.length === 0) {
                 localStorage.setItem('lastClosingBalancesByCurrency', JSON.stringify({AFN:0, USD:0, EUR:0, IRR:0, PKR:0}));
             }
@@ -1147,7 +1167,6 @@
         }
     };
 
-    // ===== Search Functions =====
     function searchTransactions() {
         const searchCustomer = document.getElementById('search-customer').value.trim().toLowerCase();
         const searchDesc = document.getElementById('search-desc').value.trim().toLowerCase();
@@ -1244,7 +1263,6 @@
         document.getElementById('search-expenses-body').innerHTML = '';
     }
 
-    // ===== Render Tables =====
     function renderTables() {
         const tb = document.getElementById('trans-table-body');
         tb.innerHTML = '';
@@ -1461,7 +1479,6 @@
         document.getElementById('current-date').innerText = '📅 ' + getAfghanistanDateTimeString() + ' (به وقت افغانستان)';
     }
 
-    // ===== Initialization =====
     checkDayClosing();
     renderTables();
     updateSummaryCards();
