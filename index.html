@@ -521,6 +521,7 @@
             <button class="sub-tab-btn" onclick="switchSubTab('sent')">خرید</button>
             <button class="sub-tab-btn active" onclick="switchSubTab('received')">فروش</button>
             <button class="sub-tab-btn" onclick="switchSubTab('daily-balance')" style="background:linear-gradient(135deg,var(--secondary),var(--info)); color:white; border-color:transparent;">💰 دخل</button>
+            <button class="sub-tab-btn" onclick="switchSubTab('trans-expenses')">💸 مصارف</button>
             <button class="sub-tab-btn" onclick="switchSubTab('search-transactions')">🔍 جستجو</button>
         </div>
 
@@ -637,7 +638,7 @@
         <div id="daily-balance" class="sub-tab-content">
             <h2 style="margin-bottom:10px; color:var(--secondary)">💰 دخل روزانه</h2>
             <p style="color:var(--text-light); margin-bottom:20px; font-size:0.85rem;">
-                فرمول: مانده روز قبل + فروش - خرید
+                فرمول: مانده روز قبل + فروش - خرید - مصارف
             </p>
             <div class="summary-cards daily-balance-cards" id="daily-balance-cards-container">
                 <div class="summary-card warning" id="card-prev-balance"><div class="label">📅 مانده روز قبل</div><div class="value" id="prev-balance">۰</div></div>
@@ -648,6 +649,47 @@
             <div class="form-card" style="border-color: var(--secondary);">
                 <h3 style="color:var(--secondary); margin-bottom:10px;">📊 ریز وضعیت دخل</h3>
                 <div id="balance-status" style="font-size:0.9rem; line-height:2.2;"></div>
+            </div>
+        </div>
+
+        <!-- زیرتب جدید مصارف در تب معاملات -->
+        <div id="trans-expenses" class="sub-tab-content">
+            <h2 style="margin-bottom:10px; color:var(--accent)">💸 مدیریت مصارف (در تب معاملات)</h2>
+            <div class="summary-cards">
+                <div class="summary-card danger">
+                    <div class="label">مجموع مصارف امروز</div>
+                    <div class="value" id="trans-total-expenses-today">۰</div>
+                </div>
+            </div>
+            <div class="form-card">
+                <h3 style="color:var(--danger)">➕ ثبت هزینه جدید</h3>
+                <div class="form-grid">
+                    <div class="input-group">
+                        <label>دسته‌بندی</label>
+                        <input type="text" id="te-cat" class="form-input">
+                    </div>
+                    <div class="input-group">
+                        <label>مبلغ</label>
+                        <input type="text" inputmode="numeric" pattern="[0-9]*" id="te-amount" class="form-input" oninput="formatInputNumber(this)">
+                    </div>
+                    <div class="input-group">
+                        <label>ارز</label>
+                        <select id="te-currency" class="form-select">
+                            <option value="AFN">AFN</option>
+                            <option value="USD">USD</option>
+                            <option value="EUR">EUR</option>
+                            <option value="IRR">IRR</option>
+                            <option value="PKR">PKR</option>
+                        </select>
+                    </div>
+                </div>
+                <button class="btn btn-danger" id="btn-add-trans-expense" onclick="addTransExpense()">💾 ثبت هزینه</button>
+            </div>
+            <div class="table-wrapper">
+                <table>
+                    <thead><tr><th>شماره</th><th>دسته‌بندی</th><th>مبلغ</th><th>ارز</th><th>تاریخ</th><th>عملیات</th></tr></thead>
+                    <tbody id="trans-exp-table-body"></tbody>
+                </table>
             </div>
         </div>
 
@@ -857,6 +899,8 @@
             prevExp.forEach(e => {
                 const c = e.currency || 'AFN';
                 todayStats.expenses[c] = (todayStats.expenses[c] || 0) + Number(e.amount);
+                // اصلاح: کم کردن مصارف از موجودی پایان روز
+                currentBalances[c] = (currentBalances[c] || 0) - Number(e.amount);
             });
 
             archives.push({
@@ -1012,7 +1056,9 @@
         document.querySelectorAll('#transactions .sub-tab-btn').forEach(el => el.classList.remove('active'));
         document.getElementById(subTabId).classList.add('active');
         event.currentTarget.classList.add('active');
-        if (subTabId === 'daily-balance') updateDailyBalance();
+        if (subTabId === 'daily-balance' || subTabId === 'trans-expenses') {
+            updateDailyBalance();
+        }
     }
 
     function switchExpenseSubTab(subTabId) {
@@ -1099,6 +1145,22 @@
         document.getElementById('e-cat').value = '';
         document.getElementById('e-amount').value = '';
         document.getElementById('e-currency').value = 'AFN';
+        saveData();
+    }
+
+    // تابع جدید برای ثبت هزینه از تب معاملات
+    function addTransExpense() {
+        const cat = document.getElementById('te-cat').value;
+        const amountStr = document.getElementById('te-amount').value.replace(/,/g, '');
+        const currency = document.getElementById('te-currency').value;
+
+        if (!cat || !amountStr) return alert('لطفاً اطلاعات را کامل کنید');
+
+        expenses.push({ id: Date.now(), cat, amount: amountStr, currency, date: getAfghanistanDateString() });
+
+        document.getElementById('te-cat').value = '';
+        document.getElementById('te-amount').value = '';
+        document.getElementById('te-currency').value = 'AFN';
         saveData();
     }
 
@@ -1276,101 +1338,134 @@
 
     function renderTables() {
         const tb = document.getElementById('trans-table-body');
-        tb.innerHTML = '';
-        const rl = transactions.filter(t => t.type === 'received');
-        if (!rl.length) {
-            tb.innerHTML = `<tr><td colspan="7"><div class="empty-state"><div class="icon">📭</div>هنوز فروشی ثبت نشده</div></td></tr>`;
-        } else {
-            rl.forEach((t, i) => {
-                const qty = t.qty || 0;
-                const price = t.price || 0;
-                const amount = Number(t.amount) || 0;
-                tb.innerHTML += `
-                    <tr>
-                        <td>${i+1}</td>
-                        <td>${t.customer || '-'}</td>
-                        <td>${t.desc}</td>
-                        <td>
-                            <div class="amount-breakdown">
-                                <span class="detail">${formatNumber(qty)} × ${formatNumber(price)} ${t.currency}</span>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="amount-breakdown">
-                                <span class="total" style="color:var(--danger)">⬇️ ${formatNumber(amount)} <span class="badge badge-${t.currency.toLowerCase()}">${t.currency}</span></span>
-                            </div>
-                        </td>
-                        <td>${t.date}</td>
-                        <td class="action-cell">
-                            <button class="action-btn" onclick="toggleDropdown(${t.id})">⚙️ عملیات</button>
-                            <div id="menu-${t.id}" class="dropdown-menu">
-                                <button class="dropdown-item text-warning" onclick="editTransaction(${t.id})">✏️ ویرایش</button>
-                                <button class="dropdown-item text-danger" onclick="deleteItem('trans',${t.id})">🗑️ حذف</button>
-                            </div>
-                        </td>
-                    </tr>`;
-            });
+        if (tb) {
+            tb.innerHTML = '';
+            const rl = transactions.filter(t => t.type === 'received');
+            if (!rl.length) {
+                tb.innerHTML = `<tr><td colspan="7"><div class="empty-state"><div class="icon">📭</div>هنوز فروشی ثبت نشده</div></td></tr>`;
+            } else {
+                rl.forEach((t, i) => {
+                    const qty = t.qty || 0;
+                    const price = t.price || 0;
+                    const amount = Number(t.amount) || 0;
+                    tb.innerHTML += `
+                        <tr>
+                            <td>${i+1}</td>
+                            <td>${t.customer || '-'}</td>
+                            <td>${t.desc}</td>
+                            <td>
+                                <div class="amount-breakdown">
+                                    <span class="detail">${formatNumber(qty)} × ${formatNumber(price)} ${t.currency}</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="amount-breakdown">
+                                    <span class="total" style="color:var(--danger)">⬇️ ${formatNumber(amount)} <span class="badge badge-${t.currency.toLowerCase()}">${t.currency}</span></span>
+                                </div>
+                            </td>
+                            <td>${t.date}</td>
+                            <td class="action-cell">
+                                <button class="action-btn" onclick="toggleDropdown(${t.id})">⚙️ عملیات</button>
+                                <div id="menu-${t.id}" class="dropdown-menu">
+                                    <button class="dropdown-item text-warning" onclick="editTransaction(${t.id})">✏️ ویرایش</button>
+                                    <button class="dropdown-item text-danger" onclick="deleteItem('trans',${t.id})">🗑️ حذف</button>
+                                </div>
+                            </td>
+                        </tr>`;
+                });
+            }
         }
 
         const sb = document.getElementById('sent-table-body');
-        sb.innerHTML = '';
-        const sl = transactions.filter(t => t.type === 'sent');
-        if (!sl.length) {
-            sb.innerHTML = `<tr><td colspan="7"><div class="empty-state"><div class="icon">📭</div>هنوز خریدی ثبت نشده</div></td></tr>`;
-        } else {
-            sl.forEach((t, i) => {
-                const qty = t.qty || 0;
-                const price = t.price || 0;
-                const amount = Number(t.amount) || 0;
-                sb.innerHTML += `
-                    <tr>
-                        <td>${i+1}</td>
-                        <td>${t.customer || '-'}</td>
-                        <td>${t.desc}</td>
-                        <td>
-                            <div class="amount-breakdown">
-                                <span class="detail">${formatNumber(qty)} × ${formatNumber(price)} ${t.currency}</span>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="amount-breakdown">
-                                <span class="total" style="color:var(--success)">⬆️ ${formatNumber(amount)} <span class="badge badge-${t.currency.toLowerCase()}">${t.currency}</span></span>
-                            </div>
-                        </td>
-                        <td>${t.date}</td>
-                        <td class="action-cell">
-                            <button class="action-btn" onclick="toggleDropdown(${t.id})">⚙️ عملیات</button>
-                            <div id="menu-${t.id}" class="dropdown-menu">
-                                <button class="dropdown-item text-warning" onclick="editTransaction(${t.id})">✏️ ویرایش</button>
-                                <button class="dropdown-item text-danger" onclick="deleteItem('trans',${t.id})">🗑️ حذف</button>
-                            </div>
-                        </td>
-                    </tr>`;
-            });
+        if (sb) {
+            sb.innerHTML = '';
+            const sl = transactions.filter(t => t.type === 'sent');
+            if (!sl.length) {
+                sb.innerHTML = `<tr><td colspan="7"><div class="empty-state"><div class="icon">📭</div>هنوز خریدی ثبت نشده</div></td></tr>`;
+            } else {
+                sl.forEach((t, i) => {
+                    const qty = t.qty || 0;
+                    const price = t.price || 0;
+                    const amount = Number(t.amount) || 0;
+                    sb.innerHTML += `
+                        <tr>
+                            <td>${i+1}</td>
+                            <td>${t.customer || '-'}</td>
+                            <td>${t.desc}</td>
+                            <td>
+                                <div class="amount-breakdown">
+                                    <span class="detail">${formatNumber(qty)} × ${formatNumber(price)} ${t.currency}</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="amount-breakdown">
+                                    <span class="total" style="color:var(--success)">⬆️ ${formatNumber(amount)} <span class="badge badge-${t.currency.toLowerCase()}">${t.currency}</span></span>
+                                </div>
+                            </td>
+                            <td>${t.date}</td>
+                            <td class="action-cell">
+                                <button class="action-btn" onclick="toggleDropdown(${t.id})">⚙️ عملیات</button>
+                                <div id="menu-${t.id}" class="dropdown-menu">
+                                    <button class="dropdown-item text-warning" onclick="editTransaction(${t.id})">✏️ ویرایش</button>
+                                    <button class="dropdown-item text-danger" onclick="deleteItem('trans',${t.id})">🗑️ حذف</button>
+                                </div>
+                            </td>
+                        </tr>`;
+                });
+            }
         }
 
         const eb = document.getElementById('exp-table-body');
-        eb.innerHTML = '';
-        if (!expenses.length) {
-            eb.innerHTML = `<tr><td colspan="6"><div class="empty-state"><div class="icon">📭</div>هنوز هزینه‌ای ثبت نشده</div></td></tr>`;
-        } else {
-            expenses.forEach((e, i) => {
-                eb.innerHTML += `
-                    <tr>
-                        <td>${i+1}</td>
-                        <td>${e.cat}</td>
-                        <td style="color:var(--danger);font-weight:800;text-align:center!important">${formatNumber(e.amount)}</td>
-                        <td><span class="badge badge-${(e.currency||'AFN').toLowerCase()}">${e.currency||'AFN'}</span></td>
-                        <td>${e.date}</td>
-                        <td class="action-cell">
-                            <button class="action-btn" onclick="toggleDropdown(${e.id})">⚙️ عملیات</button>
-                            <div id="menu-${e.id}" class="dropdown-menu">
-                                <button class="dropdown-item text-warning" onclick="editExpense(${e.id})">✏️ ویرایش</button>
-                                <button class="dropdown-item text-danger" onclick="deleteItem('exp',${e.id})">🗑️ حذف</button>
-                            </div>
-                        </td>
-                    </tr>`;
-            });
+        if (eb) {
+            eb.innerHTML = '';
+            if (!expenses.length) {
+                eb.innerHTML = `<tr><td colspan="6"><div class="empty-state"><div class="icon">📭</div>هنوز هزینه‌ای ثبت نشده</div></td></tr>`;
+            } else {
+                expenses.forEach((e, i) => {
+                    eb.innerHTML += `
+                        <tr>
+                            <td>${i+1}</td>
+                            <td>${e.cat}</td>
+                            <td style="color:var(--danger);font-weight:800;text-align:center!important">${formatNumber(e.amount)}</td>
+                            <td><span class="badge badge-${(e.currency||'AFN').toLowerCase()}">${e.currency||'AFN'}</span></td>
+                            <td>${e.date}</td>
+                            <td class="action-cell">
+                                <button class="action-btn" onclick="toggleDropdown(${e.id})">⚙️ عملیات</button>
+                                <div id="menu-${e.id}" class="dropdown-menu">
+                                    <button class="dropdown-item text-warning" onclick="editExpense(${e.id})">✏️ ویرایش</button>
+                                    <button class="dropdown-item text-danger" onclick="deleteItem('exp',${e.id})">🗑️ حذف</button>
+                                </div>
+                            </td>
+                        </tr>`;
+                });
+            }
+        }
+
+        // رندر کردن جدول مصارف در تب معاملات
+        const teb = document.getElementById('trans-exp-table-body');
+        if (teb) {
+            teb.innerHTML = '';
+            if (!expenses.length) {
+                teb.innerHTML = `<tr><td colspan="6"><div class="empty-state"><div class="icon">📭</div>هنوز هزینه‌ای ثبت نشده</div></td></tr>`;
+            } else {
+                expenses.forEach((e, i) => {
+                    teb.innerHTML += `
+                        <tr>
+                            <td>${i+1}</td>
+                            <td>${e.cat}</td>
+                            <td style="color:var(--danger);font-weight:800;text-align:center!important">${formatNumber(e.amount)}</td>
+                            <td><span class="badge badge-${(e.currency||'AFN').toLowerCase()}">${e.currency||'AFN'}</span></td>
+                            <td>${e.date}</td>
+                            <td class="action-cell">
+                                <button class="action-btn" onclick="toggleDropdown(${e.id})">⚙️ عملیات</button>
+                                <div id="menu-${e.id}" class="dropdown-menu">
+                                    <button class="dropdown-item text-warning" onclick="editExpense(${e.id})">✏️ ویرایش</button>
+                                    <button class="dropdown-item text-danger" onclick="deleteItem('exp',${e.id})">🗑️ حذف</button>
+                                </div>
+                            </td>
+                        </tr>`;
+                });
+            }
         }
     }
 
@@ -1382,6 +1477,9 @@
         document.getElementById('total-sent-today').innerHTML = formatCurrencyBreakdown(s);
         document.getElementById('count-sent-today').innerText = formatNumber(s.length);
         document.getElementById('total-expenses-today').innerHTML = formatCurrencyBreakdown(expenses);
+        
+        const teToday = document.getElementById('trans-total-expenses-today');
+        if (teToday) teToday.innerHTML = formatCurrencyBreakdown(expenses);
     }
 
     function updateDailyBalance() {
@@ -1392,6 +1490,8 @@
         const cb = { ...pb };
         r.forEach(t => cb[t.currency] += Number(t.amount));
         s.forEach(t => cb[t.currency] -= Number(t.amount));
+        // اصلاح: کم کردن مصارف از موجودی فعلی دخل
+        expenses.forEach(e => cb[e.currency || 'AFN'] -= Number(e.amount));
 
         document.getElementById('prev-balance').innerHTML = formatCurrencyBreakdownObject(pb);
         document.getElementById('db-received').innerHTML = formatCurrencyBreakdown(r);
@@ -1404,6 +1504,7 @@
             <div>📅 <strong>مانده روز قبل:</strong><br>${formatCurrencyBreakdownObject(pb, true)}</div>
             <div style="color:var(--danger)">⬇️ <strong>فروش:</strong><br>${formatCurrencyBreakdown(r, true)}</div>
             <div style="color:var(--success)">⬆️ <strong>خرید:</strong><br>${formatCurrencyBreakdown(s, true)}</div>
+            <div style="color:var(--accent)">💸 <strong>مصارف:</strong><br>${formatCurrencyBreakdown(expenses, true)}</div>
             <hr style="margin:12px 0;border:none;border-top:2px dashed var(--border)">
             <div style="font-size:1.1rem;font-weight:800;color:var(--secondary)">💵 <strong>مانده فعلی دخل:</strong><br>${formatCurrencyBreakdownObject(cb, true)}</div>
         `;
@@ -1420,7 +1521,7 @@
 
         archives.forEach(a => {
             currencies.forEach(c => {
-                tb[c] += (a.stats.received[c] || 0) - (a.stats.sent[c] || 0);
+                tb[c] += (a.stats.received[c] || 0) - (a.stats.sent[c] || 0) - (a.stats.expenses[c] || 0);
                 ti[c] += (a.stats.received[c] || 0);
                 tp[c] += (a.stats.sent[c] || 0);
                 te[c] += (a.stats.expenses[c] || 0);
@@ -1438,6 +1539,8 @@
         expenses.forEach(e => {
             const c = e.currency || 'AFN';
             te[c] += Number(e.amount);
+            // اصلاح: کم کردن مصارف از مانده کل گزارشات
+            tb[c] -= Number(e.amount);
         });
 
         document.getElementById('total-income-all').innerHTML = formatCurrencyBreakdownObject(ti, true);
