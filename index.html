@@ -46,7 +46,7 @@
             background: var(--bg);
             color: var(--text);
             min-height: 100vh;
-            padding-bottom: 80px; /* کاهش فضا به دلیل کوچک شدن نوار پایین */
+            padding-bottom: 80px;
             transition: background 0.4s, color 0.4s;
         }
 
@@ -160,7 +160,6 @@
             box-shadow: 0 4px 15px rgba(108,92,231,0.4);
         }
 
-        /* طراحی جدید نوار پایین: کپسول شناور و جمع‌وجور */
         .bottom-nav {
             position: fixed;
             bottom: 16px;
@@ -182,7 +181,7 @@
 
         .bottom-nav-btn {
             display: flex;
-            flex-direction: row; /* آیکون و متن کنار هم برای کاهش ارتفاع */
+            flex-direction: row;
             align-items: center;
             gap: 6px;
             background: transparent;
@@ -389,6 +388,29 @@
             box-shadow: var(--shadow);
             -webkit-overflow-scrolling: touch;
         }
+        
+        /* --- تغییر جدید: کلاس اسکرول عمودی برای بیش از ۱۰ ردیف --- */
+        .table-wrapper.scrollable-y {
+            max-height: 60vh; /* حداکثر ارتفاع ۶۰ درصد از ارتفاع صفحه نمایش */
+            overflow-y: auto;
+        }
+        /* زیباسازی اسکرول‌بار */
+        .table-wrapper.scrollable-y::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .table-wrapper.scrollable-y::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .table-wrapper.scrollable-y::-webkit-scrollbar-thumb {
+            background-color: var(--primary-light);
+            border-radius: 10px;
+        }
+        .table-wrapper.scrollable-y::-webkit-scrollbar-thumb:hover {
+            background-color: var(--primary);
+        }
+        /* ------------------------------------------------------- */
+
         table { 
             width: 100%; 
             border-collapse: collapse; 
@@ -405,6 +427,7 @@
             position: sticky; 
             top: 0;
             white-space: nowrap;
+            z-index: 10; /* برای اطمینان از اینکه هدر روی محتوا می‌ماند */
         }
         td {
             padding: 14px 8px; 
@@ -498,7 +521,7 @@
             .header h1 { font-size: 1.6rem; }
             .app-logo, .app-logo-fallback { width: 80px; height: 80px; font-size: 2.5rem; }
             .tabs-nav { display: flex; max-width: 800px; margin: 20px auto 0; }
-            .bottom-nav { display: none; } /* در دسکتاپ از تب‌های بالا استفاده می‌شود */
+            .bottom-nav { display: none; }
             .content-area { padding: 30px; max-width: 1000px; margin: 0 auto; }
             .summary-cards { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; }
             .form-grid { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
@@ -761,7 +784,6 @@
     </div>
 </div>
 
-<!-- نوار پایین جدید: طراحی کپسول شناور و جمع‌وجور -->
 <div class="bottom-nav">
     <button class="bottom-nav-btn active" onclick="switchTab('transactions')">
         <span class="nav-icon">🔄</span>
@@ -1235,12 +1257,15 @@
     }
 
     function renderTables() {
+        // 1. جدول فروش (Received)
         const tb = document.getElementById('trans-table-body');
         if (tb) {
+            const wrapper = tb.closest('.table-wrapper');
             tb.innerHTML = '';
             const rl = transactions.filter(t => t.type === 'received');
             if (!rl.length) {
                 tb.innerHTML = `<tr><td colspan="7"><div class="empty-state"><div class="icon">📭</div>هنوز فروشی ثبت نشده</div></td></tr>`;
+                wrapper.classList.remove('scrollable-y');
             } else {
                 rl.forEach((t, i) => {
                     const qty = t.qty || 0;
@@ -1271,15 +1296,21 @@
                             </td>
                         </tr>`;
                 });
+                // بررسی تعداد برای فعال‌سازی اسکرول
+                if (rl.length > 10) wrapper.classList.add('scrollable-y');
+                else wrapper.classList.remove('scrollable-y');
             }
         }
 
+        // 2. جدول خرید (Sent)
         const sb = document.getElementById('sent-table-body');
         if (sb) {
+            const wrapper = sb.closest('.table-wrapper');
             sb.innerHTML = '';
             const sl = transactions.filter(t => t.type === 'sent');
             if (!sl.length) {
                 sb.innerHTML = `<tr><td colspan="7"><div class="empty-state"><div class="icon">📭</div>هنوز خریدی ثبت نشده</div></td></tr>`;
+                wrapper.classList.remove('scrollable-y');
             } else {
                 sl.forEach((t, i) => {
                     const qty = t.qty || 0;
@@ -1310,14 +1341,20 @@
                             </td>
                         </tr>`;
                 });
+                // بررسی تعداد برای فعال‌سازی اسکرول
+                if (sl.length > 10) wrapper.classList.add('scrollable-y');
+                else wrapper.classList.remove('scrollable-y');
             }
         }
 
+        // 3. جدول مصارف (Expenses)
         const teb = document.getElementById('trans-exp-table-body');
         if (teb) {
+            const wrapper = teb.closest('.table-wrapper');
             teb.innerHTML = '';
             if (!expenses.length) {
                 teb.innerHTML = `<tr><td colspan="6"><div class="empty-state"><div class="icon">📭</div>هنوز هزینه‌ای ثبت نشده</div></td></tr>`;
+                wrapper.classList.remove('scrollable-y');
             } else {
                 expenses.forEach((e, i) => {
                     teb.innerHTML += `
@@ -1336,6 +1373,9 @@
                             </td>
                         </tr>`;
                 });
+                // بررسی تعداد برای فعال‌سازی اسکرول
+                if (expenses.length > 10) wrapper.classList.add('scrollable-y');
+                else wrapper.classList.remove('scrollable-y');
             }
         }
     }
