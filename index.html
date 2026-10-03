@@ -389,27 +389,14 @@
             -webkit-overflow-scrolling: touch;
         }
         
-        /* --- تغییر جدید: کلاس اسکرول عمودی برای بیش از ۱۰ ردیف --- */
         .table-wrapper.scrollable-y {
-            max-height: 60vh; /* حداکثر ارتفاع ۶۰ درصد از ارتفاع صفحه نمایش */
+            max-height: 60vh;
             overflow-y: auto;
         }
-        /* زیباسازی اسکرول‌بار */
-        .table-wrapper.scrollable-y::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        .table-wrapper.scrollable-y::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        .table-wrapper.scrollable-y::-webkit-scrollbar-thumb {
-            background-color: var(--primary-light);
-            border-radius: 10px;
-        }
-        .table-wrapper.scrollable-y::-webkit-scrollbar-thumb:hover {
-            background-color: var(--primary);
-        }
-        /* ------------------------------------------------------- */
+        .table-wrapper.scrollable-y::-webkit-scrollbar { width: 6px; height: 6px; }
+        .table-wrapper.scrollable-y::-webkit-scrollbar-track { background: transparent; }
+        .table-wrapper.scrollable-y::-webkit-scrollbar-thumb { background-color: var(--primary-light); border-radius: 10px; }
+        .table-wrapper.scrollable-y::-webkit-scrollbar-thumb:hover { background-color: var(--primary); }
 
         table { 
             width: 100%; 
@@ -427,7 +414,7 @@
             position: sticky; 
             top: 0;
             white-space: nowrap;
-            z-index: 10; /* برای اطمینان از اینکه هدر روی محتوا می‌ماند */
+            z-index: 10;
         }
         td {
             padding: 14px 8px; 
@@ -514,6 +501,36 @@
             align-items: center; flex-wrap: wrap; gap: 10px;
         }
         .archive-date { font-weight: 700; color: var(--primary); font-size: 0.9rem; }
+
+        /* --- استایل‌های پنجره تأیید سفارشی (Custom Modal) --- */
+        .custom-modal-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.6); backdrop-filter: blur(8px);
+            z-index: 2000; display: none; align-items: center; justify-content: center;
+            padding: 20px;
+        }
+        .custom-modal-overlay.show { display: flex; animation: fadeIn 0.2s; }
+        .custom-modal-box {
+            background: var(--card-solid); border-radius: 24px; padding: 30px 25px;
+            width: 100%; max-width: 420px; text-align: center;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.25); border: 1px solid var(--border);
+            transform: scale(0.95); animation: popIn 0.3s forwards;
+        }
+        @keyframes popIn { to { transform: scale(1); } }
+        .custom-modal-icon { font-size: 3.5rem; margin-bottom: 15px; }
+        .custom-modal-box h3 { 
+            font-size: 1.3rem; font-weight: 900; color: var(--text); margin-bottom: 15px; 
+        }
+        .modal-message {
+            font-size: 1.05rem; font-weight: 800; /* فونت ضخیم طبق درخواست */
+            color: var(--text); line-height: 2; margin-bottom: 25px;
+            white-space: pre-line; text-align: right; direction: rtl;
+            background: var(--bg); padding: 15px; border-radius: 12px;
+            border-right: 4px solid var(--primary);
+        }
+        .modal-actions { display: flex; gap: 12px; justify-content: center; }
+        .modal-actions .btn { flex: 1; font-weight: 800; }
+        /* ------------------------------------------------------- */
 
         @media (min-width: 768px) {
             body { padding-bottom: 20px; }
@@ -616,7 +633,7 @@
                         </select>
                     </div>
                 </div>
-                <button class="btn btn-danger" onclick="addTransaction()">💾 ذخیره فروش</button>
+                <button class="btn btn-danger" onclick="addTransaction()">💾 پیش‌نمایش و ثبت فروش</button>
             </div>
             <div class="table-wrapper">
                 <table>
@@ -671,7 +688,7 @@
                         </select>
                     </div>
                 </div>
-                <button class="btn btn-success" onclick="addTransaction('sent')">💾 ذخیره خرید</button>
+                <button class="btn btn-success" onclick="addTransaction('sent')">💾 پیش‌نمایش و ثبت خرید</button>
             </div>
             <div class="table-wrapper">
                 <table>
@@ -728,7 +745,7 @@
                         </select>
                     </div>
                 </div>
-                <button class="btn btn-danger" id="btn-add-trans-expense" onclick="addTransExpense()">💾 ثبت هزینه</button>
+                <button class="btn btn-danger" id="btn-add-trans-expense" onclick="addTransExpense()">💾 پیش‌نمایش و ثبت هزینه</button>
             </div>
             <div class="table-wrapper">
                 <table>
@@ -795,12 +812,49 @@
     </button>
 </div>
 
+<!-- پنجره تأیید سفارشی (جایگزین alert و confirm پیش‌فرض مرورگر) -->
+<div id="custom-modal" class="custom-modal-overlay">
+    <div class="custom-modal-box">
+        <div class="custom-modal-icon" id="modal-icon">⚠️</div>
+        <h3 id="modal-title">عنوان پیام</h3>
+        <div id="modal-message" class="modal-message">متن پیام در اینجا قرار می‌گیرد</div>
+        <div class="modal-actions">
+            <button class="btn btn-secondary" onclick="closeCustomModal()">انصراف</button>
+            <button class="btn btn-primary" id="modal-confirm-btn" onclick="executeModalAction()">تأیید</button>
+        </div>
+    </div>
+</div>
+
 <script>
     let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
     let expenses = JSON.parse(localStorage.getItem('expenses')) || [];
     let editIndex = null;
     let editExpenseIndex = null;
     const currencies = ['AFN', 'USD', 'EUR', 'IRR', 'PKR'];
+    let pendingAction = null; // ذخیره تابع برای اجرای پس از تأیید
+
+    // --- توابع مدیریت پنجره سفارشی ---
+    function showCustomConfirm(title, message, icon, actionFunction, confirmText = 'تأیید') {
+        document.getElementById('modal-title').innerText = title;
+        document.getElementById('modal-message').innerText = message;
+        document.getElementById('modal-icon').innerText = icon;
+        document.getElementById('modal-confirm-btn').innerText = confirmText;
+        pendingAction = actionFunction;
+        document.getElementById('custom-modal').classList.add('show');
+    }
+
+    function closeCustomModal() {
+        document.getElementById('custom-modal').classList.remove('show');
+        pendingAction = null;
+    }
+
+    function executeModalAction() {
+        if (pendingAction) {
+            pendingAction();
+        }
+        closeCustomModal();
+    }
+    // -----------------------------------
 
     function getAfghanistanDate(d = new Date()) {
         return new Date(d.toLocaleString('en-US', { timeZone: 'Asia/Kabul' }));
@@ -816,8 +870,8 @@
     }
 
     function resetAllData() {
-        if (confirm('⚠️ آیا از حذف تمام اطلاعات سیستم اطمینان دارید؟\n\nاین عمل شامل تمام معاملات، مصارف، آرشیو و مانده‌ها می‌شود و قابل بازگشت نیست!')) {
-            if (confirm('⛔ تأیید نهایی: واقعاً همه چیز پاک شود؟')) {
+        showCustomConfirm('هشدار جدی', 'آیا از حذف تمام اطلاعات سیستم اطمینان دارید؟\nاین عمل شامل تمام معاملات، مصارف، آرشیو و مانده‌ها می‌شود و قابل بازگشت نیست!', '⚠️', () => {
+            showCustomConfirm('تأیید نهایی', 'واقعاً همه چیز پاک شود؟', '🗑️', () => {
                 localStorage.removeItem('transactions');
                 localStorage.removeItem('expenses');
                 localStorage.removeItem('dailyArchives');
@@ -829,9 +883,9 @@
                 updateSummaryCards();
                 updateDailyBalance();
                 updateReports();
-                alert('✅ تمام اطلاعات سیستم با موفقیت پاک شد و حساب از صفر شروع می‌شود.');
-            }
-        }
+                showCustomConfirm('پاکسازی کامل', 'تمام اطلاعات سیستم با موفقیت پاک شد و حساب از صفر شروع می‌شود.', '✅', null);
+            });
+        });
     }
 
     function checkDayClosing() {
@@ -1048,41 +1102,50 @@
             currency = document.getElementById('t-currency-sent').value;
         }
 
-        if (!desc || amount <= 0) return alert('لطفاً تمام فیلدها را پر کنید (مجموع باید بیشتر از صفر باشد)');
-
-        const newTrans = { 
-            id: Date.now(), 
-            customer: customer || '',
-            desc, 
-            qty,
-            price,
-            amount, 
-            currency, 
-            type, 
-            date: getAfghanistanDateString() 
-        };
-
-        if (editIndex !== null) {
-            transactions[editIndex] = newTrans;
-            editIndex = null;
-        } else {
-            transactions.push(newTrans);
+        if (!desc || amount <= 0) {
+            return showCustomConfirm('خطا در ورودی', 'لطفاً تمام فیلدها را پر کنید (مجموع باید بیشتر از صفر باشد)', '⚠️', null);
         }
 
-        if (type === 'received') {
-            document.getElementById('t-customer').value = '';
-            document.getElementById('t-desc').value = '';
-            document.getElementById('t-qty').value = '';
-            document.getElementById('t-price').value = '';
-            document.getElementById('t-total').value = '';
-        } else {
-            document.getElementById('t-customer-sent').value = '';
-            document.getElementById('t-desc-sent').value = '';
-            document.getElementById('t-qty-sent').value = '';
-            document.getElementById('t-price-sent').value = '';
-            document.getElementById('t-total-sent').value = '';
-        }
-        saveData();
+        const typeText = type === 'received' ? 'فروش' : 'خرید';
+        const summary = `نوع عملیات: ${typeText}\nمشتری: ${customer || 'ندارد'}\nشرح: ${desc}\nتعداد: ${formatNumber(qty)}\nفی: ${formatNumber(price)}\nمجموع: ${formatNumber(amount)} ${currency}`;
+
+        // نمایش خلاصه و انتظار برای کلیک "ثبت نهایی"
+        showCustomConfirm('تأیید ثبت ' + typeText, summary, '📝', () => {
+            const newTrans = { 
+                id: Date.now(), 
+                customer: customer || '',
+                desc, 
+                qty,
+                price,
+                amount, 
+                currency, 
+                type, 
+                date: getAfghanistanDateString() 
+            };
+
+            if (editIndex !== null) {
+                transactions[editIndex] = newTrans;
+                editIndex = null;
+            } else {
+                transactions.push(newTrans);
+            }
+
+            if (type === 'received') {
+                document.getElementById('t-customer').value = '';
+                document.getElementById('t-desc').value = '';
+                document.getElementById('t-qty').value = '';
+                document.getElementById('t-price').value = '';
+                document.getElementById('t-total').value = '';
+            } else {
+                document.getElementById('t-customer-sent').value = '';
+                document.getElementById('t-desc-sent').value = '';
+                document.getElementById('t-qty-sent').value = '';
+                document.getElementById('t-price-sent').value = '';
+                document.getElementById('t-total-sent').value = '';
+            }
+            saveData();
+            showCustomConfirm('موفق', typeText + ' با موفقیت در سیستم ثبت گردید.', '✅', null);
+        }, 'ثبت نهایی');
     }
 
     function addTransExpense() {
@@ -1090,30 +1153,29 @@
         const amountStr = document.getElementById('te-amount').value.replace(/,/g, '');
         const currency = document.getElementById('te-currency').value;
 
-        if (!cat || !amountStr) return alert('لطفاً اطلاعات را کامل کنید');
-
-        if (editExpenseIndex !== null) {
-            expenses[editExpenseIndex].cat = cat;
-            expenses[editExpenseIndex].amount = amountStr;
-            expenses[editExpenseIndex].currency = currency;
-            editExpenseIndex = null;
-
-            const btn = document.getElementById('btn-add-trans-expense');
-            btn.innerText = '💾 ثبت هزینه';
-            btn.className = 'btn btn-danger';
-        } else {
-            expenses.push({ id: Date.now(), cat, amount: amountStr, currency, date: getAfghanistanDateString() });
+        if (!cat || !amountStr) {
+            return showCustomConfirm('خطا در ورودی', 'لطفاً اطلاعات دسته‌بندی و مبلغ را کامل کنید', '⚠️', null);
         }
 
-        document.getElementById('te-cat').value = '';
-        document.getElementById('te-amount').value = '';
-        document.getElementById('te-currency').value = 'AFN';
-        
-        const btn = document.getElementById('btn-add-trans-expense');
-        btn.innerText = '💾 ثبت هزینه';
-        btn.className = 'btn btn-danger';
-        
-        saveData();
+        const summary = `دسته‌بندی: ${cat}\nمبلغ: ${formatNumber(amountStr)} ${currency}`;
+
+        showCustomConfirm('تأیید ثبت هزینه', summary, '💸', () => {
+            if (editExpenseIndex !== null) {
+                expenses[editExpenseIndex].cat = cat;
+                expenses[editExpenseIndex].amount = amountStr;
+                expenses[editExpenseIndex].currency = currency;
+                editExpenseIndex = null;
+            } else {
+                expenses.push({ id: Date.now(), cat, amount: amountStr, currency, date: getAfghanistanDateString() });
+            }
+
+            document.getElementById('te-cat').value = '';
+            document.getElementById('te-amount').value = '';
+            document.getElementById('te-currency').value = 'AFN';
+            
+            saveData();
+            showCustomConfirm('موفق', 'هزینه با موفقیت در سیستم ثبت گردید.', '✅', null);
+        }, 'ثبت نهایی');
     }
 
     function editExpense(id) {
@@ -1141,7 +1203,7 @@
     }
 
     function deleteItem(type, id) {
-        if (confirm('آیا از حذف اطمینان دارید؟')) {
+        showCustomConfirm('حذف آیتم', 'آیا از حذف این مورد اطمینان دارید؟\nاین عملیات قابل بازگشت نیست.', '🗑️', () => {
             if (type === 'trans') transactions = transactions.filter(t => t.id !== id);
             if (type === 'exp') expenses = expenses.filter(e => e.id !== id);
             
@@ -1150,7 +1212,8 @@
             }
             
             saveData();
-        }
+            showCustomConfirm('حذف شد', 'مورد نظر با موفقیت از سیستم حذف گردید.', '✅', null);
+        });
     }
 
     function editTransaction(id) {
@@ -1257,7 +1320,6 @@
     }
 
     function renderTables() {
-        // 1. جدول فروش (Received)
         const tb = document.getElementById('trans-table-body');
         if (tb) {
             const wrapper = tb.closest('.table-wrapper');
@@ -1296,13 +1358,11 @@
                             </td>
                         </tr>`;
                 });
-                // بررسی تعداد برای فعال‌سازی اسکرول
                 if (rl.length > 10) wrapper.classList.add('scrollable-y');
                 else wrapper.classList.remove('scrollable-y');
             }
         }
 
-        // 2. جدول خرید (Sent)
         const sb = document.getElementById('sent-table-body');
         if (sb) {
             const wrapper = sb.closest('.table-wrapper');
@@ -1341,13 +1401,11 @@
                             </td>
                         </tr>`;
                 });
-                // بررسی تعداد برای فعال‌سازی اسکرول
                 if (sl.length > 10) wrapper.classList.add('scrollable-y');
                 else wrapper.classList.remove('scrollable-y');
             }
         }
 
-        // 3. جدول مصارف (Expenses)
         const teb = document.getElementById('trans-exp-table-body');
         if (teb) {
             const wrapper = teb.closest('.table-wrapper');
@@ -1373,7 +1431,6 @@
                             </td>
                         </tr>`;
                 });
-                // بررسی تعداد برای فعال‌سازی اسکرول
                 if (expenses.length > 10) wrapper.classList.add('scrollable-y');
                 else wrapper.classList.remove('scrollable-y');
             }
