@@ -46,7 +46,7 @@
             background: var(--bg);
             color: var(--text);
             min-height: 100vh;
-            padding-bottom: 90px; /* فضا برای نوار پایین در موبایل */
+            padding-bottom: 80px; /* کاهش فضا به دلیل کوچک شدن نوار پایین */
             transition: background 0.4s, color 0.4s;
         }
 
@@ -160,27 +160,46 @@
             box-shadow: 0 4px 15px rgba(108,92,231,0.4);
         }
 
+        /* طراحی جدید نوار پایین: کپسول شناور و جمع‌وجور */
         .bottom-nav {
-            position: fixed; bottom: 0; left: 0; right: 0;
-            background: var(--card);
+            position: fixed;
+            bottom: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--card-solid);
             backdrop-filter: blur(20px);
-            display: flex; justify-content: space-around;
-            padding: 8px 0 12px; z-index: 100;
-            border-top: 1px solid var(--border);
-            box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            padding: 6px;
+            z-index: 100;
+            border-radius: 50px;
+            border: 1px solid var(--border);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+            width: auto;
+            min-width: 260px;
         }
 
         .bottom-nav-btn {
-            display: flex; flex-direction: column; align-items: center;
-            gap: 4px; background: none; border: none;
-            color: var(--text-light); font-size: 0.7rem;
-            font-weight: 600; cursor: pointer; padding: 8px 15px; /* کمی بزرگتر برای لمس راحت‌تر */
-            border-radius: 12px; transition: 0.3s;
+            display: flex;
+            flex-direction: row; /* آیکون و متن کنار هم برای کاهش ارتفاع */
+            align-items: center;
+            gap: 6px;
+            background: transparent;
+            border: none;
+            color: var(--text-light);
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            padding: 10px 18px;
+            border-radius: 40px;
+            transition: all 0.3s ease;
         }
-        .bottom-nav-btn .nav-icon { font-size: 1.5rem; }
+        .bottom-nav-btn .nav-icon { font-size: 1.2rem; }
         .bottom-nav-btn.active {
-            color: var(--primary);
-            background: rgba(108,92,231,0.1);
+            color: #ffffff;
+            background: var(--primary);
+            box-shadow: 0 4px 15px rgba(108,92,231,0.4);
         }
 
         .content-area { padding: 15px; }
@@ -188,7 +207,6 @@
         .tab-content.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* بهینه‌سازی زیرتب‌ها برای موبایل (اسکرول افقی) */
         .sub-tabs {
             display: flex;
             gap: 10px;
@@ -207,7 +225,7 @@
             border-radius: 50px; cursor: pointer; font-weight: 700;
             font-size: 0.9rem; color: var(--text-light);
             transition: 0.3s; white-space: nowrap;
-            flex: 0 0 auto; /* جلوگیری از جمع شدن دکمه‌ها */
+            flex: 0 0 auto;
             text-align: center;
         }
         .sub-tab-btn.active {
@@ -325,7 +343,7 @@
         }
         .form-input, .form-select {
             width: 100%; padding: 14px; border: 2px solid var(--border);
-            border-radius: 14px; font-size: 16px; /* 16px برای جلوگیری از زوم خودکار در آیفون */
+            border-radius: 14px; font-size: 16px;
             background: var(--card-solid); color: var(--text);
             transition: 0.3s;
         }
@@ -480,7 +498,7 @@
             .header h1 { font-size: 1.6rem; }
             .app-logo, .app-logo-fallback { width: 80px; height: 80px; font-size: 2.5rem; }
             .tabs-nav { display: flex; max-width: 800px; margin: 20px auto 0; }
-            .bottom-nav { display: none; }
+            .bottom-nav { display: none; } /* در دسکتاپ از تب‌های بالا استفاده می‌شود */
             .content-area { padding: 30px; max-width: 1000px; margin: 0 auto; }
             .summary-cards { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; }
             .form-grid { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
@@ -657,7 +675,6 @@
             </div>
         </div>
 
-        <!-- زیرتب مصارف در تب معاملات -->
         <div id="trans-expenses" class="sub-tab-content">
             <h2 style="margin-bottom:10px; color:var(--accent)">💸 مصارف</h2>
             <div class="summary-cards">
@@ -744,12 +761,15 @@
     </div>
 </div>
 
+<!-- نوار پایین جدید: طراحی کپسول شناور و جمع‌وجور -->
 <div class="bottom-nav">
     <button class="bottom-nav-btn active" onclick="switchTab('transactions')">
-        <span class="nav-icon">🔄</span>معاملات
+        <span class="nav-icon">🔄</span>
+        <span>معاملات</span>
     </button>
     <button class="bottom-nav-btn" onclick="switchTab('reports')">
-        <span class="nav-icon">📊</span>گزارشات
+        <span class="nav-icon">📊</span>
+        <span>گزارشات</span>
     </button>
 </div>
 
@@ -1089,7 +1109,6 @@
             btn.innerText = '✏️ بروزرسانی هزینه';
             btn.className = 'btn btn-primary';
 
-            // هدایت کاربر به تب معاملات و زیرتب مصارف
             switchTab('transactions');
             document.querySelectorAll('#transactions .sub-tab-content').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('#transactions .sub-tab-btn').forEach(el => el.classList.remove('active'));
@@ -1294,7 +1313,6 @@
             }
         }
 
-        // رندر کردن جدول مصارف در تب معاملات
         const teb = document.getElementById('trans-exp-table-body');
         if (teb) {
             teb.innerHTML = '';
