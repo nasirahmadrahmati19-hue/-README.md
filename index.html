@@ -625,11 +625,11 @@
                     <div class="input-group">
                         <label>ارز</label>
                         <select id="t-currency" class="form-select">
-                            <option value="AFN">AFN</option>
-                            <option value="USD">USD</option>
-                            <option value="EUR">EUR</option>
-                            <option value="IRR">IRR</option>
-                            <option value="PKR">PKR</option>
+                            <option value="AFN">افغانی</option>
+                            <option value="USD">دالر</option>
+                            <option value="EUR">یورو</option>
+                            <option value="IRR">ریال</option>
+                            <option value="PKR">روپیه</option>
                         </select>
                     </div>
                 </div>
@@ -680,11 +680,11 @@
                     <div class="input-group">
                         <label>ارز</label>
                         <select id="t-currency-sent" class="form-select">
-                            <option value="AFN">AFN</option>
-                            <option value="USD">USD</option>
-                            <option value="EUR">EUR</option>
-                            <option value="IRR">IRR</option>
-                            <option value="PKR">PKR</option>
+                            <option value="AFN">افغانی</option>
+                            <option value="USD">دالر</option>
+                            <option value="EUR">یورو</option>
+                            <option value="IRR">ریال</option>
+                            <option value="PKR">روپیه</option>
                         </select>
                     </div>
                 </div>
@@ -737,11 +737,11 @@
                     <div class="input-group">
                         <label>ارز</label>
                         <select id="te-currency" class="form-select">
-                            <option value="AFN">AFN</option>
-                            <option value="USD">USD</option>
-                            <option value="EUR">EUR</option>
-                            <option value="IRR">IRR</option>
-                            <option value="PKR">PKR</option>
+                            <option value="AFN">افغانی</option>
+                            <option value="USD">دالر</option>
+                            <option value="EUR">یورو</option>
+                            <option value="IRR">ریال</option>
+                            <option value="PKR">روپیه</option>
                         </select>
                     </div>
                 </div>
@@ -832,6 +832,12 @@
     let editExpenseIndex = null;
     const currencies = ['AFN', 'USD', 'EUR', 'IRR', 'PKR'];
     let pendingAction = null; // ذخیره تابع برای اجرای پس از تأیید
+
+    // تابع کمکی برای تبدیل کد ارز به نام فارسی (بدون تغییر در منطق برنامه)
+    function getCurrencyName(code) {
+        const names = { 'AFN': 'افغانی', 'USD': 'دالر', 'EUR': 'یورو', 'IRR': 'ریال', 'PKR': 'روپیه' };
+        return names[code] || code;
+    }
 
     // --- توابع مدیریت پنجره سفارشی ---
     function showCustomConfirm(title, message, icon, actionFunction, confirmText = 'تأیید') {
@@ -1007,7 +1013,7 @@
         for (const [c, a] of Object.entries(t)) {
             if (a !== 0) {
                 has = true;
-                h += `<div style="${s}">${formatNumber(a)} <span class="badge badge-${c.toLowerCase()}">${c}</span></div>`;
+                h += `<div style="${s}">${formatNumber(a)} <span class="badge badge-${c.toLowerCase()}">${getCurrencyName(c)}</span></div>`;
             }
         }
         return has ? h : '<div style="color:var(--text-light)">۰</div>';
@@ -1022,7 +1028,7 @@
                 const isNegative = a < 0;
                 const cl = isNegative ? 'var(--danger)' : 'var(--success)';
                 const sign = isNegative ? '−' : '';
-                h += `<div style="${s}color:${cl};font-weight:800;">${sign}${formatNumber(Math.abs(a))} <span class="badge badge-${c.toLowerCase()}">${c}</span></div>`;
+                h += `<div style="${s}color:${cl};font-weight:800;">${sign}${formatNumber(Math.abs(a))} <span class="badge badge-${c.toLowerCase()}">${getCurrencyName(c)}</span></div>`;
             }
         }
         return has ? h : '<div style="color:var(--text-light)">۰</div>';
@@ -1107,7 +1113,7 @@
         }
 
         const typeText = type === 'received' ? 'فروش' : 'خرید';
-        const summary = `نوع عملیات: ${typeText}\nمشتری: ${customer || 'ندارد'}\nشرح: ${desc}\nتعداد: ${formatNumber(qty)}\nفی: ${formatNumber(price)}\nمجموع: ${formatNumber(amount)} ${currency}`;
+        const summary = `نوع عملیات: ${typeText}\nمشتری: ${customer || 'ندارد'}\nشرح: ${desc}\nتعداد: ${formatNumber(qty)}\nفی: ${formatNumber(price)}\nمجموع: ${formatNumber(amount)} ${getCurrencyName(currency)}`;
 
         // نمایش خلاصه و انتظار برای کلیک "ثبت نهایی"
         showCustomConfirm('تأیید ثبت ' + typeText, summary, '📝', () => {
@@ -1157,7 +1163,7 @@
             return showCustomConfirm('خطا در ورودی', 'لطفاً اطلاعات دسته‌بندی و مبلغ را کامل کنید', '⚠️', null);
         }
 
-        const summary = `دسته‌بندی: ${cat}\nمبلغ: ${formatNumber(amountStr)} ${currency}`;
+        const summary = `دسته‌بندی: ${cat}\nمبلغ: ${formatNumber(amountStr)} ${getCurrencyName(currency)}`;
 
         showCustomConfirm('تأیید ثبت هزینه', summary, '💸', () => {
             if (editExpenseIndex !== null) {
@@ -1297,12 +1303,12 @@
                         <td>${t.desc}</td>
                         <td>
                             <div class="amount-breakdown">
-                                <span class="detail">${formatNumber(qty)} × ${formatNumber(price)} ${t.currency}</span>
+                                <span class="detail">${formatNumber(qty)} × ${formatNumber(price)} ${getCurrencyName(t.currency)}</span>
                             </div>
                         </td>
                         <td>
                             <div class="amount-breakdown">
-                                <span class="total" style="color:${typeColor}">${formatNumber(amount)} <span class="badge badge-${t.currency.toLowerCase()}">${t.currency}</span></span>
+                                <span class="total" style="color:${typeColor}">${formatNumber(amount)} <span class="badge badge-${t.currency.toLowerCase()}">${getCurrencyName(t.currency)}</span></span>
                             </div>
                         </td>
                         <td>${t.date}</td>
@@ -1340,12 +1346,12 @@
                             <td>${t.desc}</td>
                             <td>
                                 <div class="amount-breakdown">
-                                    <span class="detail">${formatNumber(qty)} × ${formatNumber(price)} ${t.currency}</span>
+                                    <span class="detail">${formatNumber(qty)} × ${formatNumber(price)} ${getCurrencyName(t.currency)}</span>
                                 </div>
                             </td>
                             <td>
                                 <div class="amount-breakdown">
-                                    <span class="total" style="color:var(--danger)">⬇️ ${formatNumber(amount)} <span class="badge badge-${t.currency.toLowerCase()}">${t.currency}</span></span>
+                                    <span class="total" style="color:var(--danger)">⬇️ ${formatNumber(amount)} <span class="badge badge-${t.currency.toLowerCase()}">${getCurrencyName(t.currency)}</span></span>
                                 </div>
                             </td>
                             <td>${t.date}</td>
@@ -1383,12 +1389,12 @@
                             <td>${t.desc}</td>
                             <td>
                                 <div class="amount-breakdown">
-                                    <span class="detail">${formatNumber(qty)} × ${formatNumber(price)} ${t.currency}</span>
+                                    <span class="detail">${formatNumber(qty)} × ${formatNumber(price)} ${getCurrencyName(t.currency)}</span>
                                 </div>
                             </td>
                             <td>
                                 <div class="amount-breakdown">
-                                    <span class="total" style="color:var(--success)">⬆️ ${formatNumber(amount)} <span class="badge badge-${t.currency.toLowerCase()}">${t.currency}</span></span>
+                                    <span class="total" style="color:var(--success)">⬆️ ${formatNumber(amount)} <span class="badge badge-${t.currency.toLowerCase()}">${getCurrencyName(t.currency)}</span></span>
                                 </div>
                             </td>
                             <td>${t.date}</td>
@@ -1420,7 +1426,7 @@
                             <td>${i+1}</td>
                             <td>${e.cat}</td>
                             <td style="color:var(--danger);font-weight:800;text-align:center!important">${formatNumber(e.amount)}</td>
-                            <td><span class="badge badge-${(e.currency||'AFN').toLowerCase()}">${e.currency||'AFN'}</span></td>
+                            <td><span class="badge badge-${(e.currency||'AFN').toLowerCase()}">${getCurrencyName(e.currency||'AFN')}</span></td>
                             <td>${e.date}</td>
                             <td class="action-cell">
                                 <button class="action-btn" onclick="toggleDropdown(${e.id})">⚙️ عملیات</button>
