@@ -477,7 +477,7 @@
             display: none; position: absolute; left: 50%; transform: translateX(-50%); top: 100%;
             background: var(--card-solid); border: 1px solid var(--border);
             border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-            z-index: 1000; min-width: 130px; overflow: hidden;
+            z-index: 1000; min-width: 140px; overflow: hidden;
         }
         .dropdown-menu.show { display: block; animation: fadeIn 0.2s; }
         .dropdown-item {
@@ -489,6 +489,7 @@
         .dropdown-item:active { background: var(--bg); }
         .text-danger { color: var(--danger); }
         .text-warning { color: #e17055; }
+        .text-primary { color: var(--primary); }
 
         .empty-state { text-align: center; padding: 30px 15px; color: var(--text-light); }
         .empty-state .icon { font-size: 2.5rem; margin-bottom: 8px; }
@@ -522,7 +523,7 @@
             font-size: 1.3rem; font-weight: 900; color: var(--text); margin-bottom: 15px; 
         }
         .modal-message {
-            font-size: 1.05rem; font-weight: 800; /* فونت ضخیم طبق درخواست */
+            font-size: 1.05rem; font-weight: 800;
             color: var(--text); line-height: 2; margin-bottom: 25px;
             white-space: pre-line; text-align: right; direction: rtl;
             background: var(--bg); padding: 15px; border-radius: 12px;
@@ -623,6 +624,14 @@
                         <input type="text" id="t-total" class="form-input" readonly>
                     </div>
                     <div class="input-group">
+                        <label>مبلغ پرداختی اولیه</label>
+                        <input type="text" inputmode="numeric" pattern="[0-9]*" id="t-paid" class="form-input" oninput="formatInputNumber(this); calcRemaining('received')">
+                    </div>
+                    <div class="input-group">
+                        <label>باقی‌مانده (خودکار)</label>
+                        <input type="text" id="t-remaining" class="form-input" readonly style="color: var(--danger); font-weight: 800;">
+                    </div>
+                    <div class="input-group">
                         <label>ارز</label>
                         <select id="t-currency" class="form-select">
                             <option value="AFN">افغانی</option>
@@ -637,7 +646,7 @@
             </div>
             <div class="table-wrapper">
                 <table>
-                    <thead><tr><th>شماره</th><th>مشتری</th><th>شرح</th><th>تعداد × فی</th><th>مجموع</th><th>تاریخ</th><th>عملیات</th></tr></thead>
+                    <thead><tr><th>شماره</th><th>مشتری</th><th>شرح</th><th>جزئیات مبلغ</th><th>تاریخ</th><th>عملیات</th></tr></thead>
                     <tbody id="trans-table-body"></tbody>
                 </table>
             </div>
@@ -678,6 +687,14 @@
                         <input type="text" id="t-total-sent" class="form-input" readonly>
                     </div>
                     <div class="input-group">
+                        <label>مبلغ پرداختی اولیه</label>
+                        <input type="text" inputmode="numeric" pattern="[0-9]*" id="t-paid-sent" class="form-input" oninput="formatInputNumber(this); calcRemaining('sent')">
+                    </div>
+                    <div class="input-group">
+                        <label>باقی‌مانده (خودکار)</label>
+                        <input type="text" id="t-remaining-sent" class="form-input" readonly style="color: var(--danger); font-weight: 800;">
+                    </div>
+                    <div class="input-group">
                         <label>ارز</label>
                         <select id="t-currency-sent" class="form-select">
                             <option value="AFN">افغانی</option>
@@ -692,7 +709,7 @@
             </div>
             <div class="table-wrapper">
                 <table>
-                    <thead><tr><th>شماره</th><th>مشتری</th><th>شرح</th><th>تعداد × فی</th><th>مجموع</th><th>تاریخ</th><th>عملیات</th></tr></thead>
+                    <thead><tr><th>شماره</th><th>مشتری</th><th>شرح</th><th>جزئیات مبلغ</th><th>تاریخ</th><th>عملیات</th></tr></thead>
                     <tbody id="sent-table-body"></tbody>
                 </table>
             </div>
@@ -701,12 +718,12 @@
         <div id="daily-balance" class="sub-tab-content">
             <h2 style="margin-bottom:10px; color:var(--secondary)">💰 دخل روزانه</h2>
             <p style="color:var(--text-light); margin-bottom:20px; font-size:0.85rem;">
-                فرمول: مانده روز قبل + فروش - خرید - مصارف
+                فرمول: مانده روز قبل + <u>وجه نقد دریافتی (فروش)</u> - <u>وجه نقد پرداختی (خرید)</u> - مصارف
             </p>
             <div class="summary-cards daily-balance-cards" id="daily-balance-cards-container">
                 <div class="summary-card warning" id="card-prev-balance"><div class="label">📅 مانده روز قبل</div><div class="value" id="prev-balance">۰</div></div>
-                <div class="summary-card danger" id="card-db-received"><div class="label">⬇️ فروش امروز</div><div class="value" id="db-received">۰</div></div>
-                <div class="summary-card success" id="card-db-sent"><div class="label">⬆️ خرید امروز</div><div class="value" id="db-sent">۰</div></div>
+                <div class="summary-card danger" id="card-db-received"><div class="label">⬇️ وجه نقد فروش امروز</div><div class="value" id="db-received">۰</div></div>
+                <div class="summary-card success" id="card-db-sent"><div class="label">⬆️ وجه نقد خرید امروز</div><div class="value" id="db-sent">۰</div></div>
                 <div class="summary-card info" id="card-current-balance"><div class="label">💵 مانده فعلی دخل</div><div class="value" id="current-balance">۰</div></div>
             </div>
             <div class="form-card" style="border-color: var(--secondary);">
@@ -781,7 +798,7 @@
             </div>
             <div class="table-wrapper">
                 <table>
-                    <thead><tr><th>شماره</th><th>نوع</th><th>مشتری</th><th>شرح</th><th>تعداد × فی</th><th>مجموع</th><th>تاریخ</th></tr></thead>
+                    <thead><tr><th>شماره</th><th>نوع</th><th>مشتری</th><th>شرح</th><th>جزئیات مبلغ</th><th>تاریخ</th></tr></thead>
                     <tbody id="search-results-body"></tbody>
                 </table>
             </div>
@@ -812,7 +829,7 @@
     </button>
 </div>
 
-<!-- پنجره تأیید سفارشی (جایگزین alert و confirm پیش‌فرض مرورگر) -->
+<!-- پنجره تأیید سفارشی -->
 <div id="custom-modal" class="custom-modal-overlay">
     <div class="custom-modal-box">
         <div class="custom-modal-icon" id="modal-icon">⚠️</div>
@@ -825,15 +842,32 @@
     </div>
 </div>
 
+<!-- پنجره ثبت پرداخت جدید -->
+<div id="payment-modal" class="custom-modal-overlay">
+    <div class="custom-modal-box">
+        <div class="custom-modal-icon">💵</div>
+        <h3>ثبت پرداخت جدید</h3>
+        <div class="modal-message" id="payment-modal-info"></div>
+        <div class="input-group" style="margin-bottom: 15px; text-align: right;">
+            <label>مبلغ پرداختی جدید</label>
+            <input type="text" inputmode="numeric" pattern="[0-9]*" id="new-payment-amount" class="form-input" oninput="formatInputNumber(this)">
+        </div>
+        <div class="modal-actions">
+            <button class="btn btn-secondary" onclick="closePaymentModal()">انصراف</button>
+            <button class="btn btn-primary" onclick="confirmAddPayment()">ثبت پرداخت</button>
+        </div>
+    </div>
+</div>
+
 <script>
     let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
     let expenses = JSON.parse(localStorage.getItem('expenses')) || [];
     let editIndex = null;
     let editExpenseIndex = null;
     const currencies = ['AFN', 'USD', 'EUR', 'IRR', 'PKR'];
-    let pendingAction = null; // ذخیره تابع برای اجرای پس از تأیید
+    let pendingAction = null;
+    let currentPaymentId = null;
 
-    // تابع کمکی برای تبدیل کد ارز به نام فارسی (بدون تغییر در منطق برنامه)
     function getCurrencyName(code) {
         const names = { 'AFN': 'افغانی', 'USD': 'دالر', 'EUR': 'یورو', 'IRR': 'ریال', 'PKR': 'روپیه' };
         return names[code] || code;
@@ -859,6 +893,45 @@
             pendingAction();
         }
         closeCustomModal();
+    }
+
+    // --- توابع مدیریت پرداخت جدید ---
+    function openPaymentModal(id) {
+        currentPaymentId = id;
+        const t = transactions.find(x => x.id === id);
+        document.getElementById('payment-modal-info').innerHTML = `
+            مشتری: ${t.customer || 'ندارد'}<br>
+            کل مبلغ: ${formatNumber(t.amount)} ${getCurrencyName(t.currency)}<br>
+            باقی‌مانده فعلی: <span style="color:var(--danger);font-weight:800">${formatNumber(t.remaining)}</span>
+        `;
+        document.getElementById('new-payment-amount').value = '';
+        document.getElementById('payment-modal').classList.add('show');
+    }
+
+    function closePaymentModal() {
+        document.getElementById('payment-modal').classList.remove('show');
+        currentPaymentId = null;
+    }
+
+    function confirmAddPayment() {
+        const amountStr = document.getElementById('new-payment-amount').value.replace(/,/g, '');
+        const newPay = parseFloat(amountStr) || 0;
+        if (newPay <= 0) return showCustomConfirm('خطا', 'مبلغ پرداختی باید بیشتر از صفر باشد', '⚠️', null);
+
+        const tIndex = transactions.findIndex(x => x.id === currentPaymentId);
+        if (tIndex === -1) return;
+
+        const t = transactions[tIndex];
+        if (newPay > t.remaining) {
+            return showCustomConfirm('خطا', `مبلغ وارد شده (${formatNumber(newPay)}) از باقی‌مانده (${formatNumber(t.remaining)}) بیشتر است!`, '⚠️', null);
+        }
+
+        t.paid += newPay;
+        t.remaining -= newPay;
+        
+        closePaymentModal();
+        saveData();
+        showCustomConfirm('موفق', 'پرداخت جدید با موفقیت ثبت و باقی‌مانده بروزرسانی شد.', '✅', null);
     }
     // -----------------------------------
 
@@ -916,13 +989,14 @@
             const todayStats = { received: {}, sent: {}, expenses: {} };
 
             prevTrans.forEach(t => {
-                const amt = Number(t.amount) || 0;
+                // توجه: برای دخل روزانه، مبلغ واقعی پرداخت شده (paid) مبنا است نه کل مبلغ (amount)
+                const paidAmt = Number(t.paid) || 0;
                 if (t.type === 'received') {
-                    currentBalances[t.currency] = (currentBalances[t.currency] || 0) + amt;
-                    todayStats.received[t.currency] = (todayStats.received[t.currency] || 0) + amt;
+                    currentBalances[t.currency] = (currentBalances[t.currency] || 0) + paidAmt;
+                    todayStats.received[t.currency] = (todayStats.received[t.currency] || 0) + paidAmt;
                 } else {
-                    currentBalances[t.currency] = (currentBalances[t.currency] || 0) - amt;
-                    todayStats.sent[t.currency] = (todayStats.sent[t.currency] || 0) + amt;
+                    currentBalances[t.currency] = (currentBalances[t.currency] || 0) - paidAmt;
+                    todayStats.sent[t.currency] = (todayStats.sent[t.currency] || 0) + paidAmt;
                 }
             });
 
@@ -988,11 +1062,11 @@
     function formatNumber(n) { return Number(n).toLocaleString('fa-IR'); }
 
     function calcTotal(type) {
-        let qtyId, priceId, totalId;
+        let qtyId, priceId, totalId, paidId;
         if (type === 'received') {
-            qtyId = 't-qty'; priceId = 't-price'; totalId = 't-total';
+            qtyId = 't-qty'; priceId = 't-price'; totalId = 't-total'; paidId = 't-paid';
         } else {
-            qtyId = 't-qty-sent'; priceId = 't-price-sent'; totalId = 't-total-sent';
+            qtyId = 't-qty-sent'; priceId = 't-price-sent'; totalId = 't-total-sent'; paidId = 't-paid-sent';
         }
         const qtyStr = document.getElementById(qtyId).value.replace(/,/g, '');
         const priceStr = document.getElementById(priceId).value.replace(/,/g, '');
@@ -1000,7 +1074,28 @@
         const qty = parseFloat(qtyStr) || 0;
         const price = parseFloat(priceStr) || 0;
         const total = qty * price;
+        
         document.getElementById(totalId).value = total > 0 ? formatNumber(total) : '';
+        // به‌روزرسانی خودکار مبلغ پرداختی به کل مبلغ (کاربر می‌تواند بعداً آن را تغییر دهد)
+        document.getElementById(paidId).value = total > 0 ? formatNumber(total) : '';
+        calcRemaining(type);
+    }
+
+    function calcRemaining(type) {
+        let totalId, paidId, remainingId;
+        if (type === 'received') {
+            totalId = 't-total'; paidId = 't-paid'; remainingId = 't-remaining';
+        } else {
+            totalId = 't-total-sent'; paidId = 't-paid-sent'; remainingId = 't-remaining-sent';
+        }
+        const totalStr = document.getElementById(totalId).value.replace(/,/g, '');
+        const paidStr = document.getElementById(paidId).value.replace(/,/g, '');
+        
+        const total = parseFloat(totalStr) || 0;
+        const paid = parseFloat(paidStr) || 0;
+        const remaining = Math.max(0, total - paid);
+        
+        document.getElementById(remainingId).value = remaining > 0 ? formatNumber(remaining) : '۰';
     }
 
     function formatCurrencyBreakdown(items, inline = false) {
@@ -1091,7 +1186,7 @@
     }
 
     function addTransaction(type = 'received') {
-        let customer, desc, qty, price, amount, currency;
+        let customer, desc, qty, price, amount, currency, paid, remaining;
         if (type === 'received') {
             customer = document.getElementById('t-customer').value;
             desc = document.getElementById('t-desc').value;
@@ -1099,6 +1194,7 @@
             price = parseFloat(document.getElementById('t-price').value.replace(/,/g, '')) || 0;
             amount = qty * price;
             currency = document.getElementById('t-currency').value;
+            paid = parseFloat(document.getElementById('t-paid').value.replace(/,/g, '')) || 0;
         } else {
             customer = document.getElementById('t-customer-sent').value;
             desc = document.getElementById('t-desc-sent').value;
@@ -1106,16 +1202,18 @@
             price = parseFloat(document.getElementById('t-price-sent').value.replace(/,/g, '')) || 0;
             amount = qty * price;
             currency = document.getElementById('t-currency-sent').value;
+            paid = parseFloat(document.getElementById('t-paid-sent').value.replace(/,/g, '')) || 0;
         }
 
         if (!desc || amount <= 0) {
             return showCustomConfirm('خطا در ورودی', 'لطفاً تمام فیلدها را پر کنید (مجموع باید بیشتر از صفر باشد)', '⚠️', null);
         }
 
-        const typeText = type === 'received' ? 'فروش' : 'خرید';
-        const summary = `نوع عملیات: ${typeText}\nمشتری: ${customer || 'ندارد'}\nشرح: ${desc}\nتعداد: ${formatNumber(qty)}\nفی: ${formatNumber(price)}\nمجموع: ${formatNumber(amount)} ${getCurrencyName(currency)}`;
+        remaining = Math.max(0, amount - paid);
 
-        // نمایش خلاصه و انتظار برای کلیک "ثبت نهایی"
+        const typeText = type === 'received' ? 'فروش' : 'خرید';
+        const summary = `نوع عملیات: ${typeText}\nمشتری: ${customer || 'ندارد'}\nشرح: ${desc}\nتعداد: ${formatNumber(qty)}\nفی: ${formatNumber(price)}\nکل مبلغ: ${formatNumber(amount)} ${getCurrencyName(currency)}\nپرداختی اولیه: ${formatNumber(paid)}\nباقی‌مانده: ${formatNumber(remaining)}`;
+
         showCustomConfirm('تأیید ثبت ' + typeText, summary, '📝', () => {
             const newTrans = { 
                 id: Date.now(), 
@@ -1124,6 +1222,8 @@
                 qty,
                 price,
                 amount, 
+                paid,
+                remaining,
                 currency, 
                 type, 
                 date: getAfghanistanDateString() 
@@ -1142,12 +1242,16 @@
                 document.getElementById('t-qty').value = '';
                 document.getElementById('t-price').value = '';
                 document.getElementById('t-total').value = '';
+                document.getElementById('t-paid').value = '';
+                document.getElementById('t-remaining').value = '';
             } else {
                 document.getElementById('t-customer-sent').value = '';
                 document.getElementById('t-desc-sent').value = '';
                 document.getElementById('t-qty-sent').value = '';
                 document.getElementById('t-price-sent').value = '';
                 document.getElementById('t-total-sent').value = '';
+                document.getElementById('t-paid-sent').value = '';
+                document.getElementById('t-remaining-sent').value = '';
             }
             saveData();
             showCustomConfirm('موفق', typeText + ' با موفقیت در سیستم ثبت گردید.', '✅', null);
@@ -1236,6 +1340,9 @@
                 formatInputNumber(priceInput);
                 document.getElementById('t-currency').value = item.currency;
                 calcTotal('received');
+                // بازگرداندن مقدار پرداختی قبلی برای ویرایش
+                document.getElementById('t-paid').value = formatNumber(item.paid || 0);
+                calcRemaining('received');
                 switchSubTab('received');
             } else {
                 document.getElementById('t-customer-sent').value = item.customer || '';
@@ -1248,6 +1355,8 @@
                 formatInputNumber(priceInput);
                 document.getElementById('t-currency-sent').value = item.currency;
                 calcTotal('sent');
+                document.getElementById('t-paid-sent').value = formatNumber(item.paid || 0);
+                calcRemaining('sent');
                 switchSubTab('sent');
             }
             editIndex = transactions.indexOf(item);
@@ -1287,14 +1396,14 @@
         tbody.innerHTML = '';
 
         if (!results.length) {
-            tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state"><div class="icon">🔍</div>نتیجه‌ای یافت نشد</div></td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state"><div class="icon">🔍</div>نتیجه‌ای یافت نشد</div></td></tr>`;
         } else {
             results.forEach((t, i) => {
                 const typeText = t.type === 'received' ? 'فروش' : 'خرید';
                 const typeColor = t.type === 'received' ? 'var(--danger)' : 'var(--success)';
-                const qty = t.qty || 0;
-                const price = t.price || 0;
                 const amount = Number(t.amount) || 0;
+                const paid = Number(t.paid) || 0;
+                const remaining = Number(t.remaining) || 0;
                 tbody.innerHTML += `
                     <tr>
                         <td>${i+1}</td>
@@ -1303,12 +1412,9 @@
                         <td>${t.desc}</td>
                         <td>
                             <div class="amount-breakdown">
-                                <span class="detail">${formatNumber(qty)} × ${formatNumber(price)} ${getCurrencyName(t.currency)}</span>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="amount-breakdown">
-                                <span class="total" style="color:${typeColor}">${formatNumber(amount)} <span class="badge badge-${t.currency.toLowerCase()}">${getCurrencyName(t.currency)}</span></span>
+                                <span class="total">کل: ${formatNumber(amount)}</span>
+                                <span class="detail" style="color:var(--success)">پرداخت شده: ${formatNumber(paid)}</span>
+                                <span class="detail" style="color:${remaining > 0 ? 'var(--danger)' : 'var(--text-light)'}">باقی‌مانده: ${formatNumber(remaining)}</span>
                             </div>
                         </td>
                         <td>${t.date}</td>
@@ -1332,13 +1438,13 @@
             tb.innerHTML = '';
             const rl = transactions.filter(t => t.type === 'received');
             if (!rl.length) {
-                tb.innerHTML = `<tr><td colspan="7"><div class="empty-state"><div class="icon">📭</div>هنوز فروشی ثبت نشده</div></td></tr>`;
+                tb.innerHTML = `<tr><td colspan="6"><div class="empty-state"><div class="icon">📭</div>هنوز فروشی ثبت نشده</div></td></tr>`;
                 wrapper.classList.remove('scrollable-y');
             } else {
                 rl.forEach((t, i) => {
-                    const qty = t.qty || 0;
-                    const price = t.price || 0;
                     const amount = Number(t.amount) || 0;
+                    const paid = Number(t.paid) || 0;
+                    const remaining = Number(t.remaining) || 0;
                     tb.innerHTML += `
                         <tr>
                             <td>${i+1}</td>
@@ -1346,18 +1452,16 @@
                             <td>${t.desc}</td>
                             <td>
                                 <div class="amount-breakdown">
-                                    <span class="detail">${formatNumber(qty)} × ${formatNumber(price)} ${getCurrencyName(t.currency)}</span>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="amount-breakdown">
-                                    <span class="total" style="color:var(--danger)">⬇️ ${formatNumber(amount)} <span class="badge badge-${t.currency.toLowerCase()}">${getCurrencyName(t.currency)}</span></span>
+                                    <span class="total" style="color:var(--danger)">کل: ${formatNumber(amount)}</span>
+                                    <span class="detail" style="color:var(--success)">پرداخت شده: ${formatNumber(paid)}</span>
+                                    <span class="detail" style="color:${remaining > 0 ? 'var(--danger)' : 'var(--text-light)'}">باقی‌مانده: ${formatNumber(remaining)}</span>
                                 </div>
                             </td>
                             <td>${t.date}</td>
                             <td class="action-cell">
                                 <button class="action-btn" onclick="toggleDropdown(${t.id})">⚙️ عملیات</button>
                                 <div id="menu-${t.id}" class="dropdown-menu">
+                                    <button class="dropdown-item text-primary" onclick="openPaymentModal(${t.id})">💵 ثبت پرداخت جدید</button>
                                     <button class="dropdown-item text-warning" onclick="editTransaction(${t.id})">✏️ ویرایش</button>
                                     <button class="dropdown-item text-danger" onclick="deleteItem('trans',${t.id})">🗑️ حذف</button>
                                 </div>
@@ -1375,13 +1479,13 @@
             sb.innerHTML = '';
             const sl = transactions.filter(t => t.type === 'sent');
             if (!sl.length) {
-                sb.innerHTML = `<tr><td colspan="7"><div class="empty-state"><div class="icon">📭</div>هنوز خریدی ثبت نشده</div></td></tr>`;
+                sb.innerHTML = `<tr><td colspan="6"><div class="empty-state"><div class="icon">📭</div>هنوز خریدی ثبت نشده</div></td></tr>`;
                 wrapper.classList.remove('scrollable-y');
             } else {
                 sl.forEach((t, i) => {
-                    const qty = t.qty || 0;
-                    const price = t.price || 0;
                     const amount = Number(t.amount) || 0;
+                    const paid = Number(t.paid) || 0;
+                    const remaining = Number(t.remaining) || 0;
                     sb.innerHTML += `
                         <tr>
                             <td>${i+1}</td>
@@ -1389,18 +1493,16 @@
                             <td>${t.desc}</td>
                             <td>
                                 <div class="amount-breakdown">
-                                    <span class="detail">${formatNumber(qty)} × ${formatNumber(price)} ${getCurrencyName(t.currency)}</span>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="amount-breakdown">
-                                    <span class="total" style="color:var(--success)">⬆️ ${formatNumber(amount)} <span class="badge badge-${t.currency.toLowerCase()}">${getCurrencyName(t.currency)}</span></span>
+                                    <span class="total" style="color:var(--success)">کل: ${formatNumber(amount)}</span>
+                                    <span class="detail" style="color:var(--success)">پرداخت شده: ${formatNumber(paid)}</span>
+                                    <span class="detail" style="color:${remaining > 0 ? 'var(--danger)' : 'var(--text-light)'}">باقی‌مانده: ${formatNumber(remaining)}</span>
                                 </div>
                             </td>
                             <td>${t.date}</td>
                             <td class="action-cell">
                                 <button class="action-btn" onclick="toggleDropdown(${t.id})">⚙️ عملیات</button>
                                 <div id="menu-${t.id}" class="dropdown-menu">
+                                    <button class="dropdown-item text-primary" onclick="openPaymentModal(${t.id})">💵 ثبت پرداخت جدید</button>
                                     <button class="dropdown-item text-warning" onclick="editTransaction(${t.id})">✏️ ویرایش</button>
                                     <button class="dropdown-item text-danger" onclick="deleteItem('trans',${t.id})">🗑️ حذف</button>
                                 </div>
@@ -1461,21 +1563,22 @@
         const s = transactions.filter(t => t.type === 'sent');
 
         const cb = { ...pb };
-        r.forEach(t => cb[t.currency] += Number(t.amount));
-        s.forEach(t => cb[t.currency] -= Number(t.amount));
+        // توجه: برای محاسبه دخل، فقط مبلغ پرداخت شده (paid) مبنا است
+        r.forEach(t => cb[t.currency] += Number(t.paid));
+        s.forEach(t => cb[t.currency] -= Number(t.paid));
         expenses.forEach(e => cb[e.currency || 'AFN'] -= Number(e.amount));
 
         document.getElementById('prev-balance').innerHTML = formatCurrencyBreakdownObject(pb);
-        document.getElementById('db-received').innerHTML = formatCurrencyBreakdown(r);
-        document.getElementById('db-sent').innerHTML = formatCurrencyBreakdown(s);
+        document.getElementById('db-received').innerHTML = formatCurrencyBreakdown(r.map(t => ({...t, amount: t.paid})));
+        document.getElementById('db-sent').innerHTML = formatCurrencyBreakdown(s.map(t => ({...t, amount: t.paid})));
         document.getElementById('current-balance').innerHTML = formatCurrencyBreakdownObject(cb);
 
         updateBalanceCardState(cb);
 
         document.getElementById('balance-status').innerHTML = `
             <div>📅 <strong>مانده روز قبل:</strong><br>${formatCurrencyBreakdownObject(pb, true)}</div>
-            <div style="color:var(--danger)">⬇️ <strong>فروش:</strong><br>${formatCurrencyBreakdown(r, true)}</div>
-            <div style="color:var(--success)">⬆️ <strong>خرید:</strong><br>${formatCurrencyBreakdown(s, true)}</div>
+            <div style="color:var(--danger)">⬇️ <strong>وجه نقد دریافتی (فروش):</strong><br>${formatCurrencyBreakdown(r.map(t => ({...t, amount: t.paid})), true)}</div>
+            <div style="color:var(--success)">⬆️ <strong>وجه نقد پرداختی (خرید):</strong><br>${formatCurrencyBreakdown(s.map(t => ({...t, amount: t.paid})), true)}</div>
             <div style="color:var(--accent)">💸 <strong>مصارف:</strong><br>${formatCurrencyBreakdown(expenses, true)}</div>
             <hr style="margin:12px 0;border:none;border-top:2px dashed var(--border)">
             <div style="font-size:1.1rem;font-weight:800;color:var(--secondary)">💵 <strong>مانده فعلی دخل:</strong><br>${formatCurrencyBreakdownObject(cb, true)}</div>
@@ -1501,12 +1604,12 @@
         });
 
         transactions.filter(t => t.type === 'received').forEach(t => {
-            tb[t.currency] += Number(t.amount);
-            ti[t.currency] += Number(t.amount);
+            tb[t.currency] += Number(t.paid);
+            ti[t.currency] += Number(t.amount); // گزارش کل فروش بر اساس مبلغ کل فاکتور
         });
         transactions.filter(t => t.type === 'sent').forEach(t => {
-            tb[t.currency] -= Number(t.amount);
-            tp[t.currency] += Number(t.amount);
+            tb[t.currency] -= Number(t.paid);
+            tp[t.currency] += Number(t.amount); // گزارش کل خرید بر اساس مبلغ کل فاکتور
         });
         expenses.forEach(e => {
             const c = e.currency || 'AFN';
