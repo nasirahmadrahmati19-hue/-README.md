@@ -989,7 +989,6 @@
             const todayStats = { received: {}, sent: {}, expenses: {} };
 
             prevTrans.forEach(t => {
-                // توجه: برای دخل روزانه، مبلغ واقعی پرداخت شده (paid) مبنا است نه کل مبلغ (amount)
                 const paidAmt = Number(t.paid) || 0;
                 if (t.type === 'received') {
                     currentBalances[t.currency] = (currentBalances[t.currency] || 0) + paidAmt;
@@ -1076,8 +1075,10 @@
         const total = qty * price;
         
         document.getElementById(totalId).value = total > 0 ? formatNumber(total) : '';
-        // به‌روزرسانی خودکار مبلغ پرداختی به کل مبلغ (کاربر می‌تواند بعداً آن را تغییر دهد)
-        document.getElementById(paidId).value = total > 0 ? formatNumber(total) : '';
+        
+        // حذف پر کردن خودکار فیلد پرداختی، تا کاربر خودش مقدار را وارد کند
+        // document.getElementById(paidId).value = total > 0 ? formatNumber(total) : '';
+        
         calcRemaining(type);
     }
 
@@ -1563,7 +1564,6 @@
         const s = transactions.filter(t => t.type === 'sent');
 
         const cb = { ...pb };
-        // توجه: برای محاسبه دخل، فقط مبلغ پرداخت شده (paid) مبنا است
         r.forEach(t => cb[t.currency] += Number(t.paid));
         s.forEach(t => cb[t.currency] -= Number(t.paid));
         expenses.forEach(e => cb[e.currency || 'AFN'] -= Number(e.amount));
@@ -1605,11 +1605,11 @@
 
         transactions.filter(t => t.type === 'received').forEach(t => {
             tb[t.currency] += Number(t.paid);
-            ti[t.currency] += Number(t.amount); // گزارش کل فروش بر اساس مبلغ کل فاکتور
+            ti[t.currency] += Number(t.amount);
         });
         transactions.filter(t => t.type === 'sent').forEach(t => {
             tb[t.currency] -= Number(t.paid);
-            tp[t.currency] += Number(t.amount); // گزارش کل خرید بر اساس مبلغ کل فاکتور
+            tp[t.currency] += Number(t.amount);
         });
         expenses.forEach(e => {
             const c = e.currency || 'AFN';
