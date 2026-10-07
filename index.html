@@ -503,7 +503,6 @@
         }
         .archive-date { font-weight: 700; color: var(--primary); font-size: 0.9rem; }
 
-        /* --- استایل‌های پنجره تأیید سفارشی (Custom Modal) --- */
         .custom-modal-overlay {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(0,0,0,0.6); backdrop-filter: blur(8px);
@@ -531,7 +530,6 @@
         }
         .modal-actions { display: flex; gap: 12px; justify-content: center; }
         .modal-actions .btn { flex: 1; font-weight: 800; }
-        /* ------------------------------------------------------- */
 
         @media (min-width: 768px) {
             body { padding-bottom: 20px; }
@@ -829,7 +827,6 @@
     </button>
 </div>
 
-<!-- پنجره تأیید سفارشی -->
 <div id="custom-modal" class="custom-modal-overlay">
     <div class="custom-modal-box">
         <div class="custom-modal-icon" id="modal-icon">⚠️</div>
@@ -842,7 +839,6 @@
     </div>
 </div>
 
-<!-- پنجره ثبت پرداخت جدید -->
 <div id="payment-modal" class="custom-modal-overlay">
     <div class="custom-modal-box">
         <div class="custom-modal-icon">💵</div>
@@ -873,7 +869,6 @@
         return names[code] || code;
     }
 
-    // --- توابع مدیریت پنجره سفارشی ---
     function showCustomConfirm(title, message, icon, actionFunction, confirmText = 'تأیید') {
         document.getElementById('modal-title').innerText = title;
         document.getElementById('modal-message').innerText = message;
@@ -895,7 +890,6 @@
         closeCustomModal();
     }
 
-    // --- توابع مدیریت پرداخت جدید ---
     function openPaymentModal(id) {
         currentPaymentId = id;
         const t = transactions.find(x => x.id === id);
@@ -915,7 +909,7 @@
 
     function confirmAddPayment() {
         const amountStr = document.getElementById('new-payment-amount').value.replace(/,/g, '');
-        const newPay = parseFloat(amountStr) || 0;
+        const newPay = parseCleanNumber(document.getElementById('new-payment-amount').value);
         if (newPay <= 0) return showCustomConfirm('خطا', 'مبلغ پرداختی باید بیشتر از صفر باشد', '⚠️', null);
 
         const tIndex = transactions.findIndex(x => x.id === currentPaymentId);
@@ -933,7 +927,6 @@
         saveData();
         showCustomConfirm('موفق', 'پرداخت جدید با موفقیت ثبت و باقی‌مانده بروزرسانی شد.', '✅', null);
     }
-    // -----------------------------------
 
     function getAfghanistanDate(d = new Date()) {
         return new Date(d.toLocaleString('en-US', { timeZone: 'Asia/Kabul' }));
@@ -1060,6 +1053,19 @@
 
     function formatNumber(n) { return Number(n).toLocaleString('fa-IR'); }
 
+    // تابع جدید برای تبدیل ایمن اعداد فارسی/عربی و فرمت‌شده به عدد واقعی
+    function parseCleanNumber(str) {
+        if (!str) return 0;
+        let v = String(str);
+        const p = [/۰/g,/۱/g,/۲/g,/۳/g,/۴/g,/۵/g,/۶/g,/۷/g,/۸/g,/۹/g];
+        const a = [/٠/g,/١/g,/٢/g,/٣/g,/٤/g,/٥/g,/٦/g,/٧/g,/٨/g,/٩/g];
+        for(let i=0; i<10; i++) { 
+            v = v.replace(p[i], i).replace(a[i], i); 
+        }
+        v = v.replace(/,/g, '').replace(/[^0-9.]/g, '');
+        return parseFloat(v) || 0;
+    }
+
     function calcTotal(type) {
         let qtyId, priceId, totalId, paidId;
         if (type === 'received') {
@@ -1067,18 +1073,11 @@
         } else {
             qtyId = 't-qty-sent'; priceId = 't-price-sent'; totalId = 't-total-sent'; paidId = 't-paid-sent';
         }
-        const qtyStr = document.getElementById(qtyId).value.replace(/,/g, '');
-        const priceStr = document.getElementById(priceId).value.replace(/,/g, '');
-        
-        const qty = parseFloat(qtyStr) || 0;
-        const price = parseFloat(priceStr) || 0;
+        const qty = parseCleanNumber(document.getElementById(qtyId).value);
+        const price = parseCleanNumber(document.getElementById(priceId).value);
         const total = qty * price;
         
         document.getElementById(totalId).value = total > 0 ? formatNumber(total) : '';
-        
-        // حذف پر کردن خودکار فیلد پرداختی، تا کاربر خودش مقدار را وارد کند
-        // document.getElementById(paidId).value = total > 0 ? formatNumber(total) : '';
-        
         calcRemaining(type);
     }
 
@@ -1089,11 +1088,8 @@
         } else {
             totalId = 't-total-sent'; paidId = 't-paid-sent'; remainingId = 't-remaining-sent';
         }
-        const totalStr = document.getElementById(totalId).value.replace(/,/g, '');
-        const paidStr = document.getElementById(paidId).value.replace(/,/g, '');
-        
-        const total = parseFloat(totalStr) || 0;
-        const paid = parseFloat(paidStr) || 0;
+        const total = parseCleanNumber(document.getElementById(totalId).value);
+        const paid = parseCleanNumber(document.getElementById(paidId).value);
         const remaining = Math.max(0, total - paid);
         
         document.getElementById(remainingId).value = remaining > 0 ? formatNumber(remaining) : '۰';
@@ -1191,19 +1187,19 @@
         if (type === 'received') {
             customer = document.getElementById('t-customer').value;
             desc = document.getElementById('t-desc').value;
-            qty = parseFloat(document.getElementById('t-qty').value.replace(/,/g, '')) || 0;
-            price = parseFloat(document.getElementById('t-price').value.replace(/,/g, '')) || 0;
+            qty = parseCleanNumber(document.getElementById('t-qty').value);
+            price = parseCleanNumber(document.getElementById('t-price').value);
             amount = qty * price;
             currency = document.getElementById('t-currency').value;
-            paid = parseFloat(document.getElementById('t-paid').value.replace(/,/g, '')) || 0;
+            paid = parseCleanNumber(document.getElementById('t-paid').value);
         } else {
             customer = document.getElementById('t-customer-sent').value;
             desc = document.getElementById('t-desc-sent').value;
-            qty = parseFloat(document.getElementById('t-qty-sent').value.replace(/,/g, '')) || 0;
-            price = parseFloat(document.getElementById('t-price-sent').value.replace(/,/g, '')) || 0;
+            qty = parseCleanNumber(document.getElementById('t-qty-sent').value);
+            price = parseCleanNumber(document.getElementById('t-price-sent').value);
             amount = qty * price;
             currency = document.getElementById('t-currency-sent').value;
-            paid = parseFloat(document.getElementById('t-paid-sent').value.replace(/,/g, '')) || 0;
+            paid = parseCleanNumber(document.getElementById('t-paid-sent').value);
         }
 
         if (!desc || amount <= 0) {
@@ -1261,23 +1257,24 @@
 
     function addTransExpense() {
         const cat = document.getElementById('te-cat').value;
-        const amountStr = document.getElementById('te-amount').value.replace(/,/g, '');
+        const amountStr = document.getElementById('te-amount').value;
         const currency = document.getElementById('te-currency').value;
+        const cleanAmount = parseCleanNumber(amountStr);
 
-        if (!cat || !amountStr) {
+        if (!cat || cleanAmount <= 0) {
             return showCustomConfirm('خطا در ورودی', 'لطفاً اطلاعات دسته‌بندی و مبلغ را کامل کنید', '⚠️', null);
         }
 
-        const summary = `دسته‌بندی: ${cat}\nمبلغ: ${formatNumber(amountStr)} ${getCurrencyName(currency)}`;
+        const summary = `دسته‌بندی: ${cat}\nمبلغ: ${formatNumber(cleanAmount)} ${getCurrencyName(currency)}`;
 
         showCustomConfirm('تأیید ثبت هزینه', summary, '💸', () => {
             if (editExpenseIndex !== null) {
                 expenses[editExpenseIndex].cat = cat;
-                expenses[editExpenseIndex].amount = amountStr;
+                expenses[editExpenseIndex].amount = cleanAmount;
                 expenses[editExpenseIndex].currency = currency;
                 editExpenseIndex = null;
             } else {
-                expenses.push({ id: Date.now(), cat, amount: amountStr, currency, date: getAfghanistanDateString() });
+                expenses.push({ id: Date.now(), cat, amount: cleanAmount, currency, date: getAfghanistanDateString() });
             }
 
             document.getElementById('te-cat').value = '';
@@ -1294,8 +1291,7 @@
         if (item) {
             document.getElementById('te-cat').value = item.cat;
             const amountInput = document.getElementById('te-amount');
-            amountInput.value = item.amount;
-            formatInputNumber(amountInput);
+            amountInput.value = formatNumber(item.amount);
             document.getElementById('te-currency').value = item.currency || 'AFN';
             
             editExpenseIndex = expenses.indexOf(item);
@@ -1334,14 +1330,11 @@
                 document.getElementById('t-customer').value = item.customer || '';
                 document.getElementById('t-desc').value = item.desc;
                 let qtyInput = document.getElementById('t-qty');
-                qtyInput.value = item.qty || '';
-                formatInputNumber(qtyInput);
+                qtyInput.value = formatNumber(item.qty || 0);
                 let priceInput = document.getElementById('t-price');
-                priceInput.value = item.price || '';
-                formatInputNumber(priceInput);
+                priceInput.value = formatNumber(item.price || 0);
                 document.getElementById('t-currency').value = item.currency;
                 calcTotal('received');
-                // بازگرداندن مقدار پرداختی قبلی برای ویرایش
                 document.getElementById('t-paid').value = formatNumber(item.paid || 0);
                 calcRemaining('received');
                 switchSubTab('received');
@@ -1349,11 +1342,9 @@
                 document.getElementById('t-customer-sent').value = item.customer || '';
                 document.getElementById('t-desc-sent').value = item.desc;
                 let qtyInput = document.getElementById('t-qty-sent');
-                qtyInput.value = item.qty || '';
-                formatInputNumber(qtyInput);
+                qtyInput.value = formatNumber(item.qty || 0);
                 let priceInput = document.getElementById('t-price-sent');
-                priceInput.value = item.price || '';
-                formatInputNumber(priceInput);
+                priceInput.value = formatNumber(item.price || 0);
                 document.getElementById('t-currency-sent').value = item.currency;
                 calcTotal('sent');
                 document.getElementById('t-paid-sent').value = formatNumber(item.paid || 0);
@@ -1381,14 +1372,14 @@
     function searchTransactions() {
         const searchCustomer = document.getElementById('search-customer').value.trim().toLowerCase();
         const searchDesc = document.getElementById('search-desc').value.trim().toLowerCase();
-        const searchAmount = document.getElementById('search-amount').value.replace(/,/g, '').trim();
+        const searchAmount = parseCleanNumber(document.getElementById('search-amount').value);
         const searchDate = document.getElementById('search-date').value.trim();
 
         let results = transactions.filter(t => {
             let match = true;
             if (searchCustomer && !(t.customer || '').toLowerCase().includes(searchCustomer)) match = false;
             if (searchDesc && !t.desc.toLowerCase().includes(searchDesc)) match = false;
-            if (searchAmount && String(Math.round(Number(t.amount) || 0)) !== searchAmount) match = false;
+            if (searchAmount > 0 && Math.round(Number(t.amount) || 0) !== searchAmount) match = false;
             if (searchDate && !t.date.includes(searchDate)) match = false;
             return match;
         });
