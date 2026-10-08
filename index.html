@@ -896,7 +896,7 @@
         document.getElementById('payment-modal-info').innerHTML = `
             مشتری: ${t.customer || 'ندارد'}<br>
             کل مبلغ: ${formatNumber(t.amount)} ${getCurrencyName(t.currency)}<br>
-            باقی‌مانده فعلی: <span style="color:var(--danger);font-weight:800">${formatNumber(t.remaining)}</span>
+            باقی‌مانده فعلی کل: <span style="color:var(--danger);font-weight:800">${formatNumber(t.remaining)}</span>
         `;
         document.getElementById('new-payment-amount').value = '';
         document.getElementById('payment-modal').classList.add('show');
@@ -925,8 +925,7 @@
         if (!t.paymentHistory) t.paymentHistory = [];
         t.paymentHistory.push({
             amount: newPay,
-            date: getAfghanistanDateString(),
-            remaining: newRemaining
+            date: getAfghanistanDateString()
         });
 
         t.paid += newPay;
@@ -934,7 +933,7 @@
         
         closePaymentModal();
         saveData();
-        showCustomConfirm('موفق', 'قسط جدید با موفقیت ثبت و باقی‌مانده بروزرسانی شد.', '✅', null);
+        showCustomConfirm('موفق', 'قسط جدید با موفقیت ثبت و باقی‌مانده کل بروزرسانی شد.', '✅', null);
     }
 
     function getAfghanistanDate(d = new Date()) {
@@ -1221,8 +1220,7 @@
         if (paid > 0) {
             paymentHistory.push({
                 amount: paid,
-                date: getAfghanistanDateString(),
-                remaining: remaining
+                date: getAfghanistanDateString()
             });
         }
 
@@ -1453,9 +1451,9 @@
                 wrapper.classList.remove('scrollable-y');
             } else {
                 rl.forEach((t, i) => {
-                    // سازگاری با داده‌های قدیمی: اگر تاریخچه نداشت اما پرداخت داشت، یک رکورد تاریخچه می‌سازیم
+                    // سازگاری با داده‌های قدیمی
                     if (!t.paymentHistory && t.paid > 0) {
-                        t.paymentHistory = [{ amount: t.paid, date: t.date, remaining: t.remaining }];
+                        t.paymentHistory = [{ amount: t.paid, date: t.date }];
                         saveData();
                     }
                     
@@ -1469,10 +1467,9 @@
                             <div style="width:100%; text-align:right; margin-top:8px; border-top:1px dashed var(--border); padding-top:6px;">
                                 <div style="font-size:0.7rem; color:var(--primary); font-weight:700; margin-bottom:4px;">📜 تاریخچه پرداخت‌ها:</div>
                                 ${t.paymentHistory.map((p, idx) => `
-                                    <div style="font-size:0.75rem; display:flex; justify-content:space-between; align-items:center; padding:3px 0; color:var(--text-light); border-bottom:1px solid rgba(0,0,0,0.03);">
+                                    <div style="font-size:0.75rem; display:flex; justify-content:space-between; align-items:center; padding:4px 0; color:var(--text-light); border-bottom:1px solid rgba(0,0,0,0.03);">
                                         <span>✅ قسط ${idx + 1}: <b style="color:var(--success)">${formatNumber(p.amount)}</b></span>
-                                        <span style="font-size:0.7rem;">${p.date}</span>
-                                        <span style="font-size:0.7rem; color:${p.remaining > 0 ? 'var(--danger)' : 'var(--success)'}">مانده: ${formatNumber(p.remaining)}</span>
+                                        <span style="font-size:0.7rem; font-weight:600;">📅 ${p.date}</span>
                                     </div>
                                 `).join('')}
                             </div>
@@ -1490,7 +1487,7 @@
                                 <div class="amount-breakdown">
                                     <div style="font-weight:800; margin-bottom:4px; font-size:0.85rem;">
                                         کل: ${formatNumber(amount)} | 
-                                        باقی‌مانده: <span style="color:${remaining > 0 ? 'var(--danger)' : 'var(--success)'}">${formatNumber(remaining)}</span>
+                                        باقی‌مانده کل: <span style="color:${remaining > 0 ? 'var(--danger)' : 'var(--success)'}">${formatNumber(remaining)}</span>
                                     </div>
                                     ${historyHtml}
                                 </div>
@@ -1522,7 +1519,7 @@
             } else {
                 sl.forEach((t, i) => {
                     if (!t.paymentHistory && t.paid > 0) {
-                        t.paymentHistory = [{ amount: t.paid, date: t.date, remaining: t.remaining }];
+                        t.paymentHistory = [{ amount: t.paid, date: t.date }];
                         saveData();
                     }
 
@@ -1536,10 +1533,9 @@
                             <div style="width:100%; text-align:right; margin-top:8px; border-top:1px dashed var(--border); padding-top:6px;">
                                 <div style="font-size:0.7rem; color:var(--primary); font-weight:700; margin-bottom:4px;">📜 تاریخچه پرداخت‌ها:</div>
                                 ${t.paymentHistory.map((p, idx) => `
-                                    <div style="font-size:0.75rem; display:flex; justify-content:space-between; align-items:center; padding:3px 0; color:var(--text-light); border-bottom:1px solid rgba(0,0,0,0.03);">
+                                    <div style="font-size:0.75rem; display:flex; justify-content:space-between; align-items:center; padding:4px 0; color:var(--text-light); border-bottom:1px solid rgba(0,0,0,0.03);">
                                         <span>✅ قسط ${idx + 1}: <b style="color:var(--success)">${formatNumber(p.amount)}</b></span>
-                                        <span style="font-size:0.7rem;">${p.date}</span>
-                                        <span style="font-size:0.7rem; color:${p.remaining > 0 ? 'var(--danger)' : 'var(--success)'}">مانده: ${formatNumber(p.remaining)}</span>
+                                        <span style="font-size:0.7rem; font-weight:600;">📅 ${p.date}</span>
                                     </div>
                                 `).join('')}
                             </div>
@@ -1557,7 +1553,7 @@
                                 <div class="amount-breakdown">
                                     <div style="font-weight:800; margin-bottom:4px; font-size:0.85rem;">
                                         کل: ${formatNumber(amount)} | 
-                                        باقی‌مانده: <span style="color:${remaining > 0 ? 'var(--danger)' : 'var(--success)'}">${formatNumber(remaining)}</span>
+                                        باقی‌مانده کل: <span style="color:${remaining > 0 ? 'var(--danger)' : 'var(--success)'}">${formatNumber(remaining)}</span>
                                     </div>
                                     ${historyHtml}
                                 </div>
