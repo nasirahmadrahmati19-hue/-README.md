@@ -422,7 +422,7 @@
             font-size: 0.85rem; 
             vertical-align: middle;
             text-align: center !important;
-            white-space: nowrap;
+            white-space: normal; /* تغییر برای شکستن خط در صورت نیاز */
         }
         tr:last-child td { border-bottom: none; }
 
@@ -434,7 +434,7 @@
             gap: 4px;
             font-size: 0.8rem;
             width: 100%;
-            text-align: center;
+            text-align: center !important;
         }
         .amount-breakdown .total {
             font-weight: 800;
@@ -921,7 +921,6 @@
 
         const newRemaining = t.remaining - newPay;
         
-        // اضافه کردن به تاریخچه پرداخت‌ها (قسط جدید)
         if (!t.paymentHistory) t.paymentHistory = [];
         t.paymentHistory.push({
             amount: newPay,
@@ -1215,7 +1214,6 @@
 
         remaining = Math.max(0, amount - paid);
         
-        // ساخت تاریخچه پرداخت اولیه
         let paymentHistory = [];
         if (paid > 0) {
             paymentHistory.push({
@@ -1240,7 +1238,7 @@
                 currency, 
                 type, 
                 date: getAfghanistanDateString(),
-                paymentHistory: paymentHistory // ذخیره تاریخچه
+                paymentHistory: paymentHistory
             };
 
             if (editIndex !== null) {
@@ -1451,7 +1449,6 @@
                 wrapper.classList.remove('scrollable-y');
             } else {
                 rl.forEach((t, i) => {
-                    // سازگاری با داده‌های قدیمی
                     if (!t.paymentHistory && t.paid > 0) {
                         t.paymentHistory = [{ amount: t.paid, date: t.date }];
                         saveData();
@@ -1463,19 +1460,21 @@
                     
                     let historyHtml = '';
                     if (t.paymentHistory && t.paymentHistory.length > 0) {
+                        // اصلاح شده: text-align:center و justify-content:center برای وسط چین شدن کامل
                         historyHtml = `
-                            <div style="width:100%; text-align:right; margin-top:8px; border-top:1px dashed var(--border); padding-top:6px;">
+                            <div style="width:100%; text-align:center; margin-top:8px; border-top:1px dashed var(--border); padding-top:6px;">
                                 <div style="font-size:0.7rem; color:var(--primary); font-weight:700; margin-bottom:4px;">📜 تاریخچه پرداخت‌ها:</div>
                                 ${t.paymentHistory.map((p, idx) => `
-                                    <div style="font-size:0.75rem; display:flex; justify-content:space-between; align-items:center; padding:4px 0; color:var(--text-light); border-bottom:1px solid rgba(0,0,0,0.03);">
-                                        <span>✅ قسط ${idx + 1}: <b style="color:var(--success)">${formatNumber(p.amount)}</b></span>
+                                    <div style="font-size:0.75rem; display:flex; justify-content:center; align-items:center; gap: 8px; padding:4px 0; color:var(--text-light); border-bottom:1px solid rgba(0,0,0,0.03);">
+                                        <span>✅ قسط ${idx + 1}:</span>
+                                        <b style="color:var(--success)">${formatNumber(p.amount)}</b>
                                         <span style="font-size:0.7rem; font-weight:600;">📅 ${p.date}</span>
                                     </div>
                                 `).join('')}
                             </div>
                         `;
                     } else {
-                        historyHtml = `<div style="font-size:0.75rem; color:var(--danger); margin-top:4px;">⚠️ بدون پرداخت</div>`;
+                        historyHtml = `<div style="font-size:0.75rem; color:var(--danger); margin-top:4px; text-align:center;">⚠️ بدون پرداخت</div>`;
                     }
 
                     tb.innerHTML += `
@@ -1529,19 +1528,21 @@
                     
                     let historyHtml = '';
                     if (t.paymentHistory && t.paymentHistory.length > 0) {
+                        // اصلاح شده: text-align:center و justify-content:center برای وسط چین شدن کامل
                         historyHtml = `
-                            <div style="width:100%; text-align:right; margin-top:8px; border-top:1px dashed var(--border); padding-top:6px;">
+                            <div style="width:100%; text-align:center; margin-top:8px; border-top:1px dashed var(--border); padding-top:6px;">
                                 <div style="font-size:0.7rem; color:var(--primary); font-weight:700; margin-bottom:4px;">📜 تاریخچه پرداخت‌ها:</div>
                                 ${t.paymentHistory.map((p, idx) => `
-                                    <div style="font-size:0.75rem; display:flex; justify-content:space-between; align-items:center; padding:4px 0; color:var(--text-light); border-bottom:1px solid rgba(0,0,0,0.03);">
-                                        <span>✅ قسط ${idx + 1}: <b style="color:var(--success)">${formatNumber(p.amount)}</b></span>
+                                    <div style="font-size:0.75rem; display:flex; justify-content:center; align-items:center; gap: 8px; padding:4px 0; color:var(--text-light); border-bottom:1px solid rgba(0,0,0,0.03);">
+                                        <span>✅ قسط ${idx + 1}:</span>
+                                        <b style="color:var(--success)">${formatNumber(p.amount)}</b>
                                         <span style="font-size:0.7rem; font-weight:600;">📅 ${p.date}</span>
                                     </div>
                                 `).join('')}
                             </div>
                         `;
                     } else {
-                        historyHtml = `<div style="font-size:0.75rem; color:var(--danger); margin-top:4px;">⚠️ بدون پرداخت</div>`;
+                        historyHtml = `<div style="font-size:0.75rem; color:var(--danger); margin-top:4px; text-align:center;">⚠️ بدون پرداخت</div>`;
                     }
 
                     sb.innerHTML += `
