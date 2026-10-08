@@ -644,7 +644,7 @@
             </div>
             <div class="table-wrapper">
                 <table>
-                    <thead><tr><th>شماره</th><th>مشتری</th><th>شرح</th><th>جزئیات مبلغ</th><th>تاریخ</th><th>عملیات</th></tr></thead>
+                    <thead><tr><th>شماره</th><th>مشتری</th><th>شرح</th><th>جزئیات مبلغ و اقساط</th><th>تاریخ</th><th>عملیات</th></tr></thead>
                     <tbody id="trans-table-body"></tbody>
                 </table>
             </div>
@@ -707,7 +707,7 @@
             </div>
             <div class="table-wrapper">
                 <table>
-                    <thead><tr><th>شماره</th><th>مشتری</th><th>شرح</th><th>جزئیات مبلغ</th><th>تاریخ</th><th>عملیات</th></tr></thead>
+                    <thead><tr><th>شماره</th><th>مشتری</th><th>شرح</th><th>جزئیات مبلغ و اقساط</th><th>تاریخ</th><th>عملیات</th></tr></thead>
                     <tbody id="sent-table-body"></tbody>
                 </table>
             </div>
@@ -842,7 +842,7 @@
 <div id="payment-modal" class="custom-modal-overlay">
     <div class="custom-modal-box">
         <div class="custom-modal-icon">💵</div>
-        <h3>ثبت پرداخت جدید</h3>
+        <h3>ثبت پرداخت جدید (قسط)</h3>
         <div class="modal-message" id="payment-modal-info"></div>
         <div class="input-group" style="margin-bottom: 15px; text-align: right;">
             <label>مبلغ پرداختی جدید</label>
@@ -908,7 +908,6 @@
     }
 
     function confirmAddPayment() {
-        const amountStr = document.getElementById('new-payment-amount').value.replace(/,/g, '');
         const newPay = parseCleanNumber(document.getElementById('new-payment-amount').value);
         if (newPay <= 0) return showCustomConfirm('خطا', 'مبلغ پرداختی باید بیشتر از صفر باشد', '⚠️', null);
 
@@ -920,12 +919,22 @@
             return showCustomConfirm('خطا', `مبلغ وارد شده (${formatNumber(newPay)}) از باقی‌مانده (${formatNumber(t.remaining)}) بیشتر است!`, '⚠️', null);
         }
 
+        const newRemaining = t.remaining - newPay;
+        
+        // اضافه کردن به تاریخچه پرداخت‌ها (قسط جدید)
+        if (!t.paymentHistory) t.paymentHistory = [];
+        t.paymentHistory.push({
+            amount: newPay,
+            date: getAfghanistanDateString(),
+            remaining: newRemaining
+        });
+
         t.paid += newPay;
-        t.remaining -= newPay;
+        t.remaining = newRemaining;
         
         closePaymentModal();
         saveData();
-        showCustomConfirm('موفق', 'پرداخت جدید با موفقیت ثبت و باقی‌مانده بروزرسانی شد.', '✅', null);
+        showCustomConfirm('موفق', 'قسط جدید با موفقیت ثبت و باقی‌مانده بروزرسانی شد.', '✅', null);
     }
 
     function getAfghanistanDate(d = new Date()) {
@@ -1053,7 +1062,6 @@
 
     function formatNumber(n) { return Number(n).toLocaleString('fa-IR'); }
 
-    // تابع جدید برای تبدیل ایمن اعداد فارسی/عربی و فرمت‌شده به عدد واقعی
     function parseCleanNumber(str) {
         if (!str) return 0;
         let v = String(str);
@@ -1207,6 +1215,16 @@
         }
 
         remaining = Math.max(0, amount - paid);
+        
+        // ساخت تاریخچه پرداخت اولیه
+        let paymentHistory = [];
+        if (paid > 0) {
+            paymentHistory.push({
+                amount: paid,
+                date: getAfghanistanDateString(),
+                remaining: remaining
+            });
+        }
 
         const typeText = type === 'received' ? 'فروش' : 'خرید';
         const summary = `نوع عملیات: ${typeText}\nمشتری: ${customer || 'ندارد'}\nشرح: ${desc}\nتعداد: ${formatNumber(qty)}\nفی: ${formatNumber(price)}\nکل مبلغ: ${formatNumber(amount)} ${getCurrencyName(currency)}\nپرداختی اولیه: ${formatNumber(paid)}\nباقی‌مانده: ${formatNumber(remaining)}`;
@@ -1223,7 +1241,8 @@
                 remaining,
                 currency, 
                 type, 
-                date: getAfghanistanDateString() 
+                date: getAfghanistanDateString(),
+                paymentHistory: paymentHistory // ذخیره تاریخچه
             };
 
             if (editIndex !== null) {
@@ -1434,9 +1453,34 @@
                 wrapper.classList.remove('scrollable-y');
             } else {
                 rl.forEach((t, i) => {
+                    // سازگاری با داده‌های قدیمی: اگر تاریخچه نداشت اما پرداخت داشت، یک رکورد تاریخچه می‌سازیم
+                    if (!t.paymentHistory && t.paid > 0) {
+                        t.paymentHistory = [{ amount: t.paid, date: t.date, remaining: t.remaining }];
+                        saveData();
+                    }
+                    
                     const amount = Number(t.amount) || 0;
                     const paid = Number(t.paid) || 0;
                     const remaining = Number(t.remaining) || 0;
+                    
+                    let historyHtml = '';
+                    if (t.paymentHistory && t.paymentHistory.length > 0) {
+                        historyHtml = `
+                            <div style="width:100%; text-align:right; margin-top:8px; border-top:1px dashed var(--border); padding-top:6px;">
+                                <div style="font-size:0.7rem; color:var(--primary); font-weight:700; margin-bottom:4px;">📜 تاریخچه پرداخت‌ها:</div>
+                                ${t.paymentHistory.map((p, idx) => `
+                                    <div style="font-size:0.75rem; display:flex; justify-content:space-between; align-items:center; padding:3px 0; color:var(--text-light); border-bottom:1px solid rgba(0,0,0,0.03);">
+                                        <span>✅ قسط ${idx + 1}: <b style="color:var(--success)">${formatNumber(p.amount)}</b></span>
+                                        <span style="font-size:0.7rem;">${p.date}</span>
+                                        <span style="font-size:0.7rem; color:${p.remaining > 0 ? 'var(--danger)' : 'var(--success)'}">مانده: ${formatNumber(p.remaining)}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        `;
+                    } else {
+                        historyHtml = `<div style="font-size:0.75rem; color:var(--danger); margin-top:4px;">⚠️ بدون پرداخت</div>`;
+                    }
+
                     tb.innerHTML += `
                         <tr>
                             <td>${i+1}</td>
@@ -1444,16 +1488,18 @@
                             <td>${t.desc}</td>
                             <td>
                                 <div class="amount-breakdown">
-                                    <span class="total" style="color:var(--danger)">کل: ${formatNumber(amount)}</span>
-                                    <span class="detail" style="color:var(--success)">پرداخت شده: ${formatNumber(paid)}</span>
-                                    <span class="detail" style="color:${remaining > 0 ? 'var(--danger)' : 'var(--text-light)'}">باقی‌مانده: ${formatNumber(remaining)}</span>
+                                    <div style="font-weight:800; margin-bottom:4px; font-size:0.85rem;">
+                                        کل: ${formatNumber(amount)} | 
+                                        باقی‌مانده: <span style="color:${remaining > 0 ? 'var(--danger)' : 'var(--success)'}">${formatNumber(remaining)}</span>
+                                    </div>
+                                    ${historyHtml}
                                 </div>
                             </td>
                             <td>${t.date}</td>
                             <td class="action-cell">
                                 <button class="action-btn" onclick="toggleDropdown(${t.id})">⚙️ عملیات</button>
                                 <div id="menu-${t.id}" class="dropdown-menu">
-                                    <button class="dropdown-item text-primary" onclick="openPaymentModal(${t.id})">💵 ثبت پرداخت جدید</button>
+                                    <button class="dropdown-item text-primary" onclick="openPaymentModal(${t.id})">💵 ثبت قسط جدید</button>
                                     <button class="dropdown-item text-warning" onclick="editTransaction(${t.id})">✏️ ویرایش</button>
                                     <button class="dropdown-item text-danger" onclick="deleteItem('trans',${t.id})">🗑️ حذف</button>
                                 </div>
@@ -1475,9 +1521,33 @@
                 wrapper.classList.remove('scrollable-y');
             } else {
                 sl.forEach((t, i) => {
+                    if (!t.paymentHistory && t.paid > 0) {
+                        t.paymentHistory = [{ amount: t.paid, date: t.date, remaining: t.remaining }];
+                        saveData();
+                    }
+
                     const amount = Number(t.amount) || 0;
                     const paid = Number(t.paid) || 0;
                     const remaining = Number(t.remaining) || 0;
+                    
+                    let historyHtml = '';
+                    if (t.paymentHistory && t.paymentHistory.length > 0) {
+                        historyHtml = `
+                            <div style="width:100%; text-align:right; margin-top:8px; border-top:1px dashed var(--border); padding-top:6px;">
+                                <div style="font-size:0.7rem; color:var(--primary); font-weight:700; margin-bottom:4px;">📜 تاریخچه پرداخت‌ها:</div>
+                                ${t.paymentHistory.map((p, idx) => `
+                                    <div style="font-size:0.75rem; display:flex; justify-content:space-between; align-items:center; padding:3px 0; color:var(--text-light); border-bottom:1px solid rgba(0,0,0,0.03);">
+                                        <span>✅ قسط ${idx + 1}: <b style="color:var(--success)">${formatNumber(p.amount)}</b></span>
+                                        <span style="font-size:0.7rem;">${p.date}</span>
+                                        <span style="font-size:0.7rem; color:${p.remaining > 0 ? 'var(--danger)' : 'var(--success)'}">مانده: ${formatNumber(p.remaining)}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        `;
+                    } else {
+                        historyHtml = `<div style="font-size:0.75rem; color:var(--danger); margin-top:4px;">⚠️ بدون پرداخت</div>`;
+                    }
+
                     sb.innerHTML += `
                         <tr>
                             <td>${i+1}</td>
@@ -1485,16 +1555,18 @@
                             <td>${t.desc}</td>
                             <td>
                                 <div class="amount-breakdown">
-                                    <span class="total" style="color:var(--success)">کل: ${formatNumber(amount)}</span>
-                                    <span class="detail" style="color:var(--success)">پرداخت شده: ${formatNumber(paid)}</span>
-                                    <span class="detail" style="color:${remaining > 0 ? 'var(--danger)' : 'var(--text-light)'}">باقی‌مانده: ${formatNumber(remaining)}</span>
+                                    <div style="font-weight:800; margin-bottom:4px; font-size:0.85rem;">
+                                        کل: ${formatNumber(amount)} | 
+                                        باقی‌مانده: <span style="color:${remaining > 0 ? 'var(--danger)' : 'var(--success)'}">${formatNumber(remaining)}</span>
+                                    </div>
+                                    ${historyHtml}
                                 </div>
                             </td>
                             <td>${t.date}</td>
                             <td class="action-cell">
                                 <button class="action-btn" onclick="toggleDropdown(${t.id})">⚙️ عملیات</button>
                                 <div id="menu-${t.id}" class="dropdown-menu">
-                                    <button class="dropdown-item text-primary" onclick="openPaymentModal(${t.id})">💵 ثبت پرداخت جدید</button>
+                                    <button class="dropdown-item text-primary" onclick="openPaymentModal(${t.id})">💵 ثبت قسط جدید</button>
                                     <button class="dropdown-item text-warning" onclick="editTransaction(${t.id})">✏️ ویرایش</button>
                                     <button class="dropdown-item text-danger" onclick="deleteItem('trans',${t.id})">🗑️ حذف</button>
                                 </div>
