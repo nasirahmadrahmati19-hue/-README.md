@@ -9,527 +9,137 @@
     
     <style>
         :root {
-            --primary: #6C5CE7;
-            --primary-light: #a29bfe;
-            --secondary: #00CEC9;
-            --accent: #FD79A8;
-            --bg: #f0f2f5;
-            --card: rgba(255,255,255,0.9);
-            --card-solid: #ffffff;
-            --text: #2d3436;
-            --text-light: #636e72;
-            --border: rgba(0,0,0,0.08);
-            --success: #00B894;
-            --danger: #FF6B6B;
-            --warning: #FDCB6E;
-            --info: #74b9ff;
-            --shadow: 0 8px 32px rgba(108,92,231,0.1);
+            --primary: #6C5CE7; --primary-light: #a29bfe; --secondary: #00CEC9; --accent: #FD79A8;
+            --bg: #f0f2f5; --card: rgba(255,255,255,0.9); --card-solid: #ffffff; --text: #2d3436;
+            --text-light: #636e72; --border: rgba(0,0,0,0.08); --success: #00B894; --danger: #FF6B6B;
+            --warning: #FDCB6E; --info: #74b9ff; --shadow: 0 8px 32px rgba(108,92,231,0.1);
         }
-
         body.dark-mode {
-            --bg: #0a0a1a;
-            --card: rgba(30,30,60,0.85);
-            --card-solid: #1e1e3c;
-            --text: #f0f0f0;
-            --text-light: #a0a0b0;
-            --border: rgba(255,255,255,0.1);
-            --shadow: 0 8px 32px rgba(0,0,0,0.4);
+            --bg: #0a0a1a; --card: rgba(30,30,60,0.85); --card-solid: #1e1e3c; --text: #f0f0f0;
+            --text-light: #a0a0b0; --border: rgba(255,255,255,0.1); --shadow: 0 8px 32px rgba(0,0,0,0.4);
         }
-
-        * {
-            margin: 0; padding: 0; box-sizing: border-box;
-            font-family: 'Vazirmatn', sans-serif;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        body {
-            background: var(--bg);
-            color: var(--text);
-            min-height: 100vh;
-            padding-bottom: 80px;
-            transition: background 0.4s, color 0.4s;
-        }
-
-        .header {
-            background: linear-gradient(135deg, #6C5CE7 0%, #a29bfe 30%, #00CEC9 70%, #FD79A8 100%);
-            background-size: 300% 300%;
-            animation: gradientShift 8s ease infinite;
-            color: white;
-            padding: 15px 15px 30px;
-            position: relative;
-            border-radius: 0 0 30px 30px;
-        }
-
-        @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        .header-top-row {
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-            margin-bottom: 10px;
-            width: 100%;
-        }
-
-        .header-title-group { 
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
-            text-align: right;
-        }
-
-        .app-logo {
-            width: 65px;
-            height: 65px;
-            object-fit: contain;
-            border-radius: 16px;
-            background: rgba(255,255,255,0.2);
-            padding: 8px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-            backdrop-filter: blur(5px);
-            flex-shrink: 0;
-        }
-
-        .app-logo-fallback {
-            width: 65px;
-            height: 65px;
-            border-radius: 16px;
-            background: rgba(255,255,255,0.2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2rem;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-            backdrop-filter: blur(5px);
-            flex-shrink: 0;
-        }
-
-        .title-text {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-        }
-
-        .header h1 { 
-            font-size: 1.2rem; 
-            font-weight: 800; 
-            margin-bottom: 4px; 
-            line-height: 1.4;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Vazirmatn', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background: var(--bg); color: var(--text); min-height: 100vh; padding-bottom: 80px; transition: background 0.4s, color 0.4s; }
+        .header { background: linear-gradient(135deg, #6C5CE7 0%, #a29bfe 30%, #00CEC9 70%, #FD79A8 100%); background-size: 300% 300%; animation: gradientShift 8s ease infinite; color: white; padding: 15px 15px 30px; position: relative; border-radius: 0 0 30px 30px; }
+        @keyframes gradientShift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        .header-top-row { display: flex; justify-content: flex-end; align-items: center; margin-bottom: 10px; width: 100%; gap: 8px; flex-wrap: wrap; }
+        .header-title-group { display: flex; align-items: center; justify-content: center; gap: 15px; text-align: right; }
+        .app-logo { width: 65px; height: 65px; object-fit: contain; border-radius: 16px; background: rgba(255,255,255,0.2); padding: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); backdrop-filter: blur(5px); flex-shrink: 0; }
+        .app-logo-fallback { width: 65px; height: 65px; border-radius: 16px; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 2rem; box-shadow: 0 4px 15px rgba(0,0,0,0.15); backdrop-filter: blur(5px); flex-shrink: 0; }
+        .title-text { display: flex; flex-direction: column; align-items: flex-start; }
+        .header h1 { font-size: 1.2rem; font-weight: 800; margin-bottom: 4px; line-height: 1.4; }
         .header p { opacity: 0.9; font-size: 0.75rem; margin-bottom: 6px; }
         .header .date-display { font-size: 0.7rem; opacity: 0.85; }
-
-        .header-actions { display: flex; gap: 8px; }
-
-        .icon-btn {
+        .header-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+        .icon-btn { background: rgba(255,255,255,0.25); border: none; color: white; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-size: 1.2rem; backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: center; }
+        .icon-btn.reset-btn { background: rgba(255,107,107,0.4); font-size: 1rem; }
+        
+        .sync-btn {
             background: rgba(255,255,255,0.25); border: none; color: white;
-            width: 40px; height: 40px; border-radius: 50%;
-            cursor: pointer; font-size: 1.2rem;
-            backdrop-filter: blur(10px);
-            display: flex; align-items: center; justify-content: center;
+            padding: 8px 14px; border-radius: 20px; cursor: pointer;
+            font-size: 0.8rem; font-weight: 700; backdrop-filter: blur(10px);
+            display: flex; align-items: center; gap: 6px; transition: 0.3s;
         }
-        .icon-btn.reset-btn {
-            background: rgba(255,107,107,0.4);
-            font-size: 1rem;
+        .sync-btn.connected { background: rgba(0,184,148,0.4); }
+
+        .sync-status {
+            background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+            padding: 10px 15px; margin: 15px; display: none; align-items: center;
+            justify-content: space-between; font-size: 0.85rem; box-shadow: var(--shadow);
         }
-        .icon-btn.reset-btn:active {
-            background: rgba(255,107,107,0.7);
+        .sync-status.show { display: flex; }
+        .sync-status .mini-btn {
+            background: var(--primary); color: white; border: none; padding: 6px 12px;
+            border-radius: 8px; font-size: 0.75rem; font-weight: 700; cursor: pointer; margin-right: 5px;
         }
 
-        .tabs-nav {
-            display: none;
-            background: var(--card);
-            backdrop-filter: blur(20px);
-            padding: 8px; gap: 8px;
-            margin: 15px 20px 0;
-            border-radius: 16px;
-            box-shadow: var(--shadow);
-        }
-
-        .tab-btn {
-            flex: 1; padding: 14px; border: none; background: transparent;
-            cursor: pointer; font-weight: 700; font-size: 0.95rem;
-            color: var(--text-light); border-radius: 12px; transition: 0.3s;
-        }
-        .tab-btn.active {
-            background: var(--primary); color: white;
-            box-shadow: 0 4px 15px rgba(108,92,231,0.4);
-        }
-
-        .bottom-nav {
-            position: fixed;
-            bottom: 16px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--card-solid);
-            backdrop-filter: blur(20px);
-            display: flex;
-            justify-content: center;
-            gap: 8px;
-            padding: 6px;
-            z-index: 100;
-            border-radius: 50px;
-            border: 1px solid var(--border);
-            box-shadow: 0 8px 32px rgba(0,0,0,0.15);
-            width: auto;
-            min-width: 260px;
-        }
-
-        .bottom-nav-btn {
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-            gap: 6px;
-            background: transparent;
-            border: none;
-            color: var(--text-light);
-            font-size: 0.85rem;
-            font-weight: 700;
-            cursor: pointer;
-            padding: 10px 18px;
-            border-radius: 40px;
-            transition: all 0.3s ease;
-        }
+        .tabs-nav { display: none; background: var(--card); backdrop-filter: blur(20px); padding: 8px; gap: 8px; margin: 15px 20px 0; border-radius: 16px; box-shadow: var(--shadow); }
+        .tab-btn { flex: 1; padding: 14px; border: none; background: transparent; cursor: pointer; font-weight: 700; font-size: 0.95rem; color: var(--text-light); border-radius: 12px; transition: 0.3s; }
+        .tab-btn.active { background: var(--primary); color: white; box-shadow: 0 4px 15px rgba(108,92,231,0.4); }
+        .bottom-nav { position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); background: var(--card-solid); backdrop-filter: blur(20px); display: flex; justify-content: center; gap: 8px; padding: 6px; z-index: 100; border-radius: 50px; border: 1px solid var(--border); box-shadow: 0 8px 32px rgba(0,0,0,0.15); width: auto; min-width: 260px; }
+        .bottom-nav-btn { display: flex; flex-direction: row; align-items: center; gap: 6px; background: transparent; border: none; color: var(--text-light); font-size: 0.85rem; font-weight: 700; cursor: pointer; padding: 10px 18px; border-radius: 40px; transition: all 0.3s ease; }
         .bottom-nav-btn .nav-icon { font-size: 1.2rem; }
-        .bottom-nav-btn.active {
-            color: #ffffff;
-            background: var(--primary);
-            box-shadow: 0 4px 15px rgba(108,92,231,0.4);
-        }
-
+        .bottom-nav-btn.active { color: #ffffff; background: var(--primary); box-shadow: 0 4px 15px rgba(108,92,231,0.4); }
         .content-area { padding: 15px; }
         .tab-content { display: none; animation: fadeIn 0.4s; }
         .tab-content.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        .sub-tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            overflow-x: auto;
-            white-space: nowrap;
-            -webkit-overflow-scrolling: touch;
-            padding-bottom: 5px;
-        }
+        .sub-tabs { display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch; padding-bottom: 5px; }
         .sub-tabs::-webkit-scrollbar { display: none; }
-        .sub-tabs { -ms-overflow-style: none; scrollbar-width: none; }
-
-        .sub-tab-btn {
-            padding: 10px 20px; border: 2px solid var(--border);
-            background: var(--card); backdrop-filter: blur(10px);
-            border-radius: 50px; cursor: pointer; font-weight: 700;
-            font-size: 0.9rem; color: var(--text-light);
-            transition: 0.3s; white-space: nowrap;
-            flex: 0 0 auto;
-            text-align: center;
-        }
-        .sub-tab-btn.active {
-            background: var(--primary); color: white;
-            border-color: var(--primary);
-            box-shadow: 0 4px 12px rgba(108,92,231,0.3);
-        }
+        .sub-tab-btn { padding: 10px 20px; border: 2px solid var(--border); background: var(--card); backdrop-filter: blur(10px); border-radius: 50px; cursor: pointer; font-weight: 700; font-size: 0.9rem; color: var(--text-light); transition: 0.3s; white-space: nowrap; flex: 0 0 auto; text-align: center; }
+        .sub-tab-btn.active { background: var(--primary); color: white; border-color: var(--primary); box-shadow: 0 4px 12px rgba(108,92,231,0.3); }
         .sub-tab-content { display: none; animation: fadeIn 0.4s; }
         .sub-tab-content.active { display: block; }
-
-        .summary-cards {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px; margin-bottom: 20px;
-        }
-        .summary-card {
-            background: var(--card);
-            backdrop-filter: blur(15px);
-            border: 1px solid var(--border);
-            border-radius: 18px; padding: 16px 12px;
-            text-align: center; position: relative;
-            overflow: hidden; transition: transform 0.2s;
-        }
+        .summary-cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px; }
+        .summary-card { background: var(--card); backdrop-filter: blur(15px); border: 1px solid var(--border); border-radius: 18px; padding: 16px 12px; text-align: center; position: relative; overflow: hidden; transition: transform 0.2s; }
         .summary-card:active { transform: scale(0.97); }
-        .summary-card::before {
-            content: ''; position: absolute;
-            top: 0; right: 0; left: 0; height: 3px;
-        }
-        .summary-card.success { border-color: rgba(0,184,148,0.3); }
-        .summary-card.success::before { background: linear-gradient(90deg, var(--success), var(--secondary)); }
-        .summary-card.danger { border-color: rgba(255,107,107,0.3); }
-        .summary-card.danger::before { background: linear-gradient(90deg, var(--danger), var(--accent)); }
-        .summary-card.info { border-color: rgba(116,185,255,0.3); }
-        .summary-card.info::before { background: linear-gradient(90deg, var(--info), var(--primary-light)); }
-        .summary-card.warning { border-color: rgba(253,203,110,0.3); }
-        .summary-card.warning::before { background: linear-gradient(90deg, var(--warning), #e17055); }
-        .summary-card.expense { border-color: rgba(253,121,168,0.3); }
-        .summary-card.expense::before { background: linear-gradient(90deg, var(--accent), #e84393); }
-
-        .summary-card.negative {
-            border-color: rgba(255,107,107,0.6) !important;
-            background: linear-gradient(135deg, rgba(255,107,107,0.08), rgba(253,121,168,0.08));
-            animation: pulseNegative 2s ease-in-out infinite;
-        }
-        .summary-card.negative::before {
-            background: linear-gradient(90deg, #FF6B6B, #e84393) !important;
-            height: 4px;
-        }
-        @keyframes pulseNegative {
-            0%, 100% { box-shadow: 0 0 0 0 rgba(255,107,107,0); }
-            50% { box-shadow: 0 0 20px 2px rgba(255,107,107,0.2); }
-        }
-        body.dark-mode .summary-card.negative {
-            background: linear-gradient(135deg, rgba(255,107,107,0.12), rgba(253,121,168,0.08));
-        }
-
+        .summary-card::before { content: ''; position: absolute; top: 0; right: 0; left: 0; height: 3px; }
+        .summary-card.success { border-color: rgba(0,184,148,0.3); } .summary-card.success::before { background: linear-gradient(90deg, var(--success), var(--secondary)); }
+        .summary-card.danger { border-color: rgba(255,107,107,0.3); } .summary-card.danger::before { background: linear-gradient(90deg, var(--danger), var(--accent)); }
+        .summary-card.info { border-color: rgba(116,185,255,0.3); } .summary-card.info::before { background: linear-gradient(90deg, var(--info), var(--primary-light)); }
+        .summary-card.warning { border-color: rgba(253,203,110,0.3); } .summary-card.warning::before { background: linear-gradient(90deg, var(--warning), #e17055); }
+        .summary-card.expense { border-color: rgba(253,121,168,0.3); } .summary-card.expense::before { background: linear-gradient(90deg, var(--accent), #e84393); }
+        .summary-card.negative { border-color: rgba(255,107,107,0.6) !important; background: linear-gradient(135deg, rgba(255,107,107,0.08), rgba(253,121,168,0.08)); animation: pulseNegative 2s ease-in-out infinite; }
+        .summary-card.negative::before { background: linear-gradient(90deg, #FF6B6B, #e84393) !important; height: 4px; }
+        @keyframes pulseNegative { 0%, 100% { box-shadow: 0 0 0 0 rgba(255,107,107,0); } 50% { box-shadow: 0 0 20px 2px rgba(255,107,107,0.2); } }
+        body.dark-mode .summary-card.negative { background: linear-gradient(135deg, rgba(255,107,107,0.12), rgba(253,121,168,0.08)); }
         .summary-card .label { font-size: 0.75rem; color: var(--text-light); margin-bottom: 8px; font-weight: 600; }
-        .summary-card .value {
-            font-size: 0.95rem; font-weight: 800;
-            display: flex; flex-direction: column; gap: 4px; align-items: center;
-        }
-        .summary-card.success .value { color: var(--success); }
-        .summary-card.danger .value { color: var(--danger); }
-        .summary-card.info .value { color: var(--info); }
-        .summary-card.warning .value { color: #e17055; }
-        .summary-card.expense .value { color: var(--accent); }
-        .summary-card.negative .value { color: var(--danger) !important; }
-
-        @media (max-width: 767px) {
-            .daily-balance-cards {
-                grid-template-columns: 1fr;
-                gap: 10px;
-            }
-            .daily-balance-cards .summary-card {
-                display: flex;
-                flex-direction: row;
-                align-items: center;
-                justify-content: space-between;
-                padding: 14px 16px;
-                text-align: right;
-            }
-            .daily-balance-cards .summary-card .label {
-                margin-bottom: 0;
-                font-size: 0.85rem;
-                font-weight: 700;
-                white-space: nowrap;
-            }
-            .daily-balance-cards .summary-card .value {
-                flex-direction: row;
-                flex-wrap: wrap;
-                justify-content: flex-end;
-                font-size: 0.85rem;
-                gap: 4px 8px;
-                text-align: left;
-            }
-        }
-
-        .form-card {
-            background: var(--card);
-            backdrop-filter: blur(15px);
-            border: 1px solid var(--border);
-            border-radius: 20px; padding: 20px 15px;
-            margin-bottom: 20px;
-            box-shadow: var(--shadow);
-        }
+        .summary-card .value { font-size: 0.95rem; font-weight: 800; display: flex; flex-direction: column; gap: 4px; align-items: center; }
+        .summary-card.success .value { color: var(--success); } .summary-card.danger .value { color: var(--danger); }
+        .summary-card.info .value { color: var(--info); } .summary-card.warning .value { color: #e17055; }
+        .summary-card.expense .value { color: var(--accent); } .summary-card.negative .value { color: var(--danger) !important; }
+        .form-card { background: var(--card); backdrop-filter: blur(15px); border: 1px solid var(--border); border-radius: 20px; padding: 20px 15px; margin-bottom: 20px; box-shadow: var(--shadow); }
         .form-card h3 { font-size: 1rem; margin-bottom: 15px; }
-        .form-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 14px; margin-bottom: 15px;
-        }
-        .input-group label {
-            display: block; margin-bottom: 6px;
-            font-weight: 600; font-size: 0.85rem; color: var(--text-light);
-        }
-        .form-input, .form-select {
-            width: 100%; padding: 14px; border: 2px solid var(--border);
-            border-radius: 14px; font-size: 16px;
-            background: var(--card-solid); color: var(--text);
-            transition: 0.3s;
-        }
-        .form-input:focus, .form-select:focus {
-            outline: none; border-color: var(--primary);
-            box-shadow: 0 0 0 4px rgba(108,92,231,0.15);
-        }
-        .form-input[readonly] {
-            background: var(--bg);
-            color: var(--primary);
-            font-weight: 800;
-            cursor: not-allowed;
-        }
-
-        .btn {
-            padding: 16px 24px; border: none; border-radius: 14px;
-            font-weight: 700; font-size: 1rem; cursor: pointer;
-            transition: 0.3s; width: 100%;
-            display: flex; align-items: center; justify-content: center; gap: 8px;
-        }
+        .form-grid { display: grid; grid-template-columns: 1fr; gap: 14px; margin-bottom: 15px; }
+        .input-group label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 0.85rem; color: var(--text-light); }
+        .form-input, .form-select { width: 100%; padding: 14px; border: 2px solid var(--border); border-radius: 14px; font-size: 16px; background: var(--card-solid); color: var(--text); transition: 0.3s; }
+        .form-input:focus, .form-select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(108,92,231,0.15); }
+        .form-input[readonly] { background: var(--bg); color: var(--primary); font-weight: 800; cursor: not-allowed; }
+        .btn { padding: 16px 24px; border: none; border-radius: 14px; font-weight: 700; font-size: 1rem; cursor: pointer; transition: 0.3s; width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; }
         .btn:active { transform: scale(0.97); }
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary), var(--primary-light));
-            color: white; box-shadow: 0 4px 15px rgba(108,92,231,0.3);
-        }
-        .btn-success {
-            background: linear-gradient(135deg, var(--success), var(--secondary));
-            color: white; box-shadow: 0 4px 15px rgba(0,184,148,0.3);
-        }
-        .btn-danger {
-            background: linear-gradient(135deg, var(--danger), var(--accent));
-            color: white; box-shadow: 0 4px 15px rgba(255,107,107,0.3);
-        }
-        .btn-secondary {
-            background: var(--bg); color: var(--text);
-            border: 2px solid var(--border);
-        }
-
-        .table-wrapper {
-            overflow-x: auto; 
-            border-radius: 18px;
-            border: 1px solid var(--border);
-            box-shadow: var(--shadow);
-            -webkit-overflow-scrolling: touch;
-        }
-        
-        .table-wrapper.scrollable-y {
-            max-height: 60vh;
-            overflow-y: auto;
-        }
-        .table-wrapper.scrollable-y::-webkit-scrollbar { width: 6px; height: 6px; }
-        .table-wrapper.scrollable-y::-webkit-scrollbar-track { background: transparent; }
-        .table-wrapper.scrollable-y::-webkit-scrollbar-thumb { background-color: var(--primary-light); border-radius: 10px; }
-        .table-wrapper.scrollable-y::-webkit-scrollbar-thumb:hover { background-color: var(--primary); }
-
-        table { 
-            width: 100%; 
-            border-collapse: collapse; 
-            background: var(--card-solid); 
-            table-layout: auto;
-        }
-        th {
-            background: var(--bg); 
-            padding: 14px 8px;
-            text-align: center !important;
-            font-weight: 700;
-            color: var(--text-light); 
-            font-size: 0.8rem;
-            position: sticky; 
-            top: 0;
-            white-space: nowrap;
-            z-index: 10;
-        }
-        td {
-            padding: 14px 8px; 
-            border-bottom: 1px solid var(--border);
-            font-size: 0.85rem; 
-            vertical-align: middle;
-            text-align: center !important;
-            white-space: normal; /* تغییر برای شکستن خط در صورت نیاز */
-        }
+        .btn-primary { background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: white; box-shadow: 0 4px 15px rgba(108,92,231,0.3); }
+        .btn-success { background: linear-gradient(135deg, var(--success), var(--secondary)); color: white; box-shadow: 0 4px 15px rgba(0,184,148,0.3); }
+        .btn-danger { background: linear-gradient(135deg, var(--danger), var(--accent)); color: white; box-shadow: 0 4px 15px rgba(255,107,107,0.3); }
+        .btn-secondary { background: var(--bg); color: var(--text); border: 2px solid var(--border); }
+        .table-wrapper { overflow-x: auto; border-radius: 18px; border: 1px solid var(--border); box-shadow: var(--shadow); -webkit-overflow-scrolling: touch; }
+        .table-wrapper.scrollable-y { max-height: 60vh; overflow-y: auto; }
+        table { width: 100%; border-collapse: collapse; background: var(--card-solid); table-layout: auto; }
+        th { background: var(--bg); padding: 14px 8px; text-align: center !important; font-weight: 700; color: var(--text-light); font-size: 0.8rem; position: sticky; top: 0; white-space: nowrap; z-index: 10; }
+        td { padding: 14px 8px; border-bottom: 1px solid var(--border); font-size: 0.85rem; vertical-align: middle; text-align: center !important; white-space: normal; }
         tr:last-child td { border-bottom: none; }
-
-        .amount-breakdown {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 4px;
-            font-size: 0.8rem;
-            width: 100%;
-            text-align: center !important;
-        }
-        .amount-breakdown .total {
-            font-weight: 800;
-            font-size: 0.95rem;
-        }
-        .amount-breakdown .detail {
-            color: var(--text-light);
-            font-size: 0.75rem;
-        }
-
-        .badge {
-            padding: 4px 8px; border-radius: 8px;
-            font-size: 0.7rem; font-weight: 700; display: inline-flex; align-items: center;
-            vertical-align: middle;
-        }
-        .badge-afn { background: #dfe6e9; color: #2d3436; }
-        .badge-usd { background: #d5f5e3; color: #1e8449; }
-        .badge-eur { background: #fdebd0; color: #b9770e; }
-        .badge-irr { background: #fadbd8; color: #c0392b; }
-        .badge-pkr { background: #e8daef; color: #6c3483; }
-
-        body.dark-mode .badge-afn { background: #2d3436; color: #dfe6e9; }
-        body.dark-mode .badge-usd { background: #1e3a2f; color: #82e0aa; }
-        body.dark-mode .badge-eur { background: #3d2e1a; color: #f5cba7; }
-        body.dark-mode .badge-irr { background: #3d1a1a; color: #f1948a; }
-        body.dark-mode .badge-pkr { background: #2d1a3d; color: #c39bd3; }
-
-        .action-cell { 
-            position: relative; 
-            text-align: center !important;
-        }
-        .action-btn {
-            background: var(--bg); border: 1px solid var(--border);
-            padding: 8px 14px; border-radius: 10px;
-            cursor: pointer; color: var(--text); font-size: 0.85rem;
-            font-weight: 600;
-            display: inline-block;
-        }
-        .dropdown-menu {
-            display: none; position: absolute; left: 50%; transform: translateX(-50%); top: 100%;
-            background: var(--card-solid); border: 1px solid var(--border);
-            border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-            z-index: 1000; min-width: 140px; overflow: hidden;
-        }
+        .amount-breakdown { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; font-size: 0.8rem; width: 100%; text-align: center !important; }
+        .badge { padding: 4px 8px; border-radius: 8px; font-size: 0.7rem; font-weight: 700; display: inline-flex; align-items: center; vertical-align: middle; }
+        .badge-afn { background: #dfe6e9; color: #2d3436; } .badge-usd { background: #d5f5e3; color: #1e8449; }
+        .badge-eur { background: #fdebd0; color: #b9770e; } .badge-irr { background: #fadbd8; color: #c0392b; } .badge-pkr { background: #e8daef; color: #6c3483; }
+        .action-cell { position: relative; text-align: center !important; }
+        .action-btn { background: var(--bg); border: 1px solid var(--border); padding: 8px 14px; border-radius: 10px; cursor: pointer; color: var(--text); font-size: 0.85rem; font-weight: 600; display: inline-block; }
+        .dropdown-menu { display: none; position: absolute; left: 50%; transform: translateX(-50%); top: 100%; background: var(--card-solid); border: 1px solid var(--border); border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); z-index: 1000; min-width: 140px; overflow: hidden; }
         .dropdown-menu.show { display: block; animation: fadeIn 0.2s; }
-        .dropdown-item {
-            display: block; width: 100%; padding: 12px;
-            text-align: center; border: none; background: none;
-            cursor: pointer; color: var(--text); font-size: 0.85rem;
-            font-weight: 600;
-        }
+        .dropdown-item { display: block; width: 100%; padding: 12px; text-align: center; border: none; background: none; cursor: pointer; color: var(--text); font-size: 0.85rem; font-weight: 600; }
         .dropdown-item:active { background: var(--bg); }
-        .text-danger { color: var(--danger); }
-        .text-warning { color: #e17055; }
-        .text-primary { color: var(--primary); }
-
+        .text-danger { color: var(--danger); } .text-warning { color: #e17055; } .text-primary { color: var(--primary); }
         .empty-state { text-align: center; padding: 30px 15px; color: var(--text-light); }
         .empty-state .icon { font-size: 2.5rem; margin-bottom: 8px; }
-
-        .archive-item {
-            background: var(--card); backdrop-filter: blur(10px);
-            border: 1px solid var(--border); border-radius: 16px;
-            padding: 15px; margin-bottom: 10px;
-            display: flex; justify-content: space-between;
-            align-items: center; flex-wrap: wrap; gap: 10px;
-        }
+        .archive-item { background: var(--card); backdrop-filter: blur(10px); border: 1px solid var(--border); border-radius: 16px; padding: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
         .archive-date { font-weight: 700; color: var(--primary); font-size: 0.9rem; }
-
-        .custom-modal-overlay {
-            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.6); backdrop-filter: blur(8px);
-            z-index: 2000; display: none; align-items: center; justify-content: center;
-            padding: 20px;
-        }
+        .custom-modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); z-index: 2000; display: none; align-items: center; justify-content: center; padding: 20px; }
         .custom-modal-overlay.show { display: flex; animation: fadeIn 0.2s; }
-        .custom-modal-box {
-            background: var(--card-solid); border-radius: 24px; padding: 30px 25px;
-            width: 100%; max-width: 420px; text-align: center;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.25); border: 1px solid var(--border);
-            transform: scale(0.95); animation: popIn 0.3s forwards;
-        }
+        .custom-modal-box { background: var(--card-solid); border-radius: 24px; padding: 30px 25px; width: 100%; max-width: 420px; text-align: center; box-shadow: 0 25px 50px rgba(0,0,0,0.25); border: 1px solid var(--border); transform: scale(0.95); animation: popIn 0.3s forwards; }
         @keyframes popIn { to { transform: scale(1); } }
         .custom-modal-icon { font-size: 3.5rem; margin-bottom: 15px; }
-        .custom-modal-box h3 { 
-            font-size: 1.3rem; font-weight: 900; color: var(--text); margin-bottom: 15px; 
-        }
-        .modal-message {
-            font-size: 1.05rem; font-weight: 800;
-            color: var(--text); line-height: 2; margin-bottom: 25px;
-            white-space: pre-line; text-align: right; direction: rtl;
-            background: var(--bg); padding: 15px; border-radius: 12px;
-            border-right: 4px solid var(--primary);
-        }
+        .custom-modal-box h3 { font-size: 1.3rem; font-weight: 900; color: var(--text); margin-bottom: 15px; }
+        .modal-message { font-size: 1.05rem; font-weight: 800; color: var(--text); line-height: 2; margin-bottom: 25px; white-space: pre-line; text-align: right; direction: rtl; background: var(--bg); padding: 15px; border-radius: 12px; border-right: 4px solid var(--primary); }
         .modal-actions { display: flex; gap: 12px; justify-content: center; }
         .modal-actions .btn { flex: 1; font-weight: 800; }
+
+        .loading-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(5px); z-index: 3000; display: none; align-items: center;
+            justify-content: center; flex-direction: column; gap: 20px; color: white;
+        }
+        .loading-overlay.show { display: flex; }
+        .spinner { width: 60px; height: 60px; border: 5px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
         @media (min-width: 768px) {
             body { padding-bottom: 20px; }
@@ -544,10 +154,7 @@
             .btn { width: auto; padding: 14px 30px; }
             th, td { padding: 16px; font-size: 0.95rem; }
         }
-
-        @media (min-width: 1024px) {
-            .summary-cards { grid-template-columns: repeat(5, 1fr); }
-        }
+        @media (min-width: 1024px) { .summary-cards { grid-template-columns: repeat(5, 1fr); } }
     </style>
 </head>
 <body>
@@ -555,6 +162,10 @@
 <div class="header">
     <div class="header-top-row">
         <div class="header-actions">
+            <button class="sync-btn" id="sync-btn" onclick="handleCloudSync()">
+                <span>☁️</span>
+                <span id="sync-btn-text">اتصال به فضای ابری</span>
+            </button>
             <button class="icon-btn reset-btn" onclick="resetAllData()" title="ریست کامل سیستم">🗑️</button>
             <button class="icon-btn" onclick="toggleTheme()">🌙</button>
         </div>
@@ -563,12 +174,22 @@
     <div class="header-title-group">
         <img src="logo.png" alt="لوگو" class="app-logo" onerror="this.style.display='none'; document.getElementById('fallback-logo').style.display='flex';">
         <div id="fallback-logo" class="app-logo-fallback" style="display:none;">💼</div>
-        
         <div class="title-text">
             <h1>سیستم مدیریت مالی غلام سرور حسنی</h1>
             <p>سیستم هوشمند ثبت و پیگیری معاملات</p>
             <div class="date-display" id="current-date"></div>
         </div>
+    </div>
+</div>
+
+<div class="sync-status" id="sync-status">
+    <div style="display:flex; align-items:center; gap:8px;">
+        <span>🟢</span>
+        <span>همگام‌سازی فعال | <span id="last-sync-time" style="font-size:0.75rem; color:var(--text-light);">هنوز همگام‌سازی نشده</span></span>
+    </div>
+    <div>
+        <button class="mini-btn" onclick="forceSync()">💾 همگام‌سازی الآن</button>
+        <button class="mini-btn" style="background:var(--info)" onclick="loadFromCloud()">📥 دریافت از ابر</button>
     </div>
 </div>
 
@@ -589,54 +210,23 @@
 
         <div id="received" class="sub-tab-content active">
             <div class="summary-cards">
-                <div class="summary-card danger">
-                    <div class="label">مجموع فروش امروز</div>
-                    <div class="value" id="total-received-today">۰</div>
-                </div>
-                <div class="summary-card info">
-                    <div class="label">تعداد فروش</div>
-                    <div class="value" id="count-received-today">۰</div>
-                </div>
+                <div class="summary-card danger"><div class="label">مجموع فروش امروز</div><div class="value" id="total-received-today">۰</div></div>
+                <div class="summary-card info"><div class="label">تعداد فروش</div><div class="value" id="count-received-today">۰</div></div>
             </div>
             <div class="form-card">
                 <h3 style="color:var(--danger)">➕ ثبت فروش جدید</h3>
                 <div class="form-grid">
-                    <div class="input-group">
-                        <label>مشتری</label>
-                        <input type="text" id="t-customer" class="form-input">
-                    </div>
-                    <div class="input-group">
-                        <label>شرح معامله</label>
-                        <input type="text" id="t-desc" class="form-input">
-                    </div>
-                    <div class="input-group">
-                        <label>تعداد</label>
-                        <input type="text" inputmode="numeric" pattern="[0-9]*" id="t-qty" class="form-input" oninput="formatInputNumber(this); calcTotal('received')">
-                    </div>
-                    <div class="input-group">
-                        <label>فی (قیمت واحد)</label>
-                        <input type="text" inputmode="numeric" pattern="[0-9]*" id="t-price" class="form-input" oninput="formatInputNumber(this); calcTotal('received')">
-                    </div>
-                    <div class="input-group">
-                        <label>مجموع (خودکار)</label>
-                        <input type="text" id="t-total" class="form-input" readonly>
-                    </div>
-                    <div class="input-group">
-                        <label>مبلغ پرداختی اولیه</label>
-                        <input type="text" inputmode="numeric" pattern="[0-9]*" id="t-paid" class="form-input" oninput="formatInputNumber(this); calcRemaining('received')">
-                    </div>
-                    <div class="input-group">
-                        <label>باقی‌مانده (خودکار)</label>
-                        <input type="text" id="t-remaining" class="form-input" readonly style="color: var(--danger); font-weight: 800;">
-                    </div>
+                    <div class="input-group"><label>مشتری</label><input type="text" id="t-customer" class="form-input"></div>
+                    <div class="input-group"><label>شرح معامله</label><input type="text" id="t-desc" class="form-input"></div>
+                    <div class="input-group"><label>تعداد</label><input type="text" inputmode="numeric" pattern="[0-9]*" id="t-qty" class="form-input" oninput="formatInputNumber(this); calcTotal('received')"></div>
+                    <div class="input-group"><label>فی (قیمت واحد)</label><input type="text" inputmode="numeric" pattern="[0-9]*" id="t-price" class="form-input" oninput="formatInputNumber(this); calcTotal('received')"></div>
+                    <div class="input-group"><label>مجموع (خودکار)</label><input type="text" id="t-total" class="form-input" readonly></div>
+                    <div class="input-group"><label>مبلغ پرداختی اولیه</label><input type="text" inputmode="numeric" pattern="[0-9]*" id="t-paid" class="form-input" oninput="formatInputNumber(this); calcRemaining('received')"></div>
+                    <div class="input-group"><label>باقی‌مانده (خودکار)</label><input type="text" id="t-remaining" class="form-input" readonly style="color: var(--danger); font-weight: 800;"></div>
                     <div class="input-group">
                         <label>ارز</label>
                         <select id="t-currency" class="form-select">
-                            <option value="AFN">افغانی</option>
-                            <option value="USD">دالر</option>
-                            <option value="EUR">یورو</option>
-                            <option value="IRR">ریال</option>
-                            <option value="PKR">روپیه</option>
+                            <option value="AFN">افغانی</option><option value="USD">دالر</option><option value="EUR">یورو</option><option value="IRR">ریال</option><option value="PKR">روپیه</option>
                         </select>
                     </div>
                 </div>
@@ -652,54 +242,23 @@
 
         <div id="sent" class="sub-tab-content">
             <div class="summary-cards">
-                <div class="summary-card success">
-                    <div class="label">مجموع خرید امروز</div>
-                    <div class="value" id="total-sent-today">۰</div>
-                </div>
-                <div class="summary-card info">
-                    <div class="label">تعداد خرید</div>
-                    <div class="value" id="count-sent-today">۰</div>
-                </div>
+                <div class="summary-card success"><div class="label">مجموع خرید امروز</div><div class="value" id="total-sent-today">۰</div></div>
+                <div class="summary-card info"><div class="label">تعداد خرید</div><div class="value" id="count-sent-today">۰</div></div>
             </div>
             <div class="form-card">
                 <h3 style="color:var(--success)">➕ ثبت خرید جدید</h3>
                 <div class="form-grid">
-                    <div class="input-group">
-                        <label>مشتری</label>
-                        <input type="text" id="t-customer-sent" class="form-input">
-                    </div>
-                    <div class="input-group">
-                        <label>شرح معامله</label>
-                        <input type="text" id="t-desc-sent" class="form-input">
-                    </div>
-                    <div class="input-group">
-                        <label>تعداد</label>
-                        <input type="text" inputmode="numeric" pattern="[0-9]*" id="t-qty-sent" class="form-input" oninput="formatInputNumber(this); calcTotal('sent')">
-                    </div>
-                    <div class="input-group">
-                        <label>فی (قیمت واحد)</label>
-                        <input type="text" inputmode="numeric" pattern="[0-9]*" id="t-price-sent" class="form-input" oninput="formatInputNumber(this); calcTotal('sent')">
-                    </div>
-                    <div class="input-group">
-                        <label>مجموع (خودکار)</label>
-                        <input type="text" id="t-total-sent" class="form-input" readonly>
-                    </div>
-                    <div class="input-group">
-                        <label>مبلغ پرداختی اولیه</label>
-                        <input type="text" inputmode="numeric" pattern="[0-9]*" id="t-paid-sent" class="form-input" oninput="formatInputNumber(this); calcRemaining('sent')">
-                    </div>
-                    <div class="input-group">
-                        <label>باقی‌مانده (خودکار)</label>
-                        <input type="text" id="t-remaining-sent" class="form-input" readonly style="color: var(--danger); font-weight: 800;">
-                    </div>
+                    <div class="input-group"><label>مشتری</label><input type="text" id="t-customer-sent" class="form-input"></div>
+                    <div class="input-group"><label>شرح معامله</label><input type="text" id="t-desc-sent" class="form-input"></div>
+                    <div class="input-group"><label>تعداد</label><input type="text" inputmode="numeric" pattern="[0-9]*" id="t-qty-sent" class="form-input" oninput="formatInputNumber(this); calcTotal('sent')"></div>
+                    <div class="input-group"><label>فی (قیمت واحد)</label><input type="text" inputmode="numeric" pattern="[0-9]*" id="t-price-sent" class="form-input" oninput="formatInputNumber(this); calcTotal('sent')"></div>
+                    <div class="input-group"><label>مجموع (خودکار)</label><input type="text" id="t-total-sent" class="form-input" readonly></div>
+                    <div class="input-group"><label>مبلغ پرداختی اولیه</label><input type="text" inputmode="numeric" pattern="[0-9]*" id="t-paid-sent" class="form-input" oninput="formatInputNumber(this); calcRemaining('sent')"></div>
+                    <div class="input-group"><label>باقی‌مانده (خودکار)</label><input type="text" id="t-remaining-sent" class="form-input" readonly style="color: var(--danger); font-weight: 800;"></div>
                     <div class="input-group">
                         <label>ارز</label>
                         <select id="t-currency-sent" class="form-select">
-                            <option value="AFN">افغانی</option>
-                            <option value="USD">دالر</option>
-                            <option value="EUR">یورو</option>
-                            <option value="IRR">ریال</option>
-                            <option value="PKR">روپیه</option>
+                            <option value="AFN">افغانی</option><option value="USD">دالر</option><option value="EUR">یورو</option><option value="IRR">ریال</option><option value="PKR">روپیه</option>
                         </select>
                     </div>
                 </div>
@@ -715,9 +274,7 @@
 
         <div id="daily-balance" class="sub-tab-content">
             <h2 style="margin-bottom:10px; color:var(--secondary)">💰 دخل روزانه</h2>
-            <p style="color:var(--text-light); margin-bottom:20px; font-size:0.85rem;">
-                فرمول: مانده روز قبل + <u>وجه نقد دریافتی (فروش)</u> - <u>وجه نقد پرداختی (خرید)</u> - مصارف
-            </p>
+            <p style="color:var(--text-light); margin-bottom:20px; font-size:0.85rem;">فرمول: مانده روز قبل + <u>وجه نقد دریافتی (فروش)</u> - <u>وجه نقد پرداختی (خرید)</u> - مصارف</p>
             <div class="summary-cards daily-balance-cards" id="daily-balance-cards-container">
                 <div class="summary-card warning" id="card-prev-balance"><div class="label">📅 مانده روز قبل</div><div class="value" id="prev-balance">۰</div></div>
                 <div class="summary-card danger" id="card-db-received"><div class="label">⬇️ وجه نقد فروش امروز</div><div class="value" id="db-received">۰</div></div>
@@ -733,30 +290,17 @@
         <div id="trans-expenses" class="sub-tab-content">
             <h2 style="margin-bottom:10px; color:var(--accent)">💸 مصارف</h2>
             <div class="summary-cards">
-                <div class="summary-card danger">
-                    <div class="label">مجموع مصارف امروز</div>
-                    <div class="value" id="trans-total-expenses-today">۰</div>
-                </div>
+                <div class="summary-card danger"><div class="label">مجموع مصارف امروز</div><div class="value" id="trans-total-expenses-today">۰</div></div>
             </div>
             <div class="form-card">
                 <h3 style="color:var(--danger)">➕ ثبت هزینه جدید</h3>
                 <div class="form-grid">
-                    <div class="input-group">
-                        <label>دسته‌بندی</label>
-                        <input type="text" id="te-cat" class="form-input">
-                    </div>
-                    <div class="input-group">
-                        <label>مبلغ</label>
-                        <input type="text" inputmode="numeric" pattern="[0-9]*" id="te-amount" class="form-input" oninput="formatInputNumber(this)">
-                    </div>
+                    <div class="input-group"><label>دسته‌بندی</label><input type="text" id="te-cat" class="form-input"></div>
+                    <div class="input-group"><label>مبلغ</label><input type="text" inputmode="numeric" pattern="[0-9]*" id="te-amount" class="form-input" oninput="formatInputNumber(this)"></div>
                     <div class="input-group">
                         <label>ارز</label>
                         <select id="te-currency" class="form-select">
-                            <option value="AFN">افغانی</option>
-                            <option value="USD">دالر</option>
-                            <option value="EUR">یورو</option>
-                            <option value="IRR">ریال</option>
-                            <option value="PKR">روپیه</option>
+                            <option value="AFN">افغانی</option><option value="USD">دالر</option><option value="EUR">یورو</option><option value="IRR">ریال</option><option value="PKR">روپیه</option>
                         </select>
                     </div>
                 </div>
@@ -774,22 +318,10 @@
             <div class="form-card">
                 <h3 style="color:var(--primary)">🔍 جستجو در معاملات</h3>
                 <div class="form-grid">
-                    <div class="input-group">
-                        <label>نام مشتری</label>
-                        <input type="text" id="search-customer" class="form-input">
-                    </div>
-                    <div class="input-group">
-                        <label>شرح معامله</label>
-                        <input type="text" id="search-desc" class="form-input">
-                    </div>
-                    <div class="input-group">
-                        <label>مجموع مبلغ</label>
-                        <input type="text" inputmode="numeric" pattern="[0-9]*" id="search-amount" class="form-input" oninput="formatInputNumber(this)">
-                    </div>
-                    <div class="input-group">
-                        <label>تاریخ</label>
-                        <input type="text" id="search-date" class="form-input">
-                    </div>
+                    <div class="input-group"><label>نام مشتری</label><input type="text" id="search-customer" class="form-input"></div>
+                    <div class="input-group"><label>شرح معامله</label><input type="text" id="search-desc" class="form-input"></div>
+                    <div class="input-group"><label>مجموع مبلغ</label><input type="text" inputmode="numeric" pattern="[0-9]*" id="search-amount" class="form-input" oninput="formatInputNumber(this)"></div>
+                    <div class="input-group"><label>تاریخ</label><input type="text" id="search-date" class="form-input"></div>
                 </div>
                 <button class="btn btn-primary" onclick="searchTransactions()">🔍 جستجو</button>
                 <button class="btn btn-secondary" onclick="clearTransactionSearch()" style="margin-top:10px;">🗑️ پاک کردن نتایج</button>
@@ -817,14 +349,13 @@
 </div>
 
 <div class="bottom-nav">
-    <button class="bottom-nav-btn active" onclick="switchTab('transactions')">
-        <span class="nav-icon">🔄</span>
-        <span>معاملات</span>
-    </button>
-    <button class="bottom-nav-btn" onclick="switchTab('reports')">
-        <span class="nav-icon">📊</span>
-        <span>گزارشات</span>
-    </button>
+    <button class="bottom-nav-btn active" onclick="switchTab('transactions')"><span class="nav-icon">🔄</span><span>معاملات</span></button>
+    <button class="bottom-nav-btn" onclick="switchTab('reports')"><span class="nav-icon">📊</span><span>گزارشات</span></button>
+</div>
+
+<div class="loading-overlay" id="loading-overlay">
+    <div class="spinner"></div>
+    <div style="font-size: 1.1rem; font-weight: 700;" id="loading-text">در حال پردازش...</div>
 </div>
 
 <div id="custom-modal" class="custom-modal-overlay">
@@ -856,6 +387,11 @@
 </div>
 
 <script>
+    // ✅ کلیدهای شما با موفقیت در اینجا قرار گرفتند ✅
+    const BIN_ID = '6ac8ff2dffd5d160535c794a';
+    const API_KEY = '$2a$10$KRrLr0WltnWayk5v4FOE4eVuj4rZS.UKRIdBeLhub3UozylqaniFe';
+    const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
+
     let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
     let expenses = JSON.parse(localStorage.getItem('expenses')) || [];
     let editIndex = null;
@@ -863,6 +399,97 @@
     const currencies = ['AFN', 'USD', 'EUR', 'IRR', 'PKR'];
     let pendingAction = null;
     let currentPaymentId = null;
+    let autoSyncTimeout = null;
+    let isCloudConnected = false;
+
+    function handleCloudSync() {
+        isCloudConnected = true;
+        document.getElementById('sync-btn').classList.add('connected');
+        document.getElementById('sync-btn-text').innerText = 'متصل به فضای ابری ✓';
+        document.getElementById('sync-status').classList.add('show');
+        showCustomConfirm('موفق', 'اتصال برقرار شد!\nاز این به بعد، تمام تغییرات به صورت خودکار در فضای ابری ذخیره می‌شود.\nبرای دریافت اطلاعات در گوشی جدید، روی دکمه "دریافت از ابر" کلیک کنید.', '✅', null);
+        forceSync();
+    }
+
+    function showLoading(text = 'در حال پردازش...') {
+        document.getElementById('loading-text').innerText = text;
+        document.getElementById('loading-overlay').classList.add('show');
+    }
+
+    function hideLoading() {
+        document.getElementById('loading-overlay').classList.remove('show');
+    }
+
+    async function forceSync() {
+        if (!isCloudConnected) return;
+        showLoading('در حال همگام‌سازی با فضای ابری...');
+        try {
+            const dataToSave = {
+                version: 2, savedAt: new Date().toISOString(),
+                transactions: transactions, expenses: expenses,
+                lastDate: localStorage.getItem('lastDate'),
+                lastClosingBalancesByCurrency: JSON.parse(localStorage.getItem('lastClosingBalancesByCurrency') || '{}'),
+                dailyArchives: JSON.parse(localStorage.getItem('dailyArchives') || '[]')
+            };
+
+            const response = await fetch(API_URL, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Master-Key': API_KEY
+                },
+                body: JSON.stringify(dataToSave)
+            });
+
+            if (!response.ok) throw new Error('خطا در ارتباط با سرور');
+            
+            hideLoading();
+            const now = new Date().toLocaleTimeString('fa-IR');
+            document.getElementById('last-sync-time').innerText = `آخرین همگام‌سازی: ${now}`;
+        } catch (e) {
+            hideLoading();
+            console.error('Sync error:', e);
+            showCustomConfirm('خطا', 'خطا در همگام‌سازی. لطفاً اتصال اینترنت خود را بررسی کنید.', '❌', null);
+        }
+    }
+
+    async function loadFromCloud() {
+        if (!isCloudConnected) return;
+        showCustomConfirm('هشدار بازیابی', '⚠️ با این کار، تمام اطلاعات فعلی گوشی پاک شده و با اطلاعات ذخیره‌شده در فضای ابری جایگزین می‌شود.\n\nآیا مطمئن هستید؟', '⚠️', async () => {
+            showLoading('در حال دریافت اطلاعات از فضای ابری...');
+            try {
+                const response = await fetch(`${API_URL}/latest`, {
+                    method: 'GET',
+                    headers: { 'X-Master-Key': API_KEY }
+                });
+
+                if (!response.ok) throw new Error('خطا در دریافت اطلاعات');
+                
+                const result = await response.json();
+                const data = result.record;
+
+                transactions = data.transactions || [];
+                expenses = data.expenses || [];
+                localStorage.setItem('transactions', JSON.stringify(transactions));
+                localStorage.setItem('expenses', JSON.stringify(expenses));
+                if (data.lastDate) localStorage.setItem('lastDate', data.lastDate);
+                if (data.lastClosingBalancesByCurrency) localStorage.setItem('lastClosingBalancesByCurrency', JSON.stringify(data.lastClosingBalancesByCurrency));
+                if (data.dailyArchives) localStorage.setItem('dailyArchives', JSON.stringify(data.dailyArchives));
+
+                renderTables();
+                updateSummaryCards();
+                updateDailyBalance();
+                updateReports();
+                
+                hideLoading();
+                showCustomConfirm('موفق', `✅ اطلاعات با موفقیت از فضای ابری بازیابی شد.\n\n📊 تعداد معاملات: ${formatNumber(transactions.length)}\n💸 تعداد مصارف: ${formatNumber(expenses.length)}`, '✅', null);
+            } catch (e) {
+                hideLoading();
+                console.error('Load error:', e);
+                showCustomConfirm('خطا', 'خطا در دریافت اطلاعات. لطفاً اتصال اینترنت خود را بررسی کنید.', '❌', null);
+            }
+        }, 'بله، بازیابی کن');
+    }
 
     function getCurrencyName(code) {
         const names = { 'AFN': 'افغانی', 'USD': 'دالر', 'EUR': 'یورو', 'IRR': 'ریال', 'PKR': 'روپیه' };
@@ -873,7 +500,12 @@
         document.getElementById('modal-title').innerText = title;
         document.getElementById('modal-message').innerText = message;
         document.getElementById('modal-icon').innerText = icon;
-        document.getElementById('modal-confirm-btn').innerText = confirmText;
+        const confirmBtn = document.getElementById('modal-confirm-btn');
+        confirmBtn.innerText = confirmText;
+        confirmBtn.onclick = () => { if (actionFunction) actionFunction(); closeCustomModal(); };
+        const cancelBtn = document.querySelector('#custom-modal .btn-secondary');
+        cancelBtn.innerText = 'انصراف';
+        cancelBtn.onclick = closeCustomModal;
         pendingAction = actionFunction;
         document.getElementById('custom-modal').classList.add('show');
     }
@@ -884,9 +516,7 @@
     }
 
     function executeModalAction() {
-        if (pendingAction) {
-            pendingAction();
-        }
+        if (pendingAction) pendingAction();
         closeCustomModal();
     }
 
@@ -910,43 +540,26 @@
     function confirmAddPayment() {
         const newPay = parseCleanNumber(document.getElementById('new-payment-amount').value);
         if (newPay <= 0) return showCustomConfirm('خطا', 'مبلغ پرداختی باید بیشتر از صفر باشد', '⚠️', null);
-
         const tIndex = transactions.findIndex(x => x.id === currentPaymentId);
         if (tIndex === -1) return;
-
         const t = transactions[tIndex];
         if (newPay > t.remaining) {
             return showCustomConfirm('خطا', `مبلغ وارد شده (${formatNumber(newPay)}) از باقی‌مانده (${formatNumber(t.remaining)}) بیشتر است!`, '⚠️', null);
         }
-
         const newRemaining = t.remaining - newPay;
-        
         if (!t.paymentHistory) t.paymentHistory = [];
-        t.paymentHistory.push({
-            amount: newPay,
-            date: getAfghanistanDateString()
-        });
-
+        t.paymentHistory.push({ amount: newPay, date: getAfghanistanDateString() });
         t.paid += newPay;
         t.remaining = newRemaining;
-        
         closePaymentModal();
         saveData();
+        autoSyncToDrive();
         showCustomConfirm('موفق', 'قسط جدید با موفقیت ثبت و باقی‌مانده کل بروزرسانی شد.', '✅', null);
     }
 
-    function getAfghanistanDate(d = new Date()) {
-        return new Date(d.toLocaleString('en-US', { timeZone: 'Asia/Kabul' }));
-    }
-    function getAfghanistanDateString(d = new Date()) {
-        return getAfghanistanDate(d).toLocaleDateString('fa-IR');
-    }
-    function getAfghanistanDateTimeString(d = new Date()) {
-        return getAfghanistanDate(d).toLocaleString('fa-IR', {
-            year: 'numeric', month: 'long', day: 'numeric',
-            hour: '2-digit', minute: '2-digit'
-        });
-    }
+    function getAfghanistanDate(d = new Date()) { return new Date(d.toLocaleString('en-US', { timeZone: 'Asia/Kabul' })); }
+    function getAfghanistanDateString(d = new Date()) { return getAfghanistanDate(d).toLocaleDateString('fa-IR'); }
+    function getAfghanistanDateTimeString(d = new Date()) { return getAfghanistanDate(d).toLocaleString('fa-IR', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }); }
 
     function resetAllData() {
         showCustomConfirm('هشدار جدی', 'آیا از حذف تمام اطلاعات سیستم اطمینان دارید؟\nاین عمل شامل تمام معاملات، مصارف، آرشیو و مانده‌ها می‌شود و قابل بازگشت نیست!', '⚠️', () => {
@@ -956,13 +569,10 @@
                 localStorage.removeItem('dailyArchives');
                 localStorage.removeItem('lastClosingBalancesByCurrency');
                 localStorage.removeItem('lastDate');
-                transactions = [];
-                expenses = [];
-                renderTables();
-                updateSummaryCards();
-                updateDailyBalance();
-                updateReports();
-                showCustomConfirm('پاکسازی کامل', 'تمام اطلاعات سیستم با موفقیت پاک شد و حساب از صفر شروع می‌شود.', '✅', null);
+                transactions = []; expenses = [];
+                renderTables(); updateSummaryCards(); updateDailyBalance(); updateReports();
+                autoSyncToDrive();
+                showCustomConfirm('پاکسازی کامل', 'تمام اطلاعات سیستم با موفقیت پاک شد.', '✅', null);
             });
         });
     }
@@ -970,58 +580,35 @@
     function checkDayClosing() {
         const today = getAfghanistanDateString();
         const lastDate = localStorage.getItem('lastDate');
-
         if (!lastDate) {
             localStorage.setItem('lastDate', today);
-            if (!localStorage.getItem('lastClosingBalancesByCurrency')) {
-                localStorage.setItem('lastClosingBalancesByCurrency', JSON.stringify({AFN:0,USD:0,EUR:0,IRR:0,PKR:0}));
-            }
+            if (!localStorage.getItem('lastClosingBalancesByCurrency')) localStorage.setItem('lastClosingBalancesByCurrency', JSON.stringify({AFN:0,USD:0,EUR:0,IRR:0,PKR:0}));
             return;
         }
-
         if (lastDate !== today) {
             const prevTrans = JSON.parse(localStorage.getItem('transactions')) || [];
             const prevExp = JSON.parse(localStorage.getItem('expenses')) || [];
             const archives = JSON.parse(localStorage.getItem('dailyArchives')) || [];
             const prevBalances = JSON.parse(localStorage.getItem('lastClosingBalancesByCurrency')) || {AFN:0,USD:0,EUR:0,IRR:0,PKR:0};
-
             const currentBalances = { ...prevBalances };
             const todayStats = { received: {}, sent: {}, expenses: {} };
-
             prevTrans.forEach(t => {
                 const paidAmt = Number(t.paid) || 0;
-                if (t.type === 'received') {
-                    currentBalances[t.currency] = (currentBalances[t.currency] || 0) + paidAmt;
-                    todayStats.received[t.currency] = (todayStats.received[t.currency] || 0) + paidAmt;
-                } else {
-                    currentBalances[t.currency] = (currentBalances[t.currency] || 0) - paidAmt;
-                    todayStats.sent[t.currency] = (todayStats.sent[t.currency] || 0) + paidAmt;
-                }
+                if (t.type === 'received') { currentBalances[t.currency] = (currentBalances[t.currency] || 0) + paidAmt; todayStats.received[t.currency] = (todayStats.received[t.currency] || 0) + paidAmt; }
+                else { currentBalances[t.currency] = (currentBalances[t.currency] || 0) - paidAmt; todayStats.sent[t.currency] = (todayStats.sent[t.currency] || 0) + paidAmt; }
             });
-
             prevExp.forEach(e => {
                 const c = e.currency || 'AFN';
                 todayStats.expenses[c] = (todayStats.expenses[c] || 0) + Number(e.amount);
                 currentBalances[c] = (currentBalances[c] || 0) - Number(e.amount);
             });
-
-            archives.push({
-                date: lastDate,
-                transactions: prevTrans,
-                expenses: prevExp,
-                openingBalances: prevBalances,
-                closingBalances: currentBalances,
-                stats: todayStats
-            });
-
+            archives.push({ date: lastDate, transactions: prevTrans, expenses: prevExp, openingBalances: prevBalances, closingBalances: currentBalances, stats: todayStats });
             localStorage.setItem('dailyArchives', JSON.stringify(archives));
             localStorage.setItem('lastClosingBalancesByCurrency', JSON.stringify(currentBalances));
             localStorage.setItem('transactions', JSON.stringify([]));
             localStorage.setItem('expenses', JSON.stringify([]));
             localStorage.setItem('lastDate', today);
-
-            transactions = [];
-            expenses = [];
+            transactions = []; expenses = [];
         }
     }
 
@@ -1039,80 +626,59 @@
     function formatInputNumber(input) {
         let cursorPosition = input.selectionStart || 0;
         let oldLength = input.value.length;
-
         let v = input.value;
         const p = [/۰/g,/۱/g,/۲/g,/۳/g,/۴/g,/۵/g,/۶/g,/۷/g,/۸/g,/۹/g];
         const a = [/٠/g,/١/g,/٢/g,/٣/g,/٤/g,/٥/g,/٦/g,/٧/g,/٨/g,/٩/g];
         for(let i=0; i<10; i++) { v = v.replace(p[i],i).replace(a[i],i); }
-        
         v = v.replace(/,/g, '').replace(/[^0-9.]/g, '');
-        
         let parts = v.split('.');
         parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
         let newValue = parts.join('.');
-        
         input.value = newValue;
-
         let newLength = input.value.length;
         let diff = newLength - oldLength;
         input.setSelectionRange(cursorPosition + diff, cursorPosition + diff);
     }
 
     function formatNumber(n) { return Number(n).toLocaleString('fa-IR'); }
-
     function parseCleanNumber(str) {
         if (!str) return 0;
         let v = String(str);
         const p = [/۰/g,/۱/g,/۲/g,/۳/g,/۴/g,/۵/g,/۶/g,/۷/g,/۸/g,/۹/g];
         const a = [/٠/g,/١/g,/٢/g,/٣/g,/٤/g,/٥/g,/٦/g,/٧/g,/٨/g,/٩/g];
-        for(let i=0; i<10; i++) { 
-            v = v.replace(p[i], i).replace(a[i], i); 
-        }
+        for(let i=0; i<10; i++) { v = v.replace(p[i], i).replace(a[i], i); }
         v = v.replace(/,/g, '').replace(/[^0-9.]/g, '');
         return parseFloat(v) || 0;
     }
 
     function calcTotal(type) {
         let qtyId, priceId, totalId, paidId;
-        if (type === 'received') {
-            qtyId = 't-qty'; priceId = 't-price'; totalId = 't-total'; paidId = 't-paid';
-        } else {
-            qtyId = 't-qty-sent'; priceId = 't-price-sent'; totalId = 't-total-sent'; paidId = 't-paid-sent';
-        }
+        if (type === 'received') { qtyId = 't-qty'; priceId = 't-price'; totalId = 't-total'; paidId = 't-paid'; }
+        else { qtyId = 't-qty-sent'; priceId = 't-price-sent'; totalId = 't-total-sent'; paidId = 't-paid-sent'; }
         const qty = parseCleanNumber(document.getElementById(qtyId).value);
         const price = parseCleanNumber(document.getElementById(priceId).value);
         const total = qty * price;
-        
         document.getElementById(totalId).value = total > 0 ? formatNumber(total) : '';
         calcRemaining(type);
     }
 
     function calcRemaining(type) {
         let totalId, paidId, remainingId;
-        if (type === 'received') {
-            totalId = 't-total'; paidId = 't-paid'; remainingId = 't-remaining';
-        } else {
-            totalId = 't-total-sent'; paidId = 't-paid-sent'; remainingId = 't-remaining-sent';
-        }
+        if (type === 'received') { totalId = 't-total'; paidId = 't-paid'; remainingId = 't-remaining'; }
+        else { totalId = 't-total-sent'; paidId = 't-paid-sent'; remainingId = 't-remaining-sent'; }
         const total = parseCleanNumber(document.getElementById(totalId).value);
         const paid = parseCleanNumber(document.getElementById(paidId).value);
         const remaining = Math.max(0, total - paid);
-        
         document.getElementById(remainingId).value = remaining > 0 ? formatNumber(remaining) : '۰';
     }
 
     function formatCurrencyBreakdown(items, inline = false) {
         const t = {AFN:0, USD:0, EUR:0, IRR:0, PKR:0};
-        if (items && items.length > 0) {
-            items.forEach(i => { t[i.currency || 'AFN'] += Number(i.amount) || 0; });
-        }
+        if (items && items.length > 0) items.forEach(i => { t[i.currency || 'AFN'] += Number(i.amount) || 0; });
         let h = '', has = false;
         const s = inline ? 'display:inline-flex; align-items:center; margin:2px 4px;' : '';
         for (const [c, a] of Object.entries(t)) {
-            if (a !== 0) {
-                has = true;
-                h += `<div style="${s}">${formatNumber(a)} <span class="badge badge-${c.toLowerCase()}">${getCurrencyName(c)}</span></div>`;
-            }
+            if (a !== 0) { has = true; h += `<div style="${s}">${formatNumber(a)} <span class="badge badge-${c.toLowerCase()}">${getCurrencyName(c)}</span></div>`; }
         }
         return has ? h : '<div style="color:var(--text-light)">۰</div>';
     }
@@ -1135,29 +701,25 @@
     function updateBalanceCardState(balanceObj) {
         const card = document.getElementById('card-current-balance');
         if (!card) return;
-        
         let hasNegative = false;
-        for (const [c, a] of Object.entries(balanceObj)) {
-            if (a < 0) { hasNegative = true; break; }
-        }
-        
+        for (const [c, a] of Object.entries(balanceObj)) { if (a < 0) { hasNegative = true; break; } }
         card.classList.remove('info', 'negative');
-        if (hasNegative) {
-            card.classList.add('negative');
-            card.querySelector('.label').innerHTML = '⚠️ مانده فعلی دخل (قرض)';
-        } else {
-            card.classList.add('info');
-            card.querySelector('.label').innerHTML = '💵 مانده فعلی دخل';
-        }
+        if (hasNegative) { card.classList.add('negative'); card.querySelector('.label').innerHTML = '⚠️ مانده فعلی دخل (قرض)'; }
+        else { card.classList.add('info'); card.querySelector('.label').innerHTML = '💵 مانده فعلی دخل'; }
     }
 
     function saveData() {
         localStorage.setItem('transactions', JSON.stringify(transactions));
         localStorage.setItem('expenses', JSON.stringify(expenses));
-        renderTables();
-        updateSummaryCards();
-        updateDailyBalance();
-        updateReports();
+        renderTables(); updateSummaryCards(); updateDailyBalance(); updateReports();
+    }
+
+    function autoSyncToDrive() {
+        if (!isCloudConnected) return;
+        clearTimeout(autoSyncTimeout);
+        autoSyncTimeout = setTimeout(() => {
+            forceSync();
+        }, 3000);
     }
 
     function switchTab(tabId) {
@@ -1165,16 +727,10 @@
         document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
         document.querySelectorAll('.bottom-nav-btn').forEach(el => el.classList.remove('active'));
         document.getElementById(tabId).classList.add('active');
-
         const tabNames = { transactions: 'معاملات', reports: 'گزارشات' };
         const name = tabNames[tabId];
-        document.querySelectorAll('.tab-btn').forEach(b => {
-            if (b.textContent.includes(name)) b.classList.add('active');
-        });
-        document.querySelectorAll('.bottom-nav-btn').forEach(b => {
-            if (b.textContent.includes(name)) b.classList.add('active');
-        });
-
+        document.querySelectorAll('.tab-btn').forEach(b => { if (b.textContent.includes(name)) b.classList.add('active'); });
+        document.querySelectorAll('.bottom-nav-btn').forEach(b => { if (b.textContent.includes(name)) b.classList.add('active'); });
         if (tabId === 'transactions') updateDailyBalance();
     }
 
@@ -1183,89 +739,34 @@
         document.querySelectorAll('#transactions .sub-tab-btn').forEach(el => el.classList.remove('active'));
         document.getElementById(subTabId).classList.add('active');
         event.currentTarget.classList.add('active');
-        if (subTabId === 'daily-balance' || subTabId === 'trans-expenses') {
-            updateDailyBalance();
-        }
+        if (subTabId === 'daily-balance' || subTabId === 'trans-expenses') updateDailyBalance();
     }
 
     function addTransaction(type = 'received') {
         let customer, desc, qty, price, amount, currency, paid, remaining;
         if (type === 'received') {
-            customer = document.getElementById('t-customer').value;
-            desc = document.getElementById('t-desc').value;
-            qty = parseCleanNumber(document.getElementById('t-qty').value);
-            price = parseCleanNumber(document.getElementById('t-price').value);
-            amount = qty * price;
-            currency = document.getElementById('t-currency').value;
-            paid = parseCleanNumber(document.getElementById('t-paid').value);
+            customer = document.getElementById('t-customer').value; desc = document.getElementById('t-desc').value;
+            qty = parseCleanNumber(document.getElementById('t-qty').value); price = parseCleanNumber(document.getElementById('t-price').value);
+            amount = qty * price; currency = document.getElementById('t-currency').value; paid = parseCleanNumber(document.getElementById('t-paid').value);
         } else {
-            customer = document.getElementById('t-customer-sent').value;
-            desc = document.getElementById('t-desc-sent').value;
-            qty = parseCleanNumber(document.getElementById('t-qty-sent').value);
-            price = parseCleanNumber(document.getElementById('t-price-sent').value);
-            amount = qty * price;
-            currency = document.getElementById('t-currency-sent').value;
-            paid = parseCleanNumber(document.getElementById('t-paid-sent').value);
+            customer = document.getElementById('t-customer-sent').value; desc = document.getElementById('t-desc-sent').value;
+            qty = parseCleanNumber(document.getElementById('t-qty-sent').value); price = parseCleanNumber(document.getElementById('t-price-sent').value);
+            amount = qty * price; currency = document.getElementById('t-currency-sent').value; paid = parseCleanNumber(document.getElementById('t-paid-sent').value);
         }
-
-        if (!desc || amount <= 0) {
-            return showCustomConfirm('خطا در ورودی', 'لطفاً تمام فیلدها را پر کنید (مجموع باید بیشتر از صفر باشد)', '⚠️', null);
-        }
-
+        if (!desc || amount <= 0) return showCustomConfirm('خطا در ورودی', 'لطفاً تمام فیلدها را پر کنید (مجموع باید بیشتر از صفر باشد)', '⚠️', null);
         remaining = Math.max(0, amount - paid);
-        
         let paymentHistory = [];
-        if (paid > 0) {
-            paymentHistory.push({
-                amount: paid,
-                date: getAfghanistanDateString()
-            });
-        }
-
+        if (paid > 0) paymentHistory.push({ amount: paid, date: getAfghanistanDateString() });
         const typeText = type === 'received' ? 'فروش' : 'خرید';
         const summary = `نوع عملیات: ${typeText}\nمشتری: ${customer || 'ندارد'}\nشرح: ${desc}\nتعداد: ${formatNumber(qty)}\nفی: ${formatNumber(price)}\nکل مبلغ: ${formatNumber(amount)} ${getCurrencyName(currency)}\nپرداختی اولیه: ${formatNumber(paid)}\nباقی‌مانده: ${formatNumber(remaining)}`;
-
         showCustomConfirm('تأیید ثبت ' + typeText, summary, '📝', () => {
-            const newTrans = { 
-                id: Date.now(), 
-                customer: customer || '',
-                desc, 
-                qty,
-                price,
-                amount, 
-                paid,
-                remaining,
-                currency, 
-                type, 
-                date: getAfghanistanDateString(),
-                paymentHistory: paymentHistory
-            };
-
-            if (editIndex !== null) {
-                transactions[editIndex] = newTrans;
-                editIndex = null;
-            } else {
-                transactions.push(newTrans);
-            }
-
-            if (type === 'received') {
-                document.getElementById('t-customer').value = '';
-                document.getElementById('t-desc').value = '';
-                document.getElementById('t-qty').value = '';
-                document.getElementById('t-price').value = '';
-                document.getElementById('t-total').value = '';
-                document.getElementById('t-paid').value = '';
-                document.getElementById('t-remaining').value = '';
-            } else {
-                document.getElementById('t-customer-sent').value = '';
-                document.getElementById('t-desc-sent').value = '';
-                document.getElementById('t-qty-sent').value = '';
-                document.getElementById('t-price-sent').value = '';
-                document.getElementById('t-total-sent').value = '';
-                document.getElementById('t-paid-sent').value = '';
-                document.getElementById('t-remaining-sent').value = '';
-            }
+            const newTrans = { id: Date.now(), customer: customer || '', desc, qty, price, amount, paid, remaining, currency, type, date: getAfghanistanDateString(), paymentHistory: paymentHistory };
+            if (editIndex !== null) { transactions[editIndex] = newTrans; editIndex = null; }
+            else transactions.push(newTrans);
+            if (type === 'received') { document.getElementById('t-customer').value = ''; document.getElementById('t-desc').value = ''; document.getElementById('t-qty').value = ''; document.getElementById('t-price').value = ''; document.getElementById('t-total').value = ''; document.getElementById('t-paid').value = ''; document.getElementById('t-remaining').value = ''; }
+            else { document.getElementById('t-customer-sent').value = ''; document.getElementById('t-desc-sent').value = ''; document.getElementById('t-qty-sent').value = ''; document.getElementById('t-price-sent').value = ''; document.getElementById('t-total-sent').value = ''; document.getElementById('t-paid-sent').value = ''; document.getElementById('t-remaining-sent').value = ''; }
             saveData();
+            autoSyncToDrive();
             showCustomConfirm('موفق', typeText + ' با موفقیت در سیستم ثبت گردید.', '✅', null);
         }, 'ثبت نهایی');
     }
@@ -1275,28 +776,15 @@
         const amountStr = document.getElementById('te-amount').value;
         const currency = document.getElementById('te-currency').value;
         const cleanAmount = parseCleanNumber(amountStr);
-
-        if (!cat || cleanAmount <= 0) {
-            return showCustomConfirm('خطا در ورودی', 'لطفاً اطلاعات دسته‌بندی و مبلغ را کامل کنید', '⚠️', null);
-        }
-
+        if (!cat || cleanAmount <= 0) return showCustomConfirm('خطا در ورودی', 'لطفاً اطلاعات دسته‌بندی و مبلغ را کامل کنید', '⚠️', null);
         const summary = `دسته‌بندی: ${cat}\nمبلغ: ${formatNumber(cleanAmount)} ${getCurrencyName(currency)}`;
-
         showCustomConfirm('تأیید ثبت هزینه', summary, '💸', () => {
             if (editExpenseIndex !== null) {
-                expenses[editExpenseIndex].cat = cat;
-                expenses[editExpenseIndex].amount = cleanAmount;
-                expenses[editExpenseIndex].currency = currency;
-                editExpenseIndex = null;
-            } else {
-                expenses.push({ id: Date.now(), cat, amount: cleanAmount, currency, date: getAfghanistanDateString() });
-            }
-
-            document.getElementById('te-cat').value = '';
-            document.getElementById('te-amount').value = '';
-            document.getElementById('te-currency').value = 'AFN';
-            
+                expenses[editExpenseIndex].cat = cat; expenses[editExpenseIndex].amount = cleanAmount; expenses[editExpenseIndex].currency = currency; editExpenseIndex = null;
+            } else expenses.push({ id: Date.now(), cat, amount: cleanAmount, currency, date: getAfghanistanDateString() });
+            document.getElementById('te-cat').value = ''; document.getElementById('te-amount').value = ''; document.getElementById('te-currency').value = 'AFN';
             saveData();
+            autoSyncToDrive();
             showCustomConfirm('موفق', 'هزینه با موفقیت در سیستم ثبت گردید.', '✅', null);
         }, 'ثبت نهایی');
     }
@@ -1305,21 +793,15 @@
         const item = expenses.find(e => e.id === id);
         if (item) {
             document.getElementById('te-cat').value = item.cat;
-            const amountInput = document.getElementById('te-amount');
-            amountInput.value = formatNumber(item.amount);
+            document.getElementById('te-amount').value = formatNumber(item.amount);
             document.getElementById('te-currency').value = item.currency || 'AFN';
-            
             editExpenseIndex = expenses.indexOf(item);
-            
-            const btn = document.getElementById('btn-add-trans-expense');
-            btn.innerText = '✏️ بروزرسانی هزینه';
-            btn.className = 'btn btn-primary';
-
+            document.getElementById('btn-add-trans-expense').innerText = '✏️ بروزرسانی هزینه';
+            document.getElementById('btn-add-trans-expense').className = 'btn btn-primary';
             switchTab('transactions');
             document.querySelectorAll('#transactions .sub-tab-content').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('#transactions .sub-tab-btn').forEach(el => el.classList.remove('active'));
             document.getElementById('trans-expenses').classList.add('active');
-            
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     }
@@ -1328,12 +810,9 @@
         showCustomConfirm('حذف آیتم', 'آیا از حذف این مورد اطمینان دارید؟\nاین عملیات قابل بازگشت نیست.', '🗑️', () => {
             if (type === 'trans') transactions = transactions.filter(t => t.id !== id);
             if (type === 'exp') expenses = expenses.filter(e => e.id !== id);
-            
-            if (transactions.length === 0 && expenses.length === 0) {
-                localStorage.setItem('lastClosingBalancesByCurrency', JSON.stringify({AFN:0, USD:0, EUR:0, IRR:0, PKR:0}));
-            }
-            
+            if (transactions.length === 0 && expenses.length === 0) localStorage.setItem('lastClosingBalancesByCurrency', JSON.stringify({AFN:0, USD:0, EUR:0, IRR:0, PKR:0}));
             saveData();
+            autoSyncToDrive();
             showCustomConfirm('حذف شد', 'مورد نظر با موفقیت از سیستم حذف گردید.', '✅', null);
         });
     }
@@ -1344,10 +823,8 @@
             if (item.type === 'received') {
                 document.getElementById('t-customer').value = item.customer || '';
                 document.getElementById('t-desc').value = item.desc;
-                let qtyInput = document.getElementById('t-qty');
-                qtyInput.value = formatNumber(item.qty || 0);
-                let priceInput = document.getElementById('t-price');
-                priceInput.value = formatNumber(item.price || 0);
+                document.getElementById('t-qty').value = formatNumber(item.qty || 0);
+                document.getElementById('t-price').value = formatNumber(item.price || 0);
                 document.getElementById('t-currency').value = item.currency;
                 calcTotal('received');
                 document.getElementById('t-paid').value = formatNumber(item.paid || 0);
@@ -1356,10 +833,8 @@
             } else {
                 document.getElementById('t-customer-sent').value = item.customer || '';
                 document.getElementById('t-desc-sent').value = item.desc;
-                let qtyInput = document.getElementById('t-qty-sent');
-                qtyInput.value = formatNumber(item.qty || 0);
-                let priceInput = document.getElementById('t-price-sent');
-                priceInput.value = formatNumber(item.price || 0);
+                document.getElementById('t-qty-sent').value = formatNumber(item.qty || 0);
+                document.getElementById('t-price-sent').value = formatNumber(item.price || 0);
                 document.getElementById('t-currency-sent').value = item.currency;
                 calcTotal('sent');
                 document.getElementById('t-paid-sent').value = formatNumber(item.paid || 0);
@@ -1373,15 +848,11 @@
 
     function toggleDropdown(id) {
         const m = document.getElementById(`menu-${id}`);
-        document.querySelectorAll('.dropdown-menu').forEach(el => {
-            if (el !== m) el.classList.remove('show');
-        });
+        document.querySelectorAll('.dropdown-menu').forEach(el => { if (el !== m) el.classList.remove('show'); });
         m.classList.toggle('show');
     }
     window.onclick = function(e) {
-        if (!e.target.matches('.action-btn')) {
-            document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove('show'));
-        }
+        if (!e.target.matches('.action-btn')) document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove('show'));
     };
 
     function searchTransactions() {
@@ -1389,7 +860,6 @@
         const searchDesc = document.getElementById('search-desc').value.trim().toLowerCase();
         const searchAmount = parseCleanNumber(document.getElementById('search-amount').value);
         const searchDate = document.getElementById('search-date').value.trim();
-
         let results = transactions.filter(t => {
             let match = true;
             if (searchCustomer && !(t.customer || '').toLowerCase().includes(searchCustomer)) match = false;
@@ -1398,34 +868,17 @@
             if (searchDate && !t.date.includes(searchDate)) match = false;
             return match;
         });
-
         const tbody = document.getElementById('search-results-body');
         tbody.innerHTML = '';
-
-        if (!results.length) {
-            tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state"><div class="icon">🔍</div>نتیجه‌ای یافت نشد</div></td></tr>`;
-        } else {
+        if (!results.length) tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state"><div class="icon">🔍</div>نتیجه‌ای یافت نشد</div></td></tr>`;
+        else {
             results.forEach((t, i) => {
                 const typeText = t.type === 'received' ? 'فروش' : 'خرید';
                 const typeColor = t.type === 'received' ? 'var(--danger)' : 'var(--success)';
                 const amount = Number(t.amount) || 0;
                 const paid = Number(t.paid) || 0;
                 const remaining = Number(t.remaining) || 0;
-                tbody.innerHTML += `
-                    <tr>
-                        <td>${i+1}</td>
-                        <td style="color:${typeColor};font-weight:700">${typeText}</td>
-                        <td>${t.customer || '-'}</td>
-                        <td>${t.desc}</td>
-                        <td>
-                            <div class="amount-breakdown">
-                                <span class="total">کل: ${formatNumber(amount)}</span>
-                                <span class="detail" style="color:var(--success)">پرداخت شده: ${formatNumber(paid)}</span>
-                                <span class="detail" style="color:${remaining > 0 ? 'var(--danger)' : 'var(--text-light)'}">باقی‌مانده: ${formatNumber(remaining)}</span>
-                            </div>
-                        </td>
-                        <td>${t.date}</td>
-                    </tr>`;
+                tbody.innerHTML += `<tr><td>${i+1}</td><td style="color:${typeColor};font-weight:700">${typeText}</td><td>${t.customer || '-'}</td><td>${t.desc}</td><td><div class="amount-breakdown"><span class="total">کل: ${formatNumber(amount)}</span><span class="detail" style="color:var(--success)">پرداخت شده: ${formatNumber(paid)}</span><span class="detail" style="color:${remaining > 0 ? 'var(--danger)' : 'var(--text-light)'}">باقی‌مانده: ${formatNumber(remaining)}</span></div></td><td>${t.date}</td></tr>`;
             });
         }
     }
@@ -1449,64 +902,18 @@
                 wrapper.classList.remove('scrollable-y');
             } else {
                 rl.forEach((t, i) => {
-                    if (!t.paymentHistory && t.paid > 0) {
-                        t.paymentHistory = [{ amount: t.paid, date: t.date }];
-                        saveData();
-                    }
-                    
+                    if (!t.paymentHistory && t.paid > 0) { t.paymentHistory = [{ amount: t.paid, date: t.date }]; saveData(); }
                     const amount = Number(t.amount) || 0;
-                    const paid = Number(t.paid) || 0;
                     const remaining = Number(t.remaining) || 0;
-                    
                     let historyHtml = '';
                     if (t.paymentHistory && t.paymentHistory.length > 0) {
-                        // اصلاح شده: text-align:center و justify-content:center برای وسط چین شدن کامل
-                        historyHtml = `
-                            <div style="width:100%; text-align:center; margin-top:8px; border-top:1px dashed var(--border); padding-top:6px;">
-                                <div style="font-size:0.7rem; color:var(--primary); font-weight:700; margin-bottom:4px;">📜 تاریخچه پرداخت‌ها:</div>
-                                ${t.paymentHistory.map((p, idx) => `
-                                    <div style="font-size:0.75rem; display:flex; justify-content:center; align-items:center; gap: 8px; padding:4px 0; color:var(--text-light); border-bottom:1px solid rgba(0,0,0,0.03);">
-                                        <span>✅ قسط ${idx + 1}:</span>
-                                        <b style="color:var(--success)">${formatNumber(p.amount)}</b>
-                                        <span style="font-size:0.7rem; font-weight:600;">📅 ${p.date}</span>
-                                    </div>
-                                `).join('')}
-                            </div>
-                        `;
-                    } else {
-                        historyHtml = `<div style="font-size:0.75rem; color:var(--danger); margin-top:4px; text-align:center;">⚠️ بدون پرداخت</div>`;
-                    }
-
-                    tb.innerHTML += `
-                        <tr>
-                            <td>${i+1}</td>
-                            <td>${t.customer || '-'}</td>
-                            <td>${t.desc}</td>
-                            <td>
-                                <div class="amount-breakdown">
-                                    <div style="font-weight:800; margin-bottom:4px; font-size:0.85rem;">
-                                        کل: ${formatNumber(amount)} | 
-                                        باقی‌مانده کل: <span style="color:${remaining > 0 ? 'var(--danger)' : 'var(--success)'}">${formatNumber(remaining)}</span>
-                                    </div>
-                                    ${historyHtml}
-                                </div>
-                            </td>
-                            <td>${t.date}</td>
-                            <td class="action-cell">
-                                <button class="action-btn" onclick="toggleDropdown(${t.id})">⚙️ عملیات</button>
-                                <div id="menu-${t.id}" class="dropdown-menu">
-                                    <button class="dropdown-item text-primary" onclick="openPaymentModal(${t.id})">💵 ثبت قسط جدید</button>
-                                    <button class="dropdown-item text-warning" onclick="editTransaction(${t.id})">✏️ ویرایش</button>
-                                    <button class="dropdown-item text-danger" onclick="deleteItem('trans',${t.id})">🗑️ حذف</button>
-                                </div>
-                            </td>
-                        </tr>`;
+                        historyHtml = `<div style="width:100%; text-align:center; margin-top:8px; border-top:1px dashed var(--border); padding-top:6px;"><div style="font-size:0.7rem; color:var(--primary); font-weight:700; margin-bottom:4px;">📜 تاریخچه پرداخت‌ها:</div>${t.paymentHistory.map((p, idx) => `<div style="font-size:0.75rem; display:flex; justify-content:center; align-items:center; gap: 8px; padding:4px 0; color:var(--text-light); border-bottom:1px solid rgba(0,0,0,0.03);"><span>✅ قسط ${idx + 1}:</span><b style="color:var(--success)">${formatNumber(p.amount)}</b><span style="font-size:0.7rem; font-weight:600;">📅 ${p.date}</span></div>`).join('')}</div>`;
+                    } else historyHtml = `<div style="font-size:0.75rem; color:var(--danger); margin-top:4px; text-align:center;">⚠️ بدون پرداخت</div>`;
+                    tb.innerHTML += `<tr><td>${i+1}</td><td>${t.customer || '-'}</td><td>${t.desc}</td><td><div class="amount-breakdown"><div style="font-weight:800; margin-bottom:4px; font-size:0.85rem;">کل: ${formatNumber(amount)} | باقی‌مانده کل: <span style="color:${remaining > 0 ? 'var(--danger)' : 'var(--success)'}">${formatNumber(remaining)}</span></div>${historyHtml}</div></td><td>${t.date}</td><td class="action-cell"><button class="action-btn" onclick="toggleDropdown(${t.id})">⚙️ عملیات</button><div id="menu-${t.id}" class="dropdown-menu"><button class="dropdown-item text-primary" onclick="openPaymentModal(${t.id})">💵 ثبت قسط جدید</button><button class="dropdown-item text-warning" onclick="editTransaction(${t.id})">✏️ ویرایش</button><button class="dropdown-item text-danger" onclick="deleteItem('trans',${t.id})">🗑️ حذف</button></div></td></tr>`;
                 });
-                if (rl.length > 10) wrapper.classList.add('scrollable-y');
-                else wrapper.classList.remove('scrollable-y');
+                if (rl.length > 10) wrapper.classList.add('scrollable-y'); else wrapper.classList.remove('scrollable-y');
             }
         }
-
         const sb = document.getElementById('sent-table-body');
         if (sb) {
             const wrapper = sb.closest('.table-wrapper');
@@ -1517,64 +924,18 @@
                 wrapper.classList.remove('scrollable-y');
             } else {
                 sl.forEach((t, i) => {
-                    if (!t.paymentHistory && t.paid > 0) {
-                        t.paymentHistory = [{ amount: t.paid, date: t.date }];
-                        saveData();
-                    }
-
+                    if (!t.paymentHistory && t.paid > 0) { t.paymentHistory = [{ amount: t.paid, date: t.date }]; saveData(); }
                     const amount = Number(t.amount) || 0;
-                    const paid = Number(t.paid) || 0;
                     const remaining = Number(t.remaining) || 0;
-                    
                     let historyHtml = '';
                     if (t.paymentHistory && t.paymentHistory.length > 0) {
-                        // اصلاح شده: text-align:center و justify-content:center برای وسط چین شدن کامل
-                        historyHtml = `
-                            <div style="width:100%; text-align:center; margin-top:8px; border-top:1px dashed var(--border); padding-top:6px;">
-                                <div style="font-size:0.7rem; color:var(--primary); font-weight:700; margin-bottom:4px;">📜 تاریخچه پرداخت‌ها:</div>
-                                ${t.paymentHistory.map((p, idx) => `
-                                    <div style="font-size:0.75rem; display:flex; justify-content:center; align-items:center; gap: 8px; padding:4px 0; color:var(--text-light); border-bottom:1px solid rgba(0,0,0,0.03);">
-                                        <span>✅ قسط ${idx + 1}:</span>
-                                        <b style="color:var(--success)">${formatNumber(p.amount)}</b>
-                                        <span style="font-size:0.7rem; font-weight:600;">📅 ${p.date}</span>
-                                    </div>
-                                `).join('')}
-                            </div>
-                        `;
-                    } else {
-                        historyHtml = `<div style="font-size:0.75rem; color:var(--danger); margin-top:4px; text-align:center;">⚠️ بدون پرداخت</div>`;
-                    }
-
-                    sb.innerHTML += `
-                        <tr>
-                            <td>${i+1}</td>
-                            <td>${t.customer || '-'}</td>
-                            <td>${t.desc}</td>
-                            <td>
-                                <div class="amount-breakdown">
-                                    <div style="font-weight:800; margin-bottom:4px; font-size:0.85rem;">
-                                        کل: ${formatNumber(amount)} | 
-                                        باقی‌مانده کل: <span style="color:${remaining > 0 ? 'var(--danger)' : 'var(--success)'}">${formatNumber(remaining)}</span>
-                                    </div>
-                                    ${historyHtml}
-                                </div>
-                            </td>
-                            <td>${t.date}</td>
-                            <td class="action-cell">
-                                <button class="action-btn" onclick="toggleDropdown(${t.id})">⚙️ عملیات</button>
-                                <div id="menu-${t.id}" class="dropdown-menu">
-                                    <button class="dropdown-item text-primary" onclick="openPaymentModal(${t.id})">💵 ثبت قسط جدید</button>
-                                    <button class="dropdown-item text-warning" onclick="editTransaction(${t.id})">✏️ ویرایش</button>
-                                    <button class="dropdown-item text-danger" onclick="deleteItem('trans',${t.id})">🗑️ حذف</button>
-                                </div>
-                            </td>
-                        </tr>`;
+                        historyHtml = `<div style="width:100%; text-align:center; margin-top:8px; border-top:1px dashed var(--border); padding-top:6px;"><div style="font-size:0.7rem; color:var(--primary); font-weight:700; margin-bottom:4px;">📜 تاریخچه پرداخت‌ها:</div>${t.paymentHistory.map((p, idx) => `<div style="font-size:0.75rem; display:flex; justify-content:center; align-items:center; gap: 8px; padding:4px 0; color:var(--text-light); border-bottom:1px solid rgba(0,0,0,0.03);"><span>✅ قسط ${idx + 1}:</span><b style="color:var(--success)">${formatNumber(p.amount)}</b><span style="font-size:0.7rem; font-weight:600;">📅 ${p.date}</span></div>`).join('')}</div>`;
+                    } else historyHtml = `<div style="font-size:0.75rem; color:var(--danger); margin-top:4px; text-align:center;">⚠️ بدون پرداخت</div>`;
+                    sb.innerHTML += `<tr><td>${i+1}</td><td>${t.customer || '-'}</td><td>${t.desc}</td><td><div class="amount-breakdown"><div style="font-weight:800; margin-bottom:4px; font-size:0.85rem;">کل: ${formatNumber(amount)} | باقی‌مانده کل: <span style="color:${remaining > 0 ? 'var(--danger)' : 'var(--success)'}">${formatNumber(remaining)}</span></div>${historyHtml}</div></td><td>${t.date}</td><td class="action-cell"><button class="action-btn" onclick="toggleDropdown(${t.id})">⚙️ عملیات</button><div id="menu-${t.id}" class="dropdown-menu"><button class="dropdown-item text-primary" onclick="openPaymentModal(${t.id})">💵 ثبت قسط جدید</button><button class="dropdown-item text-warning" onclick="editTransaction(${t.id})">✏️ ویرایش</button><button class="dropdown-item text-danger" onclick="deleteItem('trans',${t.id})">🗑️ حذف</button></div></td></tr>`;
                 });
-                if (sl.length > 10) wrapper.classList.add('scrollable-y');
-                else wrapper.classList.remove('scrollable-y');
+                if (sl.length > 10) wrapper.classList.add('scrollable-y'); else wrapper.classList.remove('scrollable-y');
             }
         }
-
         const teb = document.getElementById('trans-exp-table-body');
         if (teb) {
             const wrapper = teb.closest('.table-wrapper');
@@ -1584,24 +945,9 @@
                 wrapper.classList.remove('scrollable-y');
             } else {
                 expenses.forEach((e, i) => {
-                    teb.innerHTML += `
-                        <tr>
-                            <td>${i+1}</td>
-                            <td>${e.cat}</td>
-                            <td style="color:var(--danger);font-weight:800;text-align:center!important">${formatNumber(e.amount)}</td>
-                            <td><span class="badge badge-${(e.currency||'AFN').toLowerCase()}">${getCurrencyName(e.currency||'AFN')}</span></td>
-                            <td>${e.date}</td>
-                            <td class="action-cell">
-                                <button class="action-btn" onclick="toggleDropdown(${e.id})">⚙️ عملیات</button>
-                                <div id="menu-${e.id}" class="dropdown-menu">
-                                    <button class="dropdown-item text-warning" onclick="editExpense(${e.id})">✏️ ویرایش</button>
-                                    <button class="dropdown-item text-danger" onclick="deleteItem('exp',${e.id})">🗑️ حذف</button>
-                                </div>
-                            </td>
-                        </tr>`;
+                    teb.innerHTML += `<tr><td>${i+1}</td><td>${e.cat}</td><td style="color:var(--danger);font-weight:800;text-align:center!important">${formatNumber(e.amount)}</td><td><span class="badge badge-${(e.currency||'AFN').toLowerCase()}">${getCurrencyName(e.currency||'AFN')}</span></td><td>${e.date}</td><td class="action-cell"><button class="action-btn" onclick="toggleDropdown(${e.id})">⚙️ عملیات</button><div id="menu-${e.id}" class="dropdown-menu"><button class="dropdown-item text-warning" onclick="editExpense(${e.id})">✏️ ویرایش</button><button class="dropdown-item text-danger" onclick="deleteItem('exp',${e.id})">🗑️ حذف</button></div></td></tr>`;
                 });
-                if (expenses.length > 10) wrapper.classList.add('scrollable-y');
-                else wrapper.classList.remove('scrollable-y');
+                if (expenses.length > 10) wrapper.classList.add('scrollable-y'); else wrapper.classList.remove('scrollable-y');
             }
         }
     }
@@ -1613,7 +959,6 @@
         document.getElementById('count-received-today').innerText = formatNumber(r.length);
         document.getElementById('total-sent-today').innerHTML = formatCurrencyBreakdown(s);
         document.getElementById('count-sent-today').innerText = formatNumber(s.length);
-        
         const teToday = document.getElementById('trans-total-expenses-today');
         if (teToday) teToday.innerHTML = formatCurrencyBreakdown(expenses);
     }
@@ -1622,38 +967,25 @@
         const pb = JSON.parse(localStorage.getItem('lastClosingBalancesByCurrency')) || {AFN:0,USD:0,EUR:0,IRR:0,PKR:0};
         const r = transactions.filter(t => t.type === 'received');
         const s = transactions.filter(t => t.type === 'sent');
-
         const cb = { ...pb };
         r.forEach(t => cb[t.currency] += Number(t.paid));
         s.forEach(t => cb[t.currency] -= Number(t.paid));
         expenses.forEach(e => cb[e.currency || 'AFN'] -= Number(e.amount));
-
         document.getElementById('prev-balance').innerHTML = formatCurrencyBreakdownObject(pb);
         document.getElementById('db-received').innerHTML = formatCurrencyBreakdown(r.map(t => ({...t, amount: t.paid})));
         document.getElementById('db-sent').innerHTML = formatCurrencyBreakdown(s.map(t => ({...t, amount: t.paid})));
         document.getElementById('current-balance').innerHTML = formatCurrencyBreakdownObject(cb);
-
         updateBalanceCardState(cb);
-
-        document.getElementById('balance-status').innerHTML = `
-            <div>📅 <strong>مانده روز قبل:</strong><br>${formatCurrencyBreakdownObject(pb, true)}</div>
-            <div style="color:var(--danger)">⬇️ <strong>وجه نقد دریافتی (فروش):</strong><br>${formatCurrencyBreakdown(r.map(t => ({...t, amount: t.paid})), true)}</div>
-            <div style="color:var(--success)">⬆️ <strong>وجه نقد پرداختی (خرید):</strong><br>${formatCurrencyBreakdown(s.map(t => ({...t, amount: t.paid})), true)}</div>
-            <div style="color:var(--accent)">💸 <strong>مصارف:</strong><br>${formatCurrencyBreakdown(expenses, true)}</div>
-            <hr style="margin:12px 0;border:none;border-top:2px dashed var(--border)">
-            <div style="font-size:1.1rem;font-weight:800;color:var(--secondary)">💵 <strong>مانده فعلی دخل:</strong><br>${formatCurrencyBreakdownObject(cb, true)}</div>
-        `;
+        document.getElementById('balance-status').innerHTML = `<div>📅 <strong>مانده روز قبل:</strong><br>${formatCurrencyBreakdownObject(pb, true)}</div><div style="color:var(--danger)">⬇️ <strong>وجه نقد دریافتی (فروش):</strong><br>${formatCurrencyBreakdown(r.map(t => ({...t, amount: t.paid})), true)}</div><div style="color:var(--success)">⬆️ <strong>وجه نقد پرداختی (خرید):</strong><br>${formatCurrencyBreakdown(s.map(t => ({...t, amount: t.paid})), true)}</div><div style="color:var(--accent)">💸 <strong>مصارف:</strong><br>${formatCurrencyBreakdown(expenses, true)}</div><hr style="margin:12px 0;border:none;border-top:2px dashed var(--border)"><div style="font-size:1.1rem;font-weight:800;color:var(--secondary)">💵 <strong>مانده فعلی دخل:</strong><br>${formatCurrencyBreakdownObject(cb, true)}</div>`;
     }
 
     function updateReports() {
         const archives = JSON.parse(localStorage.getItem('dailyArchives')) || [];
         const pb = JSON.parse(localStorage.getItem('lastClosingBalancesByCurrency')) || {AFN:0,USD:0,EUR:0,IRR:0,PKR:0};
-        
         const tb = { ...pb };
         const ti = {AFN:0,USD:0,EUR:0,IRR:0,PKR:0};
         const tp = {AFN:0,USD:0,EUR:0,IRR:0,PKR:0};
         const te = {AFN:0,USD:0,EUR:0,IRR:0,PKR:0};
-
         archives.forEach(a => {
             currencies.forEach(c => {
                 tb[c] += (a.stats.received[c] || 0) - (a.stats.sent[c] || 0) - (a.stats.expenses[c] || 0);
@@ -1662,63 +994,27 @@
                 te[c] += (a.stats.expenses[c] || 0);
             });
         });
-
-        transactions.filter(t => t.type === 'received').forEach(t => {
-            tb[t.currency] += Number(t.paid);
-            ti[t.currency] += Number(t.amount);
-        });
-        transactions.filter(t => t.type === 'sent').forEach(t => {
-            tb[t.currency] -= Number(t.paid);
-            tp[t.currency] += Number(t.amount);
-        });
-        expenses.forEach(e => {
-            const c = e.currency || 'AFN';
-            te[c] += Number(e.amount);
-            tb[c] -= Number(e.amount);
-        });
-
+        transactions.filter(t => t.type === 'received').forEach(t => { tb[t.currency] += Number(t.paid); ti[t.currency] += Number(t.amount); });
+        transactions.filter(t => t.type === 'sent').forEach(t => { tb[t.currency] -= Number(t.paid); tp[t.currency] += Number(t.amount); });
+        expenses.forEach(e => { const c = e.currency || 'AFN'; te[c] += Number(e.amount); tb[c] -= Number(e.amount); });
         document.getElementById('total-income-all').innerHTML = formatCurrencyBreakdownObject(ti, true);
         document.getElementById('total-purchase-all').innerHTML = formatCurrencyBreakdownObject(tp, true);
         document.getElementById('total-expense-all').innerHTML = formatCurrencyBreakdownObject(te, true);
         document.getElementById('total-balance-all').innerHTML = formatCurrencyBreakdownObject(tb, true);
-
         const balanceCard = document.getElementById('card-total-balance');
         if (balanceCard) {
             let hasNeg = false;
             for (const [c, a] of Object.entries(tb)) { if (a < 0) { hasNeg = true; break; } }
             balanceCard.classList.remove('info', 'negative');
-            if (hasNeg) {
-                balanceCard.classList.add('negative');
-                balanceCard.querySelector('.label').innerHTML = '⚠️ مانده فعلی دخل (قرض)';
-            } else {
-                balanceCard.classList.add('info');
-                balanceCard.querySelector('.label').innerHTML = 'مانده فعلی دخل';
-            }
+            if (hasNeg) { balanceCard.classList.add('negative'); balanceCard.querySelector('.label').innerHTML = '⚠️ مانده فعلی دخل (قرض)'; }
+            else { balanceCard.classList.add('info'); balanceCard.querySelector('.label').innerHTML = 'مانده فعلی دخل'; }
         }
-
         const al = document.getElementById('archive-list');
-        if (!archives.length) {
-            al.innerHTML = `<div class="empty-state"><div class="icon">📚</div>هنوز روزی بسته نشده</div>`;
-        } else {
+        if (!archives.length) al.innerHTML = `<div class="empty-state"><div class="icon">📚</div>هنوز روزی بسته نشده</div>`;
+        else {
             al.innerHTML = '';
             archives.slice().reverse().forEach(a => {
-                al.innerHTML += `
-                    <div class="archive-item">
-                        <div>
-                            <div class="archive-date">📅 ${a.date}</div>
-                            <div style="font-size:0.8rem;color:var(--text-light);margin-top:4px">
-                                ⬇️ فروش: ${formatCurrencyBreakdownObject(a.stats.received || {}, true)}
-                                ⬆️ خرید: ${formatCurrencyBreakdownObject(a.stats.sent || {}, true)}
-                                💸 مصارف: ${formatCurrencyBreakdownObject(a.stats.expenses || {}, true)}
-                            </div>
-                        </div>
-                        <div style="text-align:left">
-                            <div style="font-size:0.75rem;color:var(--text-light)">مانده پایان روز</div>
-                            <div style="font-weight:800;color:var(--primary);font-size:0.95rem;margin-top:4px">
-                                ${formatCurrencyBreakdownObject(a.closingBalances, true)}
-                            </div>
-                        </div>
-                    </div>`;
+                al.innerHTML += `<div class="archive-item"><div><div class="archive-date">📅 ${a.date}</div><div style="font-size:0.8rem;color:var(--text-light);margin-top:4px">⬇️ فروش: ${formatCurrencyBreakdownObject(a.stats.received || {}, true)} ⬆️ خرید: ${formatCurrencyBreakdownObject(a.stats.sent || {}, true)} 💸 مصارف: ${formatCurrencyBreakdownObject(a.stats.expenses || {}, true)}</div></div><div style="text-align:left"><div style="font-size:0.75rem;color:var(--text-light)">مانده پایان روز</div><div style="font-weight:800;color:var(--primary);font-size:0.95rem;margin-top:4px">${formatCurrencyBreakdownObject(a.closingBalances, true)}</div></div></div>`;
             });
         }
     }
@@ -1733,7 +1029,6 @@
     updateDailyBalance();
     updateReports();
     updateDateDisplay();
-
     setInterval(updateDateDisplay, 60000);
     setInterval(() => {
         const lastDate = localStorage.getItem('lastDate');
@@ -1747,6 +1042,5 @@
         }
     }, 30000);
 </script>
-
 </body>
 </html>
