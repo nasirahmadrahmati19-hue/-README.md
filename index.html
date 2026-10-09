@@ -35,7 +35,9 @@
         .icon-btn.reset-btn { background: rgba(255,107,107,0.4); font-size: 1rem; }
         .icon-btn.cloud-btn { background: rgba(0, 184, 148, 0.3); font-size: 1.1rem; transition: 0.3s; }
         .icon-btn.cloud-btn.connected { background: rgba(0, 184, 148, 0.8); animation: pulseCloud 2s ease-in-out infinite; }
+        .icon-btn.cloud-btn.offline { background: rgba(255,107,107,0.6); animation: pulseOffline 1.5s ease-in-out infinite; }
         @keyframes pulseCloud { 0%, 100% { box-shadow: 0 0 0 0 rgba(0,184,148,0.4); } 50% { box-shadow: 0 0 15px 3px rgba(0,184,148,0.6); } }
+        @keyframes pulseOffline { 0%, 100% { box-shadow: 0 0 0 0 rgba(255,107,107,0.4); } 50% { box-shadow: 0 0 15px 3px rgba(255,107,107,0.6); } }
         .tabs-nav { display: none; background: var(--card); backdrop-filter: blur(20px); padding: 8px; gap: 8px; margin: 15px 20px 0; border-radius: 16px; box-shadow: var(--shadow); }
         .tab-btn { flex: 1; padding: 14px; border: none; background: transparent; cursor: pointer; font-weight: 700; font-size: 0.95rem; color: var(--text-light); border-radius: 12px; transition: 0.3s; }
         .tab-btn.active { background: var(--primary); color: white; box-shadow: 0 4px 15px rgba(108,92,231,0.4); }
@@ -132,67 +134,52 @@
 
         .cloud-restore-banner {
             background: linear-gradient(135deg, var(--info), var(--primary));
-            color: white;
-            padding: 15px 20px;
-            margin: 15px;
-            border-radius: 16px;
-            display: none;
-            align-items: center;
-            justify-content: space-between;
-            gap: 15px;
-            box-shadow: 0 8px 24px rgba(108,92,231,0.3);
-            animation: slideDown 0.5s ease;
-            flex-wrap: wrap;
+            color: white; padding: 15px 20px; margin: 15px; border-radius: 16px;
+            display: none; align-items: center; justify-content: space-between; gap: 15px;
+            box-shadow: 0 8px 24px rgba(108,92,231,0.3); animation: slideDown 0.5s ease; flex-wrap: wrap;
         }
         .cloud-restore-banner.show { display: flex; }
         @keyframes slideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
-        .cloud-restore-banner .banner-text {
-            display: flex; align-items: center; gap: 10px;
-            font-weight: 700; font-size: 0.9rem; flex: 1;
-        }
+        .cloud-restore-banner .banner-text { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 0.9rem; flex: 1; }
         .cloud-restore-banner .banner-icon { font-size: 1.8rem; }
-        .cloud-restore-banner .banner-btn {
-            background: white; color: var(--primary);
-            border: none; padding: 10px 18px; border-radius: 12px;
-            font-weight: 800; font-size: 0.85rem; cursor: pointer;
-            transition: 0.3s; white-space: nowrap;
-        }
+        .cloud-restore-banner .banner-btn { background: white; color: var(--primary); border: none; padding: 10px 18px; border-radius: 12px; font-weight: 800; font-size: 0.85rem; cursor: pointer; transition: 0.3s; white-space: nowrap; }
         .cloud-restore-banner .banner-btn:hover { transform: scale(1.05); }
-        .cloud-restore-banner .banner-close {
-            background: transparent; border: none; color: white;
-            font-size: 1.2rem; cursor: pointer; opacity: 0.8;
-        }
+        .cloud-restore-banner .banner-close { background: transparent; border: none; color: white; font-size: 1.2rem; cursor: pointer; opacity: 0.8; }
         .cloud-restore-banner .banner-close:hover { opacity: 1; }
 
-        /* استایل مخصوص عناوین بخش‌های جستجو */
-        .search-section-title {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 12px 16px;
-            border-radius: 12px;
-            margin-bottom: 12px;
-            font-weight: 800;
-            font-size: 1rem;
+        /* 🆕 بنر وضعیت آفلاین */
+        .offline-banner {
+            background: linear-gradient(135deg, #FF6B6B, #e17055);
+            color: white; padding: 12px 18px; margin: 10px 15px; border-radius: 14px;
+            display: none; align-items: center; justify-content: space-between; gap: 10px;
+            box-shadow: 0 6px 20px rgba(255,107,107,0.4); animation: slideDown 0.4s ease;
+            font-weight: 700; font-size: 0.9rem; flex-wrap: wrap;
         }
-        .search-section-title.received {
-            background: linear-gradient(135deg, rgba(255,107,107,0.15), rgba(253,121,168,0.1));
-            color: var(--danger);
-            border: 2px solid rgba(255,107,107,0.3);
+        .offline-banner.show { display: flex; }
+        .offline-banner .offline-text { display: flex; align-items: center; gap: 10px; flex: 1; }
+        .offline-banner .offline-icon { font-size: 1.5rem; animation: shake 2s ease-in-out infinite; }
+        @keyframes shake { 0%, 100% { transform: rotate(0deg); } 25% { transform: rotate(-10deg); } 75% { transform: rotate(10deg); } }
+        .offline-banner .pending-count {
+            background: rgba(255,255,255,0.25); padding: 4px 12px; border-radius: 20px;
+            font-size: 0.8rem; white-space: nowrap;
         }
-        .search-section-title.sent {
-            background: linear-gradient(135deg, rgba(0,184,148,0.15), rgba(0,206,201,0.1));
-            color: var(--success);
-            border: 2px solid rgba(0,184,148,0.3);
+
+        /* 🆕 بنر وضعیت آنلاین (هنگام sync) */
+        .online-sync-banner {
+            background: linear-gradient(135deg, var(--success), var(--secondary));
+            color: white; padding: 10px 18px; margin: 10px 15px; border-radius: 14px;
+            display: none; align-items: center; gap: 10px;
+            box-shadow: 0 6px 20px rgba(0,184,148,0.3); animation: slideDown 0.4s ease;
+            font-weight: 700; font-size: 0.85rem;
         }
+        .online-sync-banner.show { display: flex; }
+        .online-sync-banner .sync-icon { font-size: 1.3rem; animation: spin 1s linear infinite; }
+
+        .search-section-title { display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-radius: 12px; margin-bottom: 12px; font-weight: 800; font-size: 1rem; }
+        .search-section-title.received { background: linear-gradient(135deg, rgba(255,107,107,0.15), rgba(253,121,168,0.1)); color: var(--danger); border: 2px solid rgba(255,107,107,0.3); }
+        .search-section-title.sent { background: linear-gradient(135deg, rgba(0,184,148,0.15), rgba(0,206,201,0.1)); color: var(--success); border: 2px solid rgba(0,184,148,0.3); }
         .search-section-title .title-icon { font-size: 1.4rem; }
-        .search-section-title .title-count {
-            margin-right: auto;
-            background: rgba(0,0,0,0.1);
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-        }
+        .search-section-title .title-count { margin-right: auto; background: rgba(0,0,0,0.1); padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; }
 
         @media (min-width: 768px) {
             body { padding-bottom: 20px; }
@@ -231,6 +218,7 @@
     </div>
 </div>
 
+<!-- بنر اطلاع‌رسانی برای گوشی جدید -->
 <div class="cloud-restore-banner" id="cloud-restore-banner">
     <div class="banner-text">
         <span class="banner-icon">📱</span>
@@ -240,10 +228,26 @@
     <button class="banner-close" onclick="dismissRestoreBanner()">✕</button>
 </div>
 
+<!-- 🆕 بنر وضعیت آفلاین -->
+<div class="offline-banner" id="offline-banner">
+    <div class="offline-text">
+        <span class="offline-icon">📡</span>
+        <span>آفلاین - تغییرات در گوشی ذخیره می‌شوند</span>
+    </div>
+    <span class="pending-count" id="pending-count">۰ تغییر در انتظار</span>
+</div>
+
+<!-- 🆕 بنر sync موفق -->
+<div class="online-sync-banner" id="online-sync-banner">
+    <span class="sync-icon">🔄</span>
+    <span id="sync-banner-text">در حال همگام‌سازی...</span>
+</div>
+
+<!-- نوار وضعیت همگام‌سازی -->
 <div class="sync-status" id="sync-status" style="background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 10px 15px; margin: 15px 20px 0; display: none; align-items: center; justify-content: space-between; font-size: 0.85rem; box-shadow: var(--shadow);">
     <div style="display:flex; align-items:center; gap:8px;">
-        <span>🟢</span>
-        <span>همگام‌سازی خودکار فعال (هر ۱۰ ثانیه) | <span id="last-sync-time" style="font-size:0.75rem; color:var(--text-light);">در انتظار...</span></span>
+        <span id="sync-status-icon">🟢</span>
+        <span id="sync-status-text">همگام‌سازی خودکار فعال (هر ۱۰ ثانیه) | <span id="last-sync-time" style="font-size:0.75rem; color:var(--text-light);">در انتظار...</span></span>
     </div>
 </div>
 
@@ -368,7 +372,6 @@
             </div>
         </div>
 
-        <!-- 🔍 بخش جستجو با دو جدول جداگانه -->
         <div id="search-transactions" class="sub-tab-content">
             <div class="form-card">
                 <h3 style="color:var(--primary)">🔍 جستجو در معاملات</h3>
@@ -382,7 +385,6 @@
                 <button class="btn btn-secondary" onclick="clearTransactionSearch()" style="margin-top:10px;">🗑️ پاک کردن نتایج</button>
             </div>
 
-            <!-- بخش نتایج فروش -->
             <div id="search-received-section" style="display:none; margin-top:20px;">
                 <div class="search-section-title received">
                     <span class="title-icon">💰</span>
@@ -397,7 +399,6 @@
                 </div>
             </div>
 
-            <!-- بخش نتایج خرید -->
             <div id="search-sent-section" style="display:none; margin-top:20px;">
                 <div class="search-section-title sent">
                     <span class="title-icon">🛒</span>
@@ -475,6 +476,9 @@
     let pendingAction = null;
     let currentPaymentId = null;
 
+    // ==========================================
+    // تنظیمات همگام‌سازی ابری (JSONBin)
+    // ==========================================
     const BIN_ID = '6ac8ff2dffd5d160535c794a';
     const API_KEY = '$2a$10$KRrLr0WltnWayk5v4FOE4eVuj4rZS.UKRIdBeLhub3UozylqaniFe';
     const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
@@ -482,6 +486,104 @@
     let autoSyncTimeout = null;
     let autoSyncInterval = null;
 
+    // 🆕 متغیرهای جدید برای مدیریت وضعیت آنلاین/آفلاین
+    let isOnline = navigator.onLine;
+    let pendingChangesCount = parseInt(localStorage.getItem('pending_changes_count') || '0');
+    let syncRetryInterval = null;
+
+    // ==========================================
+    // 🆕 مدیریت وضعیت آنلاین/آفلاین
+    // ==========================================
+    function updateOnlineStatus() {
+        isOnline = navigator.onLine;
+        const offlineBanner = document.getElementById('offline-banner');
+        const cloudBtn = document.getElementById('cloud-sync-btn');
+        const syncStatusIcon = document.getElementById('sync-status-icon');
+        const syncStatusText = document.getElementById('sync-status-text');
+
+        if (isCloudConnected) {
+            if (isOnline) {
+                // 🟢 آنلاین
+                offlineBanner.classList.remove('show');
+                cloudBtn.classList.remove('offline');
+                if (cloudBtn.classList.contains('connected')) {
+                    cloudBtn.title = 'متصل به فضای ابری';
+                }
+                if (syncStatusIcon) syncStatusIcon.innerText = '🟢';
+                if (syncStatusText) {
+                    const lastSync = localStorage.getItem('last_sync_time');
+                    syncStatusText.innerHTML = `همگام‌سازی خودکار فعال (هر ۱۰ ثانیه) | <span style="font-size:0.75rem; color:var(--text-light);">آخرین: ${lastSync || 'در انتظار...'}</span>`;
+                }
+            } else {
+                // 🔴 آفلاین
+                offlineBanner.classList.add('show');
+                cloudBtn.classList.add('offline');
+                cloudBtn.title = 'آفلاین - تغییرات در گوشی ذخیره می‌شوند';
+                updatePendingCount();
+                if (syncStatusIcon) syncStatusIcon.innerText = '🔴';
+                if (syncStatusText) syncStatusText.innerHTML = `<span style="color:var(--danger); font-weight:700;">آفلاین</span> - تغییرات در حافظه گوشی ذخیره می‌شوند و پس از اتصال اینترنت به صورت خودکار همگام‌سازی خواهند شد`;
+            }
+        }
+    }
+
+    function updatePendingCount() {
+        const countEl = document.getElementById('pending-count');
+        if (countEl) {
+            countEl.innerText = `${formatNumber(pendingChangesCount)} تغییر در انتظار`;
+        }
+    }
+
+    function incrementPendingChanges() {
+        if (!isOnline && isCloudConnected) {
+            pendingChangesCount++;
+            localStorage.setItem('pending_changes_count', pendingChangesCount.toString());
+            updatePendingCount();
+        }
+    }
+
+    function resetPendingChanges() {
+        pendingChangesCount = 0;
+        localStorage.setItem('pending_changes_count', '0');
+        updatePendingCount();
+    }
+
+    // گوش دادن به رویدادهای آنلاین/آفلاین مرورگر
+    window.addEventListener('online', () => {
+        console.log('🟢 اینترنت وصل شد');
+        updateOnlineStatus();
+        if (isCloudConnected) {
+            showOnlineSyncBanner('🔄 در حال همگام‌سازی تغییرات ذخیره‌شده...');
+            // همگام‌سازی فوری
+            forceSyncSilent().then(() => {
+                if (pendingChangesCount > 0) {
+                    showOnlineSyncBanner(`✅ ${formatNumber(pendingChangesCount)} تغییر با موفقیت همگام‌سازی شد`);
+                    resetPendingChanges();
+                    setTimeout(() => hideOnlineSyncBanner(), 3000);
+                } else {
+                    hideOnlineSyncBanner();
+                }
+            });
+        }
+    });
+
+    window.addEventListener('offline', () => {
+        console.log('🔴 اینترنت قطع شد');
+        updateOnlineStatus();
+    });
+
+    function showOnlineSyncBanner(text) {
+        const banner = document.getElementById('online-sync-banner');
+        document.getElementById('sync-banner-text').innerText = text;
+        banner.classList.add('show');
+    }
+
+    function hideOnlineSyncBanner() {
+        document.getElementById('online-sync-banner').classList.remove('show');
+    }
+
+    // ==========================================
+    // اتصال خودکار + تشخیص گوشی جدید
+    // ==========================================
     async function initAutoConnect() {
         if (localStorage.getItem('cloud_auto_connect') === 'true') {
             isCloudConnected = true;
@@ -491,6 +593,9 @@
             if (status) status.style.display = 'flex';
             const lastSync = localStorage.getItem('last_sync_time');
             if (lastSync) document.getElementById('last-sync-time').innerText = `آخرین: ${lastSync}`;
+
+            // 🆕 به‌روزرسانی وضعیت آنلاین/آفلاین
+            updateOnlineStatus();
 
             const localIsEmpty = transactions.length === 0 && expenses.length === 0;
             const hasCloudFlag = !localStorage.getItem('device_initialized');
@@ -514,16 +619,23 @@
 
     function startAutoSync() {
         if (autoSyncInterval) clearInterval(autoSyncInterval);
-        autoSyncInterval = setInterval(() => { if (isCloudConnected) forceSyncSilent(); }, 10000);
-        forceSyncSilent();
+        // 🆕 همگام‌سازی فقط در حالت آنلاین
+        autoSyncInterval = setInterval(() => { 
+            if (isCloudConnected && isOnline) forceSyncSilent(); 
+        }, 10000);
+        if (isOnline) forceSyncSilent();
     }
 
     initAutoConnect();
 
     function handleCloudSync() {
         if (isCloudConnected) {
-            forceSyncSilent();
-            showCustomConfirm('اطلاعات', '✅ شما از قبل به فضای ابری متصل هستید.\n\nهمگام‌سازی خودکار هر ۱۰ ثانیه در حال انجام است.', 'ℹ️', null);
+            if (isOnline) {
+                forceSyncSilent();
+                showCustomConfirm('اطلاعات', '✅ شما از قبل به فضای ابری متصل هستید.\n\n🟢 وضعیت: آنلاین\n• همگام‌سازی خودکار هر ۱۰ ثانیه فعال است\n• تغییرات به صورت خودکار در فضای ابری ذخیره می‌شوند', 'ℹ️', null);
+            } else {
+                showCustomConfirm('آفلاین', '🔴 در حال حاضر اینترنت قطع است.\n\n• تغییرات شما در حافظه گوشی ذخیره می‌شوند\n• به محض وصل شدن اینترنت، به صورت خودکار همگام‌سازی خواهند شد\n• نیازی به انجام کاری نیست', '📡', null);
+            }
             return;
         }
         isCloudConnected = true;
@@ -534,7 +646,10 @@
         btn.title = 'متصل به فضای ابری';
         const status = document.getElementById('sync-status');
         status.style.display = 'flex';
-        showCustomConfirm('موفق', '✅ اتصال به فضای ابری برقرار شد!\n\n• هر ۱۰ ثانیه به صورت خودکار ذخیره می‌شود\n• در گوشی جدید، پیام بارگذاری نمایش داده می‌شود', '✅', null);
+        
+        updateOnlineStatus();
+        
+        showCustomConfirm('موفق', '✅ اتصال به فضای ابری برقرار شد!\n\n• برنامه به صورت آفلاین کار می‌کند\n• تغییرات در حافظه گوشی ذخیره می‌شوند\n• هر زمان اینترنت وصل باشد، به صورت خودکار (هر ۱۰ ثانیه) همگام‌سازی می‌شود', '✅', null);
         startAutoSync();
     }
 
@@ -574,8 +689,13 @@
         }
     }
 
+    // 🆕 تابع sync بهبودیافته با مدیریت آفلاین
     async function forceSyncSilent() {
         if (!isCloudConnected) return;
+        if (!isOnline) {
+            console.log('📡 آفلاین - sync به تعویق افتاد');
+            return;
+        }
         try {
             const dataToSave = {
                 version: 2, savedAt: new Date().toISOString(),
@@ -593,11 +713,29 @@
             const now = new Date().toLocaleTimeString('fa-IR');
             document.getElementById('last-sync-time').innerText = `آخرین: ${now}`;
             localStorage.setItem('last_sync_time', now);
-        } catch (e) { console.warn('⚠️ همگام‌سازی خودکار ناموفق:', e.message); }
+            // 🆕 اگر قبلاً تغییرات در انتظار بود، پاک کن
+            if (pendingChangesCount > 0) resetPendingChanges();
+            updateOnlineStatus();
+        } catch (e) { 
+            console.warn('⚠️ همگام‌سازی خودکار ناموفق:', e.message);
+            // اگر sync ناموفق بود، وضعیت را دوباره بررسی کن
+            if (!navigator.onLine) {
+                isOnline = false;
+                updateOnlineStatus();
+            }
+        }
     }
 
+    // 🆕 تابع autoSync بهبودیافته
     function autoSyncToDrive() {
         if (!isCloudConnected) return;
+        
+        // 🆕 اگر آفلاین هستیم، فقط تعداد تغییرات را زیاد کن
+        if (!isOnline) {
+            incrementPendingChanges();
+            return;
+        }
+        
         clearTimeout(autoSyncTimeout);
         autoSyncTimeout = setTimeout(() => { forceSyncSilent(); }, 1500);
     }
@@ -952,7 +1090,6 @@
         if (!e.target.matches('.action-btn')) document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove('show'));
     };
 
-    // 🔍 تابع جستجوی بهبود یافته - نمایش جداگانه خرید و فروش
     function searchTransactions() {
         const searchCustomer = document.getElementById('search-customer').value.trim().toLowerCase();
         const searchDesc = document.getElementById('search-desc').value.trim().toLowerCase();
@@ -968,7 +1105,6 @@
             return match;
         });
 
-        // جدا کردن نتایج بر اساس نوع
         const receivedResults = results.filter(t => t.type === 'received');
         const sentResults = results.filter(t => t.type === 'sent');
 
@@ -982,7 +1118,6 @@
         tbodyReceived.innerHTML = '';
         tbodySent.innerHTML = '';
 
-        // نمایش بخش فروش
         sectionReceived.style.display = 'block';
         countReceived.innerText = `${formatNumber(receivedResults.length)} مورد`;
         if (receivedResults.length === 0) {
@@ -1009,7 +1144,6 @@
             });
         }
 
-        // نمایش بخش خرید
         sectionSent.style.display = 'block';
         countSent.innerText = `${formatNumber(sentResults.length)} مورد`;
         if (sentResults.length === 0) {
@@ -1036,7 +1170,6 @@
             });
         }
 
-        // پیام کلی اگر هیچ نتیجه‌ای نبود
         if (results.length === 0) {
             showCustomConfirm('نتیجه جستجو', '🔍 هیچ معامله‌ای با این مشخصات یافت نشد.\n\nلطفاً فیلترهای جستجو را تغییر دهید.', '🔍', null);
         }
