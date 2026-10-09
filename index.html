@@ -7,6 +7,23 @@
     <link rel="icon" type="image/png" href="logo.png">
     <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
     
+    <!-- 🆕 کدهای اضافه شده برای قابلیت PWA (نصب به عنوان اپلیکیشن) -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#6C5CE7">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="logo.png">
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then(reg => console.log('✅ Service Worker ثبت شد'))
+            .catch(err => console.log('❌ خطا:', err));
+        });
+      }
+    </script>
+    <!-- پایان کدهای PWA -->
+
     <style>
         :root {
             --primary: #6C5CE7; --primary-light: #a29bfe; --secondary: #00CEC9; --accent: #FD79A8;
@@ -147,7 +164,6 @@
         .cloud-restore-banner .banner-close { background: transparent; border: none; color: white; font-size: 1.2rem; cursor: pointer; opacity: 0.8; }
         .cloud-restore-banner .banner-close:hover { opacity: 1; }
 
-        /* 🆕 بنر وضعیت آفلاین */
         .offline-banner {
             background: linear-gradient(135deg, #FF6B6B, #e17055);
             color: white; padding: 12px 18px; margin: 10px 15px; border-radius: 14px;
@@ -164,7 +180,6 @@
             font-size: 0.8rem; white-space: nowrap;
         }
 
-        /* 🆕 بنر وضعیت آنلاین (هنگام sync) */
         .online-sync-banner {
             background: linear-gradient(135deg, var(--success), var(--secondary));
             color: white; padding: 10px 18px; margin: 10px 15px; border-radius: 14px;
@@ -199,6 +214,7 @@
 </head>
 <body>
 
+<!-- بقیه کد شما دقیقاً به همان شکل قبلی بدون هیچ تغییری ادامه دارد... -->
 <div class="header">
     <div class="header-top-row">
         <div class="header-actions">
@@ -228,7 +244,7 @@
     <button class="banner-close" onclick="dismissRestoreBanner()">✕</button>
 </div>
 
-<!-- 🆕 بنر وضعیت آفلاین -->
+<!-- بنر وضعیت آفلاین -->
 <div class="offline-banner" id="offline-banner">
     <div class="offline-text">
         <span class="offline-icon">📡</span>
@@ -237,7 +253,7 @@
     <span class="pending-count" id="pending-count">۰ تغییر در انتظار</span>
 </div>
 
-<!-- 🆕 بنر sync موفق -->
+<!-- بنر sync موفق -->
 <div class="online-sync-banner" id="online-sync-banner">
     <span class="sync-icon">🔄</span>
     <span id="sync-banner-text">در حال همگام‌سازی...</span>
@@ -486,13 +502,13 @@
     let autoSyncTimeout = null;
     let autoSyncInterval = null;
 
-    // 🆕 متغیرهای جدید برای مدیریت وضعیت آنلاین/آفلاین
+    // متغیرهای جدید برای مدیریت وضعیت آنلاین/آفلاین
     let isOnline = navigator.onLine;
     let pendingChangesCount = parseInt(localStorage.getItem('pending_changes_count') || '0');
     let syncRetryInterval = null;
 
     // ==========================================
-    // 🆕 مدیریت وضعیت آنلاین/آفلاین
+    // مدیریت وضعیت آنلاین/آفلاین
     // ==========================================
     function updateOnlineStatus() {
         isOnline = navigator.onLine;
@@ -503,7 +519,6 @@
 
         if (isCloudConnected) {
             if (isOnline) {
-                // 🟢 آنلاین
                 offlineBanner.classList.remove('show');
                 cloudBtn.classList.remove('offline');
                 if (cloudBtn.classList.contains('connected')) {
@@ -515,7 +530,6 @@
                     syncStatusText.innerHTML = `همگام‌سازی خودکار فعال (هر ۱۰ ثانیه) | <span style="font-size:0.75rem; color:var(--text-light);">آخرین: ${lastSync || 'در انتظار...'}</span>`;
                 }
             } else {
-                // 🔴 آفلاین
                 offlineBanner.classList.add('show');
                 cloudBtn.classList.add('offline');
                 cloudBtn.title = 'آفلاین - تغییرات در گوشی ذخیره می‌شوند';
@@ -547,13 +561,11 @@
         updatePendingCount();
     }
 
-    // گوش دادن به رویدادهای آنلاین/آفلاین مرورگر
     window.addEventListener('online', () => {
         console.log('🟢 اینترنت وصل شد');
         updateOnlineStatus();
         if (isCloudConnected) {
             showOnlineSyncBanner('🔄 در حال همگام‌سازی تغییرات ذخیره‌شده...');
-            // همگام‌سازی فوری
             forceSyncSilent().then(() => {
                 if (pendingChangesCount > 0) {
                     showOnlineSyncBanner(`✅ ${formatNumber(pendingChangesCount)} تغییر با موفقیت همگام‌سازی شد`);
@@ -581,9 +593,6 @@
         document.getElementById('online-sync-banner').classList.remove('show');
     }
 
-    // ==========================================
-    // اتصال خودکار + تشخیص گوشی جدید
-    // ==========================================
     async function initAutoConnect() {
         if (localStorage.getItem('cloud_auto_connect') === 'true') {
             isCloudConnected = true;
@@ -594,7 +603,6 @@
             const lastSync = localStorage.getItem('last_sync_time');
             if (lastSync) document.getElementById('last-sync-time').innerText = `آخرین: ${lastSync}`;
 
-            // 🆕 به‌روزرسانی وضعیت آنلاین/آفلاین
             updateOnlineStatus();
 
             const localIsEmpty = transactions.length === 0 && expenses.length === 0;
@@ -619,7 +627,6 @@
 
     function startAutoSync() {
         if (autoSyncInterval) clearInterval(autoSyncInterval);
-        // 🆕 همگام‌سازی فقط در حالت آنلاین
         autoSyncInterval = setInterval(() => { 
             if (isCloudConnected && isOnline) forceSyncSilent(); 
         }, 10000);
@@ -689,7 +696,6 @@
         }
     }
 
-    // 🆕 تابع sync بهبودیافته با مدیریت آفلاین
     async function forceSyncSilent() {
         if (!isCloudConnected) return;
         if (!isOnline) {
@@ -713,12 +719,10 @@
             const now = new Date().toLocaleTimeString('fa-IR');
             document.getElementById('last-sync-time').innerText = `آخرین: ${now}`;
             localStorage.setItem('last_sync_time', now);
-            // 🆕 اگر قبلاً تغییرات در انتظار بود، پاک کن
             if (pendingChangesCount > 0) resetPendingChanges();
             updateOnlineStatus();
         } catch (e) { 
             console.warn('⚠️ همگام‌سازی خودکار ناموفق:', e.message);
-            // اگر sync ناموفق بود، وضعیت را دوباره بررسی کن
             if (!navigator.onLine) {
                 isOnline = false;
                 updateOnlineStatus();
@@ -726,16 +730,12 @@
         }
     }
 
-    // 🆕 تابع autoSync بهبودیافته
     function autoSyncToDrive() {
         if (!isCloudConnected) return;
-        
-        // 🆕 اگر آفلاین هستیم، فقط تعداد تغییرات را زیاد کن
         if (!isOnline) {
             incrementPendingChanges();
             return;
         }
-        
         clearTimeout(autoSyncTimeout);
         autoSyncTimeout = setTimeout(() => { forceSyncSilent(); }, 1500);
     }
