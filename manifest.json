@@ -1,0 +1,22 @@
+{
+  "name": "سیستم مدیریت مالی غلام سرور حسنی",
+  "short_name": "مالی غلام سرور",
+  "description": "سیستم هوشمند ثبت و پیگیری معاملات",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#6C5CE7",
+  "theme_color": "#6C5CE7",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "logo.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
