@@ -33,8 +33,9 @@
         .header-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
         .icon-btn { background: rgba(255,255,255,0.25); border: none; color: white; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-size: 1.2rem; backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: center; }
         .icon-btn.reset-btn { background: rgba(255,107,107,0.4); font-size: 1rem; }
-        .icon-btn.cloud-btn { background: rgba(0, 184, 148, 0.3); font-size: 1.1rem; }
-        .icon-btn.cloud-btn.connected { background: rgba(0, 184, 148, 0.8); }
+        .icon-btn.cloud-btn { background: rgba(0, 184, 148, 0.3); font-size: 1.1rem; transition: 0.3s; }
+        .icon-btn.cloud-btn.connected { background: rgba(0, 184, 148, 0.8); animation: pulseCloud 2s ease-in-out infinite; }
+        @keyframes pulseCloud { 0%, 100% { box-shadow: 0 0 0 0 rgba(0,184,148,0.4); } 50% { box-shadow: 0 0 15px 3px rgba(0,184,148,0.6); } }
         .tabs-nav { display: none; background: var(--card); backdrop-filter: blur(20px); padding: 8px; gap: 8px; margin: 15px 20px 0; border-radius: 16px; box-shadow: var(--shadow); }
         .tab-btn { flex: 1; padding: 14px; border: none; background: transparent; cursor: pointer; font-weight: 700; font-size: 0.95rem; color: var(--text-light); border-radius: 12px; transition: 0.3s; }
         .tab-btn.active { background: var(--primary); color: white; box-shadow: 0 4px 15px rgba(108,92,231,0.4); }
@@ -168,11 +169,12 @@
 <div class="sync-status" id="sync-status" style="background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 10px 15px; margin: 15px 20px 0; display: none; align-items: center; justify-content: space-between; font-size: 0.85rem; box-shadow: var(--shadow);">
     <div style="display:flex; align-items:center; gap:8px;">
         <span>🟢</span>
-        <span>همگام‌سازی فعال | <span id="last-sync-time" style="font-size:0.75rem; color:var(--text-light);">هنوز همگام‌سازی نشده</span></span>
+        <span>همگام‌سازی خودکار فعال | <span id="last-sync-time" style="font-size:0.75rem; color:var(--text-light);">هنوز همگام‌سازی نشده</span></span>
     </div>
-    <div style="display:flex; gap:5px;">
-        <button class="btn btn-primary" onclick="forceSync()" style="padding: 6px 12px; font-size: 0.75rem;">💾 همگام‌سازی الآن</button>
-        <button class="btn btn-secondary" onclick="loadFromCloud()" style="padding: 6px 12px; font-size: 0.75rem;">📥 دریافت از ابر</button>
+    <div style="display:flex; gap:5px; flex-wrap:wrap;">
+        <button class="btn btn-primary" onclick="forceSync()" style="padding: 6px 12px; font-size: 0.75rem;">💾 ذخیره</button>
+        <button class="btn btn-secondary" onclick="loadFromCloud()" style="padding: 6px 12px; font-size: 0.75rem;">📥 بازیابی</button>
+        <button class="btn btn-danger" onclick="disconnectCloud()" style="padding: 6px 12px; font-size: 0.75rem;">🚪 خروج</button>
     </div>
 </div>
 
@@ -388,12 +390,78 @@
     let isCloudConnected = false;
     let autoSyncTimeout = null;
 
+    // ==========================================
+    // 🔥 اتصال خودکار هنگام باز شدن برنامه 🔥
+    // ==========================================
+    function initAutoConnect() {
+        // بررسی اینکه آیا قبلاً کاربر متصل شده بوده است
+        if (localStorage.getItem('cloud_auto_connect') === 'true') {
+            isCloudConnected = true;
+            const btn = document.getElementById('cloud-sync-btn');
+            if (btn) {
+                btn.classList.add('connected');
+                btn.title = 'متصل به فضای ابری (کلیک برای همگام‌سازی دستی)';
+            }
+            const status = document.getElementById('sync-status');
+            if (status) status.style.display = 'flex';
+            
+            // نمایش آخرین زمان sync
+            const lastSync = localStorage.getItem('last_sync_time');
+            if (lastSync) {
+                document.getElementById('last-sync-time').innerText = `آخرین همگام‌سازی: ${lastSync}`;
+            }
+            
+            // همگام‌سازی اولیه خودکار پس از ۲ ثانیه
+            setTimeout(() => {
+                forceSyncSilent();
+            }, 2000);
+            
+            // همگام‌سازی دوره‌ای هر ۵ دقیقه (برای اطمینان از اتصال دائم)
+            setInterval(() => {
+                if (isCloudConnected) forceSyncSilent();
+            }, 300000);
+        }
+    }
+
+    // اجرای اتصال خودکار به محض بارگذاری صفحه
+    initAutoConnect();
+
     function handleCloudSync() {
+        if (isCloudConnected) {
+            // اگر از قبل متصل است، فقط یک sync دستی انجام بده
+            forceSync();
+            return;
+        }
+        // اولین بار اتصال
         isCloudConnected = true;
-        document.getElementById('cloud-sync-btn').classList.add('connected');
-        document.getElementById('sync-status').style.display = 'flex';
-        showCustomConfirm('موفق', 'اتصال به فضای ابری برقرار شد!\nاز این به بعد، تمام تغییرات به صورت خودکار در اینترنت ذخیره می‌شوند.', '✅', null);
+        localStorage.setItem('cloud_auto_connect', 'true'); // ذخیره وضعیت اتصال
+        
+        const btn = document.getElementById('cloud-sync-btn');
+        btn.classList.add('connected');
+        btn.title = 'متصل به فضای ابری (کلیک برای همگام‌سازی دستی)';
+        
+        const status = document.getElementById('sync-status');
+        status.style.display = 'flex';
+        
+        showCustomConfirm('موفق', '✅ اتصال به فضای ابری برقرار شد!\n\nاز این به بعد:\n• تمام تغییرات به صورت خودکار در اینترنت ذخیره می‌شوند\n• حتی بعد از بستن برنامه، اتصال حفظ می‌شود\n• در گوشی جدید، اطلاعات شما در دسترس است', '✅', null);
+        
         forceSync();
+    }
+
+    function disconnectCloud() {
+        showCustomConfirm('قطع اتصال', 'آیا می‌خواهید از فضای ابری خارج شوید؟\n\n⚠️ توجه: اطلاعات فعلی گوشی شما پاک نمی‌شود، اما همگام‌سازی خودکار متوقف می‌شود.\n\nبرای اتصال مجدد، دوباره روی دکمه ☁️ کلیک کنید.', '🚪', () => {
+            isCloudConnected = false;
+            localStorage.removeItem('cloud_auto_connect');
+            
+            const btn = document.getElementById('cloud-sync-btn');
+            btn.classList.remove('connected');
+            btn.title = 'اتصال به فضای ابری';
+            
+            const status = document.getElementById('sync-status');
+            status.style.display = 'none';
+            
+            showCustomConfirm('قطع شد', 'اتصال با فضای ابری قطع شد.\nاطلاعات شما همچنان در گوشی محفوظ است.', '✅', null);
+        }, 'بله، قطع کن');
     }
 
     function showCloudLoading(text = 'در حال پردازش...') {
@@ -426,9 +494,37 @@
             hideCloudLoading();
             const now = new Date().toLocaleTimeString('fa-IR');
             document.getElementById('last-sync-time').innerText = `آخرین همگام‌سازی: ${now}`;
+            localStorage.setItem('last_sync_time', now);
+            showCustomConfirm('موفق', `✅ اطلاعات با موفقیت در فضای ابری ذخیره شد.\n\nزمان: ${now}`, '✅', null);
         } catch (e) {
             hideCloudLoading();
-            showCustomConfirm('خطا', 'خطا در همگام‌سازی. لطفاً اتصال اینترنت خود را بررسی کنید.', '❌', null);
+            showCustomConfirm('خطا', 'خطا در همگام‌سازی. لطفاً اتصال اینترنت خود را بررسی کنید.\n\nجزئیات: ' + e.message, '❌', null);
+        }
+    }
+
+    // همگام‌سازی بی‌صدا (بدون نمایش پیام موفقیت) - برای sync خودکار
+    async function forceSyncSilent() {
+        if (!isCloudConnected) return;
+        try {
+            const dataToSave = {
+                version: 2, savedAt: new Date().toISOString(),
+                transactions: transactions, expenses: expenses,
+                lastDate: localStorage.getItem('lastDate'),
+                lastClosingBalancesByCurrency: JSON.parse(localStorage.getItem('lastClosingBalancesByCurrency') || '{}'),
+                dailyArchives: JSON.parse(localStorage.getItem('dailyArchives') || '[]')
+            };
+            const response = await fetch(API_URL, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'X-Master-Key': API_KEY },
+                body: JSON.stringify(dataToSave)
+            });
+            if (!response.ok) throw new Error('خطا در ارتباط با سرور');
+            const now = new Date().toLocaleTimeString('fa-IR');
+            document.getElementById('last-sync-time').innerText = `آخرین همگام‌سازی: ${now}`;
+            localStorage.setItem('last_sync_time', now);
+            console.log('✅ همگام‌سازی خودکار موفق:', now);
+        } catch (e) {
+            console.warn('⚠️ همگام‌سازی خودکار ناموفق:', e.message);
         }
     }
 
@@ -463,7 +559,7 @@
     function autoSyncToDrive() {
         if (!isCloudConnected) return;
         clearTimeout(autoSyncTimeout);
-        autoSyncTimeout = setTimeout(() => { forceSync(); }, 3000);
+        autoSyncTimeout = setTimeout(() => { forceSyncSilent(); }, 3000); // ۳ ثانیه بعد از هر تغییر
     }
     // ==========================================
 
@@ -580,6 +676,7 @@
             localStorage.setItem('expenses', JSON.stringify([]));
             localStorage.setItem('lastDate', today);
             transactions = []; expenses = [];
+            autoSyncToDrive(); // sync بعد از بستن روز
         }
     }
 
