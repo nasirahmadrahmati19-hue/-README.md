@@ -130,7 +130,6 @@
         .modal-actions { display: flex; gap: 12px; justify-content: center; }
         .modal-actions .btn { flex: 1; font-weight: 800; }
 
-        /* بنر اطلاع‌رسانی بازیابی اطلاعات */
         .cloud-restore-banner {
             background: linear-gradient(135deg, var(--info), var(--primary));
             color: white;
@@ -164,6 +163,36 @@
             font-size: 1.2rem; cursor: pointer; opacity: 0.8;
         }
         .cloud-restore-banner .banner-close:hover { opacity: 1; }
+
+        /* استایل مخصوص عناوین بخش‌های جستجو */
+        .search-section-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            font-weight: 800;
+            font-size: 1rem;
+        }
+        .search-section-title.received {
+            background: linear-gradient(135deg, rgba(255,107,107,0.15), rgba(253,121,168,0.1));
+            color: var(--danger);
+            border: 2px solid rgba(255,107,107,0.3);
+        }
+        .search-section-title.sent {
+            background: linear-gradient(135deg, rgba(0,184,148,0.15), rgba(0,206,201,0.1));
+            color: var(--success);
+            border: 2px solid rgba(0,184,148,0.3);
+        }
+        .search-section-title .title-icon { font-size: 1.4rem; }
+        .search-section-title .title-count {
+            margin-right: auto;
+            background: rgba(0,0,0,0.1);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
 
         @media (min-width: 768px) {
             body { padding-bottom: 20px; }
@@ -202,7 +231,6 @@
     </div>
 </div>
 
-<!-- بنر اطلاع‌رسانی برای گوشی جدید -->
 <div class="cloud-restore-banner" id="cloud-restore-banner">
     <div class="banner-text">
         <span class="banner-icon">📱</span>
@@ -212,7 +240,6 @@
     <button class="banner-close" onclick="dismissRestoreBanner()">✕</button>
 </div>
 
-<!-- نوار وضعیت ساده (فقط نمایش) -->
 <div class="sync-status" id="sync-status" style="background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 10px 15px; margin: 15px 20px 0; display: none; align-items: center; justify-content: space-between; font-size: 0.85rem; box-shadow: var(--shadow);">
     <div style="display:flex; align-items:center; gap:8px;">
         <span>🟢</span>
@@ -341,6 +368,7 @@
             </div>
         </div>
 
+        <!-- 🔍 بخش جستجو با دو جدول جداگانه -->
         <div id="search-transactions" class="sub-tab-content">
             <div class="form-card">
                 <h3 style="color:var(--primary)">🔍 جستجو در معاملات</h3>
@@ -353,11 +381,35 @@
                 <button class="btn btn-primary" onclick="searchTransactions()">🔍 جستجو</button>
                 <button class="btn btn-secondary" onclick="clearTransactionSearch()" style="margin-top:10px;">🗑️ پاک کردن نتایج</button>
             </div>
-            <div class="table-wrapper">
-                <table>
-                    <thead><tr><th>شماره</th><th>نوع</th><th>مشتری</th><th>شرح</th><th>جزئیات مبلغ</th><th>تاریخ</th></tr></thead>
-                    <tbody id="search-results-body"></tbody>
-                </table>
+
+            <!-- بخش نتایج فروش -->
+            <div id="search-received-section" style="display:none; margin-top:20px;">
+                <div class="search-section-title received">
+                    <span class="title-icon">💰</span>
+                    <span>نتایج فروش</span>
+                    <span class="title-count" id="search-received-count">۰ مورد</span>
+                </div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead><tr><th>شماره</th><th>مشتری</th><th>شرح</th><th>جزئیات مبلغ</th><th>تاریخ</th></tr></thead>
+                        <tbody id="search-results-received"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- بخش نتایج خرید -->
+            <div id="search-sent-section" style="display:none; margin-top:20px;">
+                <div class="search-section-title sent">
+                    <span class="title-icon">🛒</span>
+                    <span>نتایج خرید</span>
+                    <span class="title-count" id="search-sent-count">۰ مورد</span>
+                </div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead><tr><th>شماره</th><th>مشتری</th><th>شرح</th><th>جزئیات مبلغ</th><th>تاریخ</th></tr></thead>
+                        <tbody id="search-results-sent"></tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
@@ -423,9 +475,6 @@
     let pendingAction = null;
     let currentPaymentId = null;
 
-    // ==========================================
-    // تنظیمات همگام‌سازی ابری (JSONBin)
-    // ==========================================
     const BIN_ID = '6ac8ff2dffd5d160535c794a';
     const API_KEY = '$2a$10$KRrLr0WltnWayk5v4FOE4eVuj4rZS.UKRIdBeLhub3UozylqaniFe';
     const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
@@ -433,96 +482,59 @@
     let autoSyncTimeout = null;
     let autoSyncInterval = null;
 
-    // ==========================================
-    // 🔥 اتصال خودکار + تشخیص گوشی جدید 🔥
-    // ==========================================
     async function initAutoConnect() {
         if (localStorage.getItem('cloud_auto_connect') === 'true') {
             isCloudConnected = true;
             const btn = document.getElementById('cloud-sync-btn');
-            if (btn) {
-                btn.classList.add('connected');
-                btn.title = 'متصل به فضای ابری';
-            }
+            if (btn) { btn.classList.add('connected'); btn.title = 'متصل به فضای ابری'; }
             const status = document.getElementById('sync-status');
             if (status) status.style.display = 'flex';
-            
             const lastSync = localStorage.getItem('last_sync_time');
-            if (lastSync) {
-                document.getElementById('last-sync-time').innerText = `آخرین: ${lastSync}`;
-            }
+            if (lastSync) document.getElementById('last-sync-time').innerText = `آخرین: ${lastSync}`;
 
-            // بررسی اینکه آیا این گوشی جدید است (اطلاعات محلی خالی ولی در ابر هست)
             const localIsEmpty = transactions.length === 0 && expenses.length === 0;
             const hasCloudFlag = !localStorage.getItem('device_initialized');
-            
             if (localIsEmpty && hasCloudFlag) {
-                // بررسی وجود اطلاعات در فضای ابری
                 try {
-                    const response = await fetch(`${API_URL}/latest`, { 
-                        method: 'GET', 
-                        headers: { 'X-Master-Key': API_KEY } 
-                    });
+                    const response = await fetch(`${API_URL}/latest`, { method: 'GET', headers: { 'X-Master-Key': API_KEY } });
                     if (response.ok) {
                         const result = await response.json();
                         const data = result.record;
-                        const cloudHasData = (data.transactions && data.transactions.length > 0) || 
-                                           (data.expenses && data.expenses.length > 0);
-                        if (cloudHasData) {
-                            // نمایش بنر اطلاع‌رسانی
-                            document.getElementById('cloud-restore-banner').classList.add('show');
-                        } else {
-                            // ابر هم خالی است، پس این یک نصب کاملاً جدید است
-                            localStorage.setItem('device_initialized', 'true');
-                        }
+                        const cloudHasData = (data.transactions && data.transactions.length > 0) || (data.expenses && data.expenses.length > 0);
+                        if (cloudHasData) document.getElementById('cloud-restore-banner').classList.add('show');
+                        else localStorage.setItem('device_initialized', 'true');
                     }
-                } catch (e) {
-                    console.warn('بررسی فضای ابری ناموفق:', e.message);
-                }
+                } catch (e) { console.warn('بررسی فضای ابری ناموفق:', e.message); }
             } else if (!localIsEmpty) {
-                // اطلاعات محلی موجود است
                 localStorage.setItem('device_initialized', 'true');
             }
-            
-            // شروع همگام‌سازی خودکار هر ۱۰ ثانیه
             startAutoSync();
         }
     }
 
     function startAutoSync() {
         if (autoSyncInterval) clearInterval(autoSyncInterval);
-        // همگام‌سازی هر ۱۰ ثانیه
-        autoSyncInterval = setInterval(() => {
-            if (isCloudConnected) forceSyncSilent();
-        }, 10000);
-        // اولین sync بلافاصله
+        autoSyncInterval = setInterval(() => { if (isCloudConnected) forceSyncSilent(); }, 10000);
         forceSyncSilent();
     }
 
-    // اجرای اتصال خودکار به محض بارگذاری صفحه
     initAutoConnect();
 
     function handleCloudSync() {
         if (isCloudConnected) {
-            // اگر از قبل متصل است، یک sync دستی فوری انجام بده
             forceSyncSilent();
-            showCustomConfirm('اطلاعات', '✅ شما از قبل به فضای ابری متصل هستید.\n\nهمگام‌سازی خودکار هر ۱۰ ثانیه در حال انجام است.\n\nاگر گوشی جدیدی دارید و می‌خواهید اطلاعات را بارگذاری کنید، روی بنر آبی رنگ "بارگذاری اطلاعات" کلیک کنید.', 'ℹ️', null);
+            showCustomConfirm('اطلاعات', '✅ شما از قبل به فضای ابری متصل هستید.\n\nهمگام‌سازی خودکار هر ۱۰ ثانیه در حال انجام است.', 'ℹ️', null);
             return;
         }
-        // اولین بار اتصال
         isCloudConnected = true;
         localStorage.setItem('cloud_auto_connect', 'true');
         localStorage.setItem('device_initialized', 'true');
-        
         const btn = document.getElementById('cloud-sync-btn');
         btn.classList.add('connected');
         btn.title = 'متصل به فضای ابری';
-        
         const status = document.getElementById('sync-status');
         status.style.display = 'flex';
-        
-        showCustomConfirm('موفق', '✅ اتصال به فضای ابری برقرار شد!\n\nاز این به بعد:\n• هر ۱۰ ثانیه به صورت خودکار ذخیره می‌شود\n• در گوشی جدید، پیام "بارگذاری اطلاعات" نمایش داده می‌شود', '✅', null);
-        
+        showCustomConfirm('موفق', '✅ اتصال به فضای ابری برقرار شد!\n\n• هر ۱۰ ثانیه به صورت خودکار ذخیره می‌شود\n• در گوشی جدید، پیام بارگذاری نمایش داده می‌شود', '✅', null);
         startAutoSync();
     }
 
@@ -532,9 +544,7 @@
     }
 
     async function loadFromCloudDirect() {
-        showCustomConfirm('تأیید بارگذاری', '⚠️ اطلاعات موجود در فضای ابری جایگزین اطلاعات فعلی گوشی می‌شود.\n\nآیا مطمئن هستید؟', '⚠️', async () => {
-            await performCloudLoad();
-        }, 'بله، بارگذاری کن');
+        showCustomConfirm('تأیید بارگذاری', '⚠️ اطلاعات موجود در فضای ابری جایگزین اطلاعات فعلی گوشی می‌شود.\n\nآیا مطمئن هستید؟', '⚠️', async () => { await performCloudLoad(); }, 'بله، بارگذاری کن');
     }
 
     async function performCloudLoad() {
@@ -546,7 +556,6 @@
             if (!response.ok) throw new Error('خطا در دریافت اطلاعات');
             const result = await response.json();
             const data = result.record;
-
             transactions = data.transactions || [];
             expenses = data.expenses || [];
             localStorage.setItem('transactions', JSON.stringify(transactions));
@@ -555,7 +564,6 @@
             if (data.lastClosingBalancesByCurrency) localStorage.setItem('lastClosingBalancesByCurrency', JSON.stringify(data.lastClosingBalancesByCurrency));
             if (data.dailyArchives) localStorage.setItem('dailyArchives', JSON.stringify(data.dailyArchives));
             localStorage.setItem('device_initialized', 'true');
-
             renderTables(); updateSummaryCards(); updateDailyBalance(); updateReports();
             loader.style.display = 'none';
             document.getElementById('cloud-restore-banner').classList.remove('show');
@@ -585,17 +593,14 @@
             const now = new Date().toLocaleTimeString('fa-IR');
             document.getElementById('last-sync-time').innerText = `آخرین: ${now}`;
             localStorage.setItem('last_sync_time', now);
-        } catch (e) {
-            console.warn('⚠️ همگام‌سازی خودکار ناموفق:', e.message);
-        }
+        } catch (e) { console.warn('⚠️ همگام‌سازی خودکار ناموفق:', e.message); }
     }
 
     function autoSyncToDrive() {
         if (!isCloudConnected) return;
         clearTimeout(autoSyncTimeout);
-        autoSyncTimeout = setTimeout(() => { forceSyncSilent(); }, 1500); // ۱.۵ ثانیه بعد از تغییر (سریع‌تر)
+        autoSyncTimeout = setTimeout(() => { forceSyncSilent(); }, 1500);
     }
-    // ==========================================
 
     function getCurrencyName(code) {
         const names = { 'AFN': 'افغانی', 'USD': 'دالر', 'EUR': 'یورو', 'IRR': 'ریال', 'PKR': 'روپیه' };
@@ -947,11 +952,13 @@
         if (!e.target.matches('.action-btn')) document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove('show'));
     };
 
+    // 🔍 تابع جستجوی بهبود یافته - نمایش جداگانه خرید و فروش
     function searchTransactions() {
         const searchCustomer = document.getElementById('search-customer').value.trim().toLowerCase();
         const searchDesc = document.getElementById('search-desc').value.trim().toLowerCase();
         const searchAmount = parseCleanNumber(document.getElementById('search-amount').value);
         const searchDate = document.getElementById('search-date').value.trim();
+
         let results = transactions.filter(t => {
             let match = true;
             if (searchCustomer && !(t.customer || '').toLowerCase().includes(searchCustomer)) match = false;
@@ -960,18 +967,78 @@
             if (searchDate && !t.date.includes(searchDate)) match = false;
             return match;
         });
-        const tbody = document.getElementById('search-results-body');
-        tbody.innerHTML = '';
-        if (!results.length) tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state"><div class="icon">🔍</div>نتیجه‌ای یافت نشد</div></td></tr>`;
-        else {
-            results.forEach((t, i) => {
-                const typeText = t.type === 'received' ? 'فروش' : 'خرید';
-                const typeColor = t.type === 'received' ? 'var(--danger)' : 'var(--success)';
+
+        // جدا کردن نتایج بر اساس نوع
+        const receivedResults = results.filter(t => t.type === 'received');
+        const sentResults = results.filter(t => t.type === 'sent');
+
+        const sectionReceived = document.getElementById('search-received-section');
+        const sectionSent = document.getElementById('search-sent-section');
+        const tbodyReceived = document.getElementById('search-results-received');
+        const tbodySent = document.getElementById('search-results-sent');
+        const countReceived = document.getElementById('search-received-count');
+        const countSent = document.getElementById('search-sent-count');
+
+        tbodyReceived.innerHTML = '';
+        tbodySent.innerHTML = '';
+
+        // نمایش بخش فروش
+        sectionReceived.style.display = 'block';
+        countReceived.innerText = `${formatNumber(receivedResults.length)} مورد`;
+        if (receivedResults.length === 0) {
+            tbodyReceived.innerHTML = `<tr><td colspan="5"><div class="empty-state"><div class="icon">📭</div>هیچ فروشی با این مشخصات یافت نشد</div></td></tr>`;
+        } else {
+            receivedResults.forEach((t, i) => {
                 const amount = Number(t.amount) || 0;
                 const paid = Number(t.paid) || 0;
                 const remaining = Number(t.remaining) || 0;
-                tbody.innerHTML += `<tr><td>${i+1}</td><td style="color:${typeColor};font-weight:700">${typeText}</td><td>${t.customer || '-'}</td><td>${t.desc}</td><td><div class="amount-breakdown"><span class="total">کل: ${formatNumber(amount)}</span><span class="detail" style="color:var(--success)">پرداخت شده: ${formatNumber(paid)}</span><span class="detail" style="color:${remaining > 0 ? 'var(--danger)' : 'var(--text-light)'}">باقی‌مانده: ${formatNumber(remaining)}</span></div></td><td>${t.date}</td></tr>`;
+                tbodyReceived.innerHTML += `
+                    <tr>
+                        <td>${i+1}</td>
+                        <td>${t.customer || '-'}</td>
+                        <td>${t.desc}</td>
+                        <td>
+                            <div class="amount-breakdown">
+                                <span class="total" style="color:var(--danger)">کل: ${formatNumber(amount)}</span>
+                                <span class="detail" style="color:var(--success)">پرداخت شده: ${formatNumber(paid)}</span>
+                                <span class="detail" style="color:${remaining > 0 ? 'var(--danger)' : 'var(--text-light)'}">باقی‌مانده: ${formatNumber(remaining)}</span>
+                            </div>
+                        </td>
+                        <td>${t.date}</td>
+                    </tr>`;
             });
+        }
+
+        // نمایش بخش خرید
+        sectionSent.style.display = 'block';
+        countSent.innerText = `${formatNumber(sentResults.length)} مورد`;
+        if (sentResults.length === 0) {
+            tbodySent.innerHTML = `<tr><td colspan="5"><div class="empty-state"><div class="icon">📭</div>هیچ خریدی با این مشخصات یافت نشد</div></td></tr>`;
+        } else {
+            sentResults.forEach((t, i) => {
+                const amount = Number(t.amount) || 0;
+                const paid = Number(t.paid) || 0;
+                const remaining = Number(t.remaining) || 0;
+                tbodySent.innerHTML += `
+                    <tr>
+                        <td>${i+1}</td>
+                        <td>${t.customer || '-'}</td>
+                        <td>${t.desc}</td>
+                        <td>
+                            <div class="amount-breakdown">
+                                <span class="total" style="color:var(--success)">کل: ${formatNumber(amount)}</span>
+                                <span class="detail" style="color:var(--success)">پرداخت شده: ${formatNumber(paid)}</span>
+                                <span class="detail" style="color:${remaining > 0 ? 'var(--danger)' : 'var(--text-light)'}">باقی‌مانده: ${formatNumber(remaining)}</span>
+                            </div>
+                        </td>
+                        <td>${t.date}</td>
+                    </tr>`;
+            });
+        }
+
+        // پیام کلی اگر هیچ نتیجه‌ای نبود
+        if (results.length === 0) {
+            showCustomConfirm('نتیجه جستجو', '🔍 هیچ معامله‌ای با این مشخصات یافت نشد.\n\nلطفاً فیلترهای جستجو را تغییر دهید.', '🔍', null);
         }
     }
 
@@ -980,7 +1047,10 @@
         document.getElementById('search-desc').value = '';
         document.getElementById('search-amount').value = '';
         document.getElementById('search-date').value = '';
-        document.getElementById('search-results-body').innerHTML = '';
+        document.getElementById('search-results-received').innerHTML = '';
+        document.getElementById('search-results-sent').innerHTML = '';
+        document.getElementById('search-received-section').style.display = 'none';
+        document.getElementById('search-sent-section').style.display = 'none';
     }
 
     function renderTables() {
